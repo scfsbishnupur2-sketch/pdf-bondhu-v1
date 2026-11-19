@@ -5,7 +5,11 @@ plugins {
 
 val configuredAppUrl: String = (project.findProperty("APP_URL") as? String)
     ?.takeIf { it.isNotBlank() }
-    ?: "https://ais-pre-djeap3venq5kotpetnutp7-304175076052.asia-southeast1.run.app"
+    ?: "https://appassets.androidplatform.net/index.html"
+
+val configuredGithubRepo: String = (project.findProperty("GITHUB_REPO") as? String)
+    ?.takeIf { it.isNotBlank() }
+    ?: "scfsbishnupur2-sketch/pdf-bondhu-v1"
 
 android {
     namespace = "com.nayak.pdfbondhu"
@@ -15,10 +19,11 @@ android {
         applicationId = "com.nayak.pdfbondhu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         buildConfigField("String", "APP_URL", "\"$configuredAppUrl\"")
+        buildConfigField("String", "GITHUB_REPO", "\"$configuredGithubRepo\"")
     }
 
     signingConfigs {

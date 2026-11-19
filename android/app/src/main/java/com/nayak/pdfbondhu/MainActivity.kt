@@ -24,6 +24,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -35,9 +36,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.webkit.WebViewAssetLoader
 import org.json.JSONObject
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.security.MessageDigest
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -46,8 +54,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var splashOverlay: LinearLayout
     private lateinit var offlineOverlay: LinearLayout
     private lateinit var retryButton: Button
+    private lateinit var assetLoader: WebViewAssetLoader
 
     private val ioExecutor = Executors.newSingleThreadExecutor()
+    private val otaDir: File by lazy { File(filesDir, "ota_www").apply { mkdirs() } }
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingChooserParams: WebChromeClient.FileChooserParams? = null
@@ -114,10 +124,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val rootContainer = findViewById<View>(R.id.rootContainer)
+        ViewCompat.setOnApplyWindowInsetsListener(rootContainer) { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
+            )
+            view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+            windowInsets
+        }
+
         webView = findViewById(R.id.webView)
         splashOverlay = findViewById(R.id.splashOverlay)
         offlineOverlay = findViewById(R.id.offlineOverlay)
         retryButton = findViewById(R.id.retryButton)
+
+        assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/", LocalAndOtaPathHandler())
+            .build()
 
         retryButton.setOnClickListener {
             offlineOverlay.visibility = View.GONE
@@ -128,6 +151,7 @@ class MainActivity : AppCompatActivity() {
         configureWebView()
         setupBackNavigation()
         loadAppUrl()
+        checkForOtaUpdateAsync()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -147,6 +171,14 @@ class MainActivity : AppCompatActivity() {
         webView.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
 
         webView.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): WebResourceResponse? {
+                val url = request?.url ?: return null
+                return assetLoader.shouldInterceptRequest(url)
+            }
+
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
                 request: WebResourceRequest?
@@ -156,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                 val scheme = uri.scheme?.lowercase() ?: ""
 
                 if (scheme == "http" || scheme == "https") {
-                    if (uri.host == targetHost) {
+                    if (uri.host == WebViewAssetLoader.DEFAULT_DOMAIN || uri.host == targetHost) {
                         return false
                     }
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
@@ -267,6 +299,115 @@ class MainActivity : AppCompatActivity() {
             WebSettings.LOAD_CACHE_ELSE_NETWORK
         }
         webView.loadUrl(BuildConfig.APP_URL)
+    }
+
+    private fun checkForOtaUpdateAsync() {
+        val repo = BuildConfig.GITHUB_REPO
+        if (repo.isBlank() || !isNetworkAvailable()) return
+
+        ioExecutor.execute {
+            runCatching {
+                val baseRaw = "https://raw.githubusercontent.com/$repo/main"
+                val remoteHtml = downloadText("$baseRaw/index.html") ?: return@runCatching
+                val remoteJs = downloadText("$baseRaw/public/app.js") ?: return@runCatching
+
+                if (!remoteHtml.contains("PDF Bondhu") || remoteJs.length < 5000) {
+                    return@runCatching
+                }
+
+                val remoteHash = sha256("$remoteHtml\n---\n$remoteJs")
+                val prefs = getSharedPreferences("pdf_bondhu_ota", Context.MODE_PRIVATE)
+                val savedHash = prefs.getString("ota_hash", null) ?: computeBundledHash()
+
+                if (remoteHash == savedHash) return@runCatching
+
+                val htmlTmp = File(otaDir, "index.html.tmp")
+                val jsTmp = File(otaDir, "app.js.tmp")
+                htmlTmp.writeText(remoteHtml, Charsets.UTF_8)
+                jsTmp.writeText(remoteJs, Charsets.UTF_8)
+
+                htmlTmp.renameTo(File(otaDir, "index.html"))
+                jsTmp.renameTo(File(otaDir, "app.js"))
+
+                prefs.edit().putString("ota_hash", remoteHash).apply()
+
+                runOnUiThread {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "PDF Bondhu updated! Reopen app for latest version.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun computeBundledHash(): String {
+        return runCatching {
+            val bundledHtml = assets.open("www/index.html").bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val bundledJs = assets.open("www/app.js").bufferedReader(Charsets.UTF_8).use { it.readText() }
+            sha256("$bundledHtml\n---\n$bundledJs")
+        }.getOrDefault("")
+    }
+
+    private fun downloadText(urlString: String): String? {
+        var conn: HttpURLConnection? = null
+        return try {
+            conn = (URL(urlString).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 8000
+                readTimeout = 12000
+                requestMethod = "GET"
+                setRequestProperty("Cache-Control", "no-cache")
+            }
+            if (conn.responseCode != HttpURLConnection.HTTP_OK) return null
+            conn.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+        } catch (_: Exception) {
+            null
+        } finally {
+            conn?.disconnect()
+        }
+    }
+
+    private fun sha256(input: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(input.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private inner class LocalAndOtaPathHandler : WebViewAssetLoader.PathHandler {
+        override fun handle(path: String): WebResourceResponse? {
+            val cleanPath = path.trimStart('/').ifEmpty { "index.html" }
+            if (cleanPath.contains("..")) return null
+
+            val mimeType = when {
+                cleanPath.endsWith(".html", true) -> "text/html"
+                cleanPath.endsWith(".js", true) -> "application/javascript"
+                cleanPath.endsWith(".css", true) -> "text/css"
+                cleanPath.endsWith(".json", true) -> "application/json"
+                cleanPath.endsWith(".svg", true) -> "image/svg+xml"
+                cleanPath.endsWith(".png", true) -> "image/png"
+                cleanPath.endsWith(".jpg", true) || cleanPath.endsWith(".jpeg", true) -> "image/jpeg"
+                cleanPath.endsWith(".webp", true) -> "image/webp"
+                cleanPath.endsWith(".ico", true) -> "image/x-icon"
+                else -> "application/octet-stream"
+            }
+            val encoding = if (mimeType.startsWith("image/") && mimeType != "image/svg+xml") null else "UTF-8"
+            val headers = mapOf(
+                "Access-Control-Allow-Origin" to "*",
+                "Cache-Control" to "no-cache"
+            )
+
+            val otaFile = File(otaDir, cleanPath)
+            if (otaFile.exists() && otaFile.isFile) {
+                return runCatching {
+                    WebResourceResponse(mimeType, encoding, 200, "OK", headers, FileInputStream(otaFile))
+                }.getOrNull()
+            }
+
+            return runCatching {
+                val stream = assets.open("www/$cleanPath")
+                WebResourceResponse(mimeType, encoding, 200, "OK", headers, stream)
+            }.getOrNull()
+        }
     }
 
     private fun setupBackNavigation() {

@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       app_url:
-        description: 'Live Published URL (leave empty to use default PDF Bondhu Published URL)'
+        description: 'Optional custom URL (leave empty to use built-in bundled PDF Bondhu offline engine)'
         required: false
-        default: 'https://ais-pre-djeap3venq5kotpetnutp7-304175076052.asia-southeast1.run.app'
+        default: ''
 
 permissions:
   contents: write
@@ -59,6 +59,20 @@ jobs:
             -keypass pdfbondhu123 \
             -dname "CN=PDF Bondhu, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
 
+      - name: Bundle Web App into Android Assets
+        run: |
+          rm -rf android/app/src/main/assets/www
+          mkdir -p android/app/src/main/assets/www
+          cp index.html android/app/src/main/assets/www/index.html
+          cp public/app.js android/app/src/main/assets/www/app.js
+          [ -f public/admob-service.js ] && cp public/admob-service.js android/app/src/main/assets/www/admob-service.js || true
+          [ -f public/manifest.json ] && cp public/manifest.json android/app/src/main/assets/www/manifest.json || true
+          [ -f public/sw.js ] && cp public/sw.js android/app/src/main/assets/www/sw.js || true
+          for f in public/*.svg public/*.png public/*.ico; do
+            [ -f "$f" ] && cp "$f" android/app/src/main/assets/www/
+          done
+          ls -lh android/app/src/main/assets/www
+
       - name: Build Signed Release APK
         working-directory: android
         env:
@@ -69,9 +83,9 @@ jobs:
         run: |
           APP_URL_INPUT="${{ github.event.inputs.app_url }}"
           if [ -n "$APP_URL_INPUT" ]; then
-            gradle assembleRelease -PAPP_URL="$APP_URL_INPUT" --no-daemon
+            gradle assembleRelease -PAPP_URL="$APP_URL_INPUT" -PGITHUB_REPO="${{ github.repository }}" --no-daemon
           else
-            gradle assembleRelease --no-daemon
+            gradle assembleRelease -PGITHUB_REPO="${{ github.repository }}" --no-daemon
           fi
 
       - name: Prepare PDF-Bondhu.apk

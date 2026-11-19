@@ -186,8 +186,9 @@ function initPWA() {
     window.navigator.standalone === true;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-  // Register Service Worker & listen for published updates
-  if ('serviceWorker' in navigator) {
+  // Register Service Worker & listen for published updates (web/PWA only; Android APK uses native bundled assets + OTA)
+  const isBundledApkOrigin = window.location.hostname === 'appassets.androidplatform.net';
+  if ('serviceWorker' in navigator && !isBundledApkOrigin) {
     let hadController = Boolean(navigator.serviceWorker.controller);
     navigator.serviceWorker.register('/sw.js')
       .then((reg) => {
