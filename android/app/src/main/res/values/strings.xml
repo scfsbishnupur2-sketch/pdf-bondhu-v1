@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PDF Bondhu</string>
+    <string name="splash_subtitle">Offline PDF, Image &amp; Excel Utilities</string>
+    <string name="offline_title">No Internet Connection</string>
+    <string name="offline_message">Connect once to download the latest PDF Bondhu tools. After the first load, offline mode works automatically.</string>
+    <string name="retry_button">Try Again</string>
+    <string name="press_back_again">Press back again to exit PDF Bondhu</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "PDF Bondhu",
+  "description": "100% offline, privacy-first mobile utility app for PDFs, Images, and Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

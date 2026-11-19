@@ -1,0 +1,88 @@
+name: Build PDF Bondhu APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: 'Live Published URL (leave empty to use default PDF Bondhu Published URL)'
+        required: false
+        default: 'https://ais-pre-djeap3venq5kotpetnutp7-304175076052.asia-southeast1.run.app'
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Installable Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Generate release signing keystore
+        run: |
+          mkdir -p android/keystore
+          keytool -genkeypair -v \
+            -keystore android/keystore/pdfbondhu-release.jks \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias pdfbondhu \
+            -storepass pdfbondhu123 \
+            -keypass pdfbondhu123 \
+            -dname "CN=PDF Bondhu, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
+
+      - name: Build Signed Release APK
+        working-directory: android
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/android/keystore/pdfbondhu-release.jks
+          KEYSTORE_PASSWORD: pdfbondhu123
+          KEY_ALIAS: pdfbondhu
+          KEY_PASSWORD: pdfbondhu123
+        run: |
+          APP_URL_INPUT="${{ github.event.inputs.app_url }}"
+          if [ -n "$APP_URL_INPUT" ]; then
+            gradle assembleRelease -PAPP_URL="$APP_URL_INPUT" --no-daemon
+          else
+            gradle assembleRelease --no-daemon
+          fi
+
+      - name: Prepare PDF-Bondhu.apk
+        run: |
+          mkdir -p apk-output
+          cp android/app/build/outputs/apk/release/app-release.apk apk-output/PDF-Bondhu.apk
+          ls -lh apk-output/PDF-Bondhu.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF-Bondhu-APK
+          path: apk-output/PDF-Bondhu.apk
+          retention-days: 90
+
+      - name: Publish Direct Download Release
+        uses: softprops/action-gh-release@v2
+        continue-on-error: true
+        with:
+          tag_name: v1.0-latest
+          name: PDF Bondhu Android APK
+          body: |
+            Download `PDF-Bondhu.apk` below, install it on your Android phone, and share it with anyone.
+            Every time you update and Publish the web app in AI Studio, all installed APKs automatically receive the latest updates!
+          files: apk-output/PDF-Bondhu.apk
+          make_latest: true
