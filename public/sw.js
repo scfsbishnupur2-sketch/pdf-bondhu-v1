@@ -1,4 +1,4 @@
-const APP_SHELL_CACHE = 'pdf-bondhu-shell-v5';
+const APP_SHELL_CACHE = 'pdf-bondhu-shell-v6';
 const CDN_CACHE = 'pdf-bondhu-cdn-v3';
 
 const APP_SHELL_ASSETS = [

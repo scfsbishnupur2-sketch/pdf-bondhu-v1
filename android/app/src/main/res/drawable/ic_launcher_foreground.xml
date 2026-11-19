@@ -4,16 +4,60 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Precision Scanner Brackets -->
+    <path
+        android:strokeColor="#67E8F9"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M21,33V24a3,3 0 0,1 3,-3h9" />
+    <path
+        android:strokeColor="#67E8F9"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M75,21h9a3,3 0 0,1 3,3v9" />
+    <path
+        android:strokeColor="#67E8F9"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M87,75v9a3,3 0 0,1 -3,3h-9" />
+    <path
+        android:strokeColor="#67E8F9"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M33,87h-9a3,3 0 0,1 -3,-3v-9" />
+
+    <!-- Floating White Document Sheet -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M34,26h26l16,16v40c0,3.3 -2.7,6 -6,6H34c-3.3,0 -6,-2.7 -6,-6V32C28,28.7 30.7,26 34,26z" />
+        android:pathData="M34,25h25l16,16v39c0,3.3 -2.7,6 -6,6H34c-3.3,0 -6,-2.7 -6,-6V31C28,27.7 30.7,25 34,25z" />
+
+    <!-- Golden Folded Corner -->
     <path
-        android:fillColor="#CBD5E1"
-        android:pathData="M60,26v12c0,2.2 1.8,4 4,4h12L60,26z" />
+        android:fillColor="#F59E0B"
+        android:pathData="M59,25v11c0,2.8 2.2,5 5,5h11L59,25z" />
+
+    <!-- Coral-Red PDF Accent Ribbon -->
     <path
-        android:fillColor="#0284C7"
-        android:pathData="M36,50h36c2.2,0 4,1.8 4,4v8c0,2.2 -1.8,4 -4,4H36c-2.2,0 -4,-1.8 -4,-4v-8C32,51.8 33.8,50 36,50z" />
+        android:fillColor="#EF4444"
+        android:pathData="M26,47h42c2.8,0 5,2.2 5,5v9c0,2.8 -2.2,5 -5,5H26c-2.8,0 -5,-2.2 -5,-5v-9C21,49.2 23.2,47 26,47z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,53h28c1.1,0 2,0.9 2,2v2c0,1.1 -0.9,2 -2,2H31c-1.1,0 -2,-0.9 -2,-2v-2C29,53.9 29.9,53 31,53z" />
+
+    <!-- Clean Document Lines -->
+    <path
+        android:fillColor="#6366F1"
+        android:pathData="M35,71h32c1.1,0 2,0.9 2,2v1.5c0,1.1 -0.9,2 -2,2H35c-1.1,0 -2,-0.9 -2,-2V73C33,71.9 33.9,71 35,71z" />
     <path
         android:fillColor="#94A3B8"
-        android:pathData="M36,72h32c1.1,0 2,0.9 2,2v2c0,1.1 -0.9,2 -2,2H36c-1.1,0 -2,-0.9 -2,-2v-2C34,72.9 34.9,72 36,72z" />
+        android:pathData="M35,78h22c1,0 1.8,0.8 1.8,1.8v1.2c0,1 -0.8,1.8 -1.8,1.8H35c-1,0 -1.8,-0.8 -1.8,-1.8v-1.2C33.2,78.8 34,78 35,78z" />
+
+    <!-- Golden Sparkle Star -->
+    <path
+        android:fillColor="#FDE047"
+        android:pathData="M79,31l2,5l5,2l-5,2l-2,5l-2,-5l-5,-2l5,-2z" />
 </vector>

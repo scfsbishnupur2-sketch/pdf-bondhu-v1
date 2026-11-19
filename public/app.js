@@ -5,6 +5,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initLiveClock();
+  initPdfMetadataModal();
   initPWA();
   initTabs();
   initHomeFilters();
@@ -24,10 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initOcrScanner();
   initImageConverter();
 
-  // Initialize new utility modules
+  // Initialize utility & daily essential modules
   initPdfOrganizer();
   initPdfWatermark();
   initPhotoResizer();
+  initPdfSign();
+  initIdCardMaker();
+  initTextToPdf();
+  initPdfMetadataTool();
 });
 
 /* ==========================================================================
@@ -127,14 +133,219 @@ const utils = {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  },
+  toLocalDateTimeInputValue(dateObj = new Date()) {
+    const d = dateObj instanceof Date && !isNaN(dateObj.getTime()) ? dateObj : new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  },
+  savePdfWithMetadata(pdfDocOrData, defaultFilename = 'PDF_Bondhu_Document.pdf', defaultTitle = '', saveOptions = {}) {
+    if (typeof window.__openPdfMetadataSaveModal === 'function') {
+      return window.__openPdfMetadataSaveModal(pdfDocOrData, defaultFilename, defaultTitle, saveOptions);
+    }
+    return (async () => {
+      let bytes;
+      if (pdfDocOrData instanceof Blob) {
+        utils.downloadBlob(pdfDocOrData, defaultFilename);
+        return { saved: true, filename: defaultFilename, blob: pdfDocOrData };
+      }
+      if (pdfDocOrData && typeof pdfDocOrData.save === 'function') {
+        bytes = await pdfDocOrData.save(saveOptions);
+      } else {
+        bytes = pdfDocOrData;
+      }
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      utils.downloadBlob(blob, defaultFilename);
+      return { saved: true, filename: defaultFilename, blob };
+    })();
   }
 };
+
+/* ==========================================================================
+   Live Today's Date & Time Clock (Header Desktop + Mobile)
+   ========================================================================== */
+
+function initLiveClock() {
+  const desktopEl = document.getElementById('liveDateTimeDisplay');
+  const mobileEl = document.getElementById('liveDateTimeMobile');
+  if (!desktopEl && !mobileEl) return;
+
+  const updateClock = () => {
+    const now = new Date();
+    const dateShort = now.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+    const weekday = now.toLocaleDateString('en-IN', { weekday: 'short' });
+    const timeFull = now.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    const timeCompact = now.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    if (desktopEl) {
+      desktopEl.textContent = `${weekday}, ${dateShort} · ${timeFull}`;
+    }
+    if (mobileEl) {
+      mobileEl.textContent = `${weekday}, ${dateShort} · ${timeCompact}`;
+    }
+  };
+
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+
+/* ==========================================================================
+   Universal PDF Metadata Editor Modal (Author, Title, Creation Date)
+   ========================================================================== */
+
+function initPdfMetadataModal() {
+  const modal = document.getElementById('pdfMetadataModal');
+  const form = document.getElementById('pdfMetadataForm');
+  const fileNameInput = document.getElementById('pdfMetaFileName');
+  const titleInput = document.getElementById('pdfMetaTitle');
+  const authorInput = document.getElementById('pdfMetaAuthor');
+  const dateInput = document.getElementById('pdfMetaCreationDate');
+  const subjectInput = document.getElementById('pdfMetaSubject');
+  const cancelTopBtn = document.getElementById('pdfMetaCancelTopBtn');
+  const cancelBtn = document.getElementById('pdfMetaCancelBtn');
+
+  if (!modal || !form) return;
+
+  let activeRequest = null;
+
+  function closeModal(result) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    if (activeRequest) {
+      const resolve = activeRequest.resolve;
+      activeRequest = null;
+      resolve(result);
+    }
+  }
+
+  if (cancelTopBtn) cancelTopBtn.addEventListener('click', () => closeModal({ saved: false }));
+  if (cancelBtn) cancelBtn.addEventListener('click', () => closeModal({ saved: false }));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal({ saved: false });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!activeRequest) return;
+
+    const req = activeRequest;
+    const rawName = (fileNameInput.value || req.defaultFilename || 'Document.pdf').trim();
+    const safeName = rawName.toLowerCase().endsWith('.pdf') ? rawName : `${rawName}.pdf`;
+    const title = titleInput.value.trim();
+    const author = authorInput.value.trim();
+    const subject = subjectInput.value.trim();
+    const dateVal = dateInput.value;
+    const parsedDate = dateVal ? new Date(dateVal) : new Date();
+    const finalDate = !isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+
+    if (author) {
+      try { localStorage.setItem('pdfBondhuDefaultAuthor', author); } catch {}
+    }
+
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    utils.showLoader('Applying PDF Metadata...', 'text-indigo-600 dark:text-indigo-400');
+
+    try {
+      let pdfDoc = req.pdfDocOrData;
+      if (!pdfDoc || typeof pdfDoc.save !== 'function') {
+        let buffer;
+        if (pdfDoc instanceof Blob) {
+          buffer = await pdfDoc.arrayBuffer();
+        } else if (pdfDoc instanceof Uint8Array) {
+          buffer = pdfDoc;
+        } else {
+          buffer = new Uint8Array(pdfDoc);
+        }
+        pdfDoc = await window.PDFLib.PDFDocument.load(buffer, { ignoreEncryption: true });
+      }
+
+      if (title) pdfDoc.setTitle(title);
+      if (author) pdfDoc.setAuthor(author);
+      if (subject) pdfDoc.setSubject(subject);
+      pdfDoc.setCreator('PDF Bondhu by Suman Nayak');
+      pdfDoc.setProducer('PDF Bondhu Offline Suite');
+      pdfDoc.setCreationDate(finalDate);
+      pdfDoc.setModificationDate(finalDate);
+
+      const bytes = await pdfDoc.save(req.saveOptions || {});
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      utils.downloadBlob(blob, safeName);
+
+      const resolve = req.resolve;
+      activeRequest = null;
+      resolve({ saved: true, filename: safeName, blob });
+    } catch (err) {
+      console.error('Failed to save PDF with metadata:', err);
+      utils.showToast('Error', 'Could not apply PDF metadata. Saving standard copy...', 'error');
+      const resolve = req.resolve;
+      activeRequest = null;
+      resolve({ saved: false, error: err });
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  window.__openPdfMetadataSaveModal = (pdfDocOrData, defaultFilename = 'Document.pdf', defaultTitle = '', saveOptions = {}) => {
+    utils.hideLoader();
+    return new Promise((resolve) => {
+      if (activeRequest) {
+        activeRequest.resolve({ saved: false });
+      }
+      activeRequest = { pdfDocOrData, defaultFilename, saveOptions, resolve };
+
+      const cleanBase = (defaultFilename || 'Document.pdf').replace(/\.pdf$/i, '');
+      let savedAuthor = 'Suman Nayak';
+      try {
+        savedAuthor = localStorage.getItem('pdfBondhuDefaultAuthor') || 'Suman Nayak';
+      } catch {}
+
+      let existingTitle = defaultTitle || cleanBase.replace(/[_-]+/g, ' ');
+      let existingAuthor = savedAuthor;
+      let existingSubject = '';
+      let existingDate = new Date();
+
+      if (pdfDocOrData && typeof pdfDocOrData.getTitle === 'function') {
+        try {
+          if (pdfDocOrData.getTitle()) existingTitle = pdfDocOrData.getTitle();
+          if (pdfDocOrData.getAuthor()) existingAuthor = pdfDocOrData.getAuthor();
+          if (pdfDocOrData.getSubject()) existingSubject = pdfDocOrData.getSubject();
+          const cDate = pdfDocOrData.getCreationDate();
+          if (cDate instanceof Date && !isNaN(cDate.getTime())) existingDate = cDate;
+        } catch {}
+      }
+
+      fileNameInput.value = defaultFilename.toLowerCase().endsWith('.pdf') ? defaultFilename : `${defaultFilename}.pdf`;
+      titleInput.value = existingTitle;
+      authorInput.value = existingAuthor;
+      dateInput.value = utils.toLocalDateTimeInputValue(existingDate);
+      subjectInput.value = existingSubject;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => titleInput.focus(), 60);
+    });
+  };
+}
 
 /* ==========================================================================
    PWA, Android WebView Bridge, Auto-Update & Share Hub
    ========================================================================== */
 
-const PUBLISHED_APP_URL = 'https://ais-pre-djeap3venq5kotpetnutp7-304175076052.asia-southeast1.run.app';
+const PUBLISHED_APP_URL = 'https://pdf-bondhu-v1.vercel.app';
 
 window.onAndroidDownloadSuccess = (savedName) => {
   utils.showToast('Saved to Downloads', `${savedName} saved in Downloads/PDF Bondhu.`);
@@ -147,6 +358,7 @@ window.onAndroidDownloadError = (msg) => {
 window.handleAndroidBackPress = () => {
   // 1. Close any visible modal first
   const modals = [
+    { id: 'pdfMetadataModal', closeBtn: 'pdfMetaCancelTopBtn' },
     { id: 'appShareModal', closeBtn: 'closeAppHubModal' },
     { id: 'pdfCompressZoomModal', closeBtn: 'pdfCompressZoomClose' },
     { id: 'cropModal', closeBtn: 'closeCropModal' }
@@ -387,134 +599,640 @@ function initPWA() {
    ========================================================================== */
 const scanSettings = {
   pageSize: 'a4', // 'fit', 'a4', 'letter'
-  quality: 0.95   // 0.1 to 1.0
+  quality: 0.94,  // 0.62 to 0.94
+  autoMagic: 'magic' // 'magic', 'bw', 'original'
 };
 
 /* ==========================================================================
-   Computer Vision Utilities (Auto Crop, Perspective)
+   Pro Studio Computer Vision Engine (Multi-Pass Auto-Crop, Perspective Warp,
+   Illumination Shadow Removal & Sharpening — OpenCV + Pure-JS Offline Engine)
    ========================================================================== */
 const cvUtils = {
   isReady: () => typeof cv !== 'undefined' && cv.Mat,
+
   orderPoints: (pts) => {
-    // Sort by sum of x+y to find Top-Left and Bottom-Right
-    pts.sort((a, b) => (a.x + a.y) - (b.x + b.y));
-    const tl = pts[0];
-    const br = pts[3];
-    
-    // Sort remaining by diff of x-y to find Top-Right and Bottom-Left
-    const remain = [pts[1], pts[2]];
+    const arr = pts.map(p => ({ x: p.x, y: p.y }));
+    arr.sort((a, b) => (a.x + a.y) - (b.x + b.y));
+    const tl = arr[0];
+    const br = arr[3];
+    const remain = [arr[1], arr[2]];
     remain.sort((a, b) => (a.x - a.y) - (b.x - b.y));
     const bl = remain[0];
     const tr = remain[1];
-    
     return [tl, tr, br, bl];
   },
-  autoCrop: (imageElement) => {
-    return new Promise((resolve, reject) => {
-      if (!cvUtils.isReady()) return reject("OpenCV not ready");
-      try {
-        let src = cv.imread(imageElement);
-        
-        // Downscale for performance
-        const maxDim = 800;
-        let scale = 1;
-        let processSrc = new cv.Mat();
-        if (src.cols > maxDim || src.rows > maxDim) {
-          scale = Math.min(maxDim / src.cols, maxDim / src.rows);
-          cv.resize(src, processSrc, new cv.Size(0, 0), scale, scale, cv.INTER_AREA);
-        } else {
-          processSrc = src.clone();
+
+  defaultCorners: () => ([
+    { x: 0.03, y: 0.03 },
+    { x: 0.97, y: 0.03 },
+    { x: 0.97, y: 0.97 },
+    { x: 0.03, y: 0.97 }
+  ]),
+
+  // Pure-JS fallback paper-boundary detector (fast gradient + border contrast projection)
+  detectDocumentCornersFallback: (img) => {
+    try {
+      const maxDim = 260;
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      const scale = Math.min(1, maxDim / Math.max(iw, ih));
+      const w = Math.max(32, Math.round(iw * scale));
+      const h = Math.max(32, Math.round(ih * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+
+      // Estimate background luminance from outer 4% border ring
+      let bgSum = 0;
+      let bgCount = 0;
+      const lum = new Float32Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const l = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+          lum[y * w + x] = l;
+          if (x < w * 0.04 || x > w * 0.96 || y < h * 0.04 || y > h * 0.96) {
+            bgSum += l;
+            bgCount++;
+          }
+        }
+      }
+      const bgMean = bgCount ? bgSum / bgCount : 120;
+
+      // Check if center is significantly brighter (paper on desk) or distinct from border
+      let centerSum = 0;
+      let centerCount = 0;
+      for (let y = Math.floor(h * 0.25); y < Math.floor(h * 0.75); y++) {
+        for (let x = Math.floor(w * 0.25); x < Math.floor(w * 0.75); x++) {
+          centerSum += lum[y * w + x];
+          centerCount++;
+        }
+      }
+      const centerMean = centerCount ? centerSum / centerCount : 200;
+      const contrastDiff = centerMean - bgMean;
+
+      if (contrastDiff > 22) {
+        const thresh = bgMean + contrastDiff * 0.42;
+        const rowScore = new Float32Array(h);
+        const colScore = new Float32Array(w);
+        for (let y = 0; y < h; y++) {
+          let hits = 0;
+          for (let x = 0; x < w; x++) {
+            if (lum[y * w + x] >= thresh) hits++;
+          }
+          rowScore[y] = hits / w;
+        }
+        for (let x = 0; x < w; x++) {
+          let hits = 0;
+          for (let y = 0; y < h; y++) {
+            if (lum[y * w + x] >= thresh) hits++;
+          }
+          colScore[x] = hits / h;
         }
 
-        // Grayscale & Blur
-        let gray = new cv.Mat();
-        cv.cvtColor(processSrc, gray, cv.COLOR_RGBA2GRAY, 0);
-        let blurred = new cv.Mat();
-        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
-        
-        // Edge Detection
-        let edges = new cv.Mat();
-        cv.Canny(blurred, edges, 75, 200);
+        let top = 0, bottom = h - 1, left = 0, right = w - 1;
+        while (top < h * 0.35 && rowScore[top] < 0.28) top++;
+        while (bottom > h * 0.65 && rowScore[bottom] < 0.28) bottom--;
+        while (left < w * 0.35 && colScore[left] < 0.28) left++;
+        while (right > w * 0.65 && colScore[right] < 0.28) right--;
 
-        // Find Contours
+        const areaRatio = ((right - left) * (bottom - top)) / (w * h);
+        if (areaRatio > 0.2 && areaRatio < 0.96) {
+          const padX = 0.008;
+          const padY = 0.008;
+          const x1 = Math.max(0, left / w - padX);
+          const y1 = Math.max(0, top / h - padY);
+          const x2 = Math.min(1, right / w + padX);
+          const y2 = Math.min(1, bottom / h + padY);
+          return [
+            { x: x1, y: y1 },
+            { x: x2, y: y1 },
+            { x: x2, y: y2 },
+            { x: x1, y: y2 }
+          ];
+        }
+      }
+    } catch (e) {
+      console.warn('Fallback edge detection skipped:', e);
+    }
+    return cvUtils.defaultCorners();
+  },
+
+  // Multi-pass OpenCV document quadrilateral detector (normalized 0..1 TL, TR, BR, BL)
+  detectDocumentCorners: (imageElement) => {
+    if (!cvUtils.isReady()) {
+      return cvUtils.detectDocumentCornersFallback(imageElement);
+    }
+
+    let src = null, processSrc = null, gray = null, closed = null, blurred = null, kernel = null, dilateKernel = null;
+    try {
+      src = cv.imread(imageElement);
+      const maxDim = 720;
+      let scale = 1;
+      processSrc = new cv.Mat();
+      if (src.cols > maxDim || src.rows > maxDim) {
+        scale = Math.min(maxDim / src.cols, maxDim / src.rows);
+        cv.resize(src, processSrc, new cv.Size(0, 0), scale, scale, cv.INTER_AREA);
+      } else {
+        processSrc = src.clone();
+      }
+
+      const imgArea = processSrc.cols * processSrc.rows;
+      gray = new cv.Mat();
+      cv.cvtColor(processSrc, gray, cv.COLOR_RGBA2GRAY, 0);
+
+      // Morphological close suppresses interior text & table lines so outer paper rectangle dominates
+      kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(7, 7));
+      closed = new cv.Mat();
+      cv.morphologyEx(gray, closed, cv.MORPH_CLOSE, kernel);
+
+      blurred = new cv.Mat();
+      cv.GaussianBlur(closed, blurred, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+
+      dilateKernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
+      const thresholds = [[25, 90], [45, 140], [70, 200]];
+
+      let bestScore = 0;
+      let bestPts = null;
+
+      for (const [low, high] of thresholds) {
+        let edges = new cv.Mat();
+        let dilated = new cv.Mat();
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
-        cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+        try {
+          cv.Canny(blurred, edges, low, high);
+          cv.dilate(edges, dilated, dilateKernel);
+          cv.findContours(dilated, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-        let maxArea = 0;
-        let bestCnt = null;
-        for (let i = 0; i < contours.size(); ++i) {
-          let cnt = contours.get(i);
-          let area = cv.contourArea(cnt);
-          if (area > (processSrc.cols * processSrc.rows * 0.1)) {
-            let peri = cv.arcLength(cnt, true);
-            let approx = new cv.Mat();
-            cv.approxPolyDP(cnt, approx, 0.02 * peri, true);
-            if (approx.rows === 4 && area > maxArea) {
-              maxArea = area;
-              if (bestCnt) bestCnt.delete();
-              bestCnt = approx;
-            } else {
-              approx.delete();
+          for (let i = 0; i < contours.size(); i++) {
+            const cnt = contours.get(i);
+            const area = cv.contourArea(cnt);
+            const areaRatio = area / imgArea;
+            if (areaRatio < 0.16 || areaRatio > 0.97) continue;
+
+            const peri = cv.arcLength(cnt, true);
+            const approx = new cv.Mat();
+            cv.approxPolyDP(cnt, approx, 0.025 * peri, true);
+            if (approx.rows === 4 && cv.isContourConvex(approx)) {
+              const pts = [];
+              for (let k = 0; k < 4; k++) {
+                pts.push({
+                  x: Math.max(0, Math.min(1, approx.data32S[k * 2] / processSrc.cols)),
+                  y: Math.max(0, Math.min(1, approx.data32S[k * 2 + 1] / processSrc.rows))
+                });
+              }
+              const ordered = cvUtils.orderPoints(pts);
+              const wTop = Math.hypot(ordered[1].x - ordered[0].x, ordered[1].y - ordered[0].y);
+              const wBot = Math.hypot(ordered[2].x - ordered[3].x, ordered[2].y - ordered[3].y);
+              const hLeft = Math.hypot(ordered[3].x - ordered[0].x, ordered[3].y - ordered[0].y);
+              const hRight = Math.hypot(ordered[2].x - ordered[1].x, ordered[2].y - ordered[1].y);
+              const minSide = Math.min(wTop, wBot, hLeft, hRight);
+              if (minSide > 0.18) {
+                const symmetry = 1 - Math.abs(wTop - wBot) * 0.5 - Math.abs(hLeft - hRight) * 0.5;
+                const score = areaRatio * Math.max(0.4, symmetry);
+                if (score > bestScore) {
+                  bestScore = score;
+                  bestPts = ordered;
+                }
+              }
             }
+            approx.delete();
           }
+        } finally {
+          edges.delete();
+          dilated.delete();
+          contours.delete();
+          hierarchy.delete();
         }
-
-        let finalMat = new cv.Mat();
-        if (bestCnt) {
-          // Found document. Apply Perspective Transform to original hi-res image
-          let pts = [];
-          for(let i=0; i<4; i++) {
-            pts.push({
-              x: bestCnt.data32S[i*2] / scale,
-              y: bestCnt.data32S[i*2+1] / scale
-            });
-          }
-          let orderedPts = cvUtils.orderPoints(pts);
-
-          let w1 = Math.hypot(orderedPts[2].x - orderedPts[3].x, orderedPts[2].y - orderedPts[3].y);
-          let w2 = Math.hypot(orderedPts[1].x - orderedPts[0].x, orderedPts[1].y - orderedPts[0].y);
-          let maxWidth = Math.max(w1, w2);
-
-          let h1 = Math.hypot(orderedPts[1].x - orderedPts[2].x, orderedPts[1].y - orderedPts[2].y);
-          let h2 = Math.hypot(orderedPts[0].x - orderedPts[3].x, orderedPts[0].y - orderedPts[3].y);
-          let maxHeight = Math.max(h1, h2);
-
-          let srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-            orderedPts[0].x, orderedPts[0].y,
-            orderedPts[1].x, orderedPts[1].y,
-            orderedPts[2].x, orderedPts[2].y,
-            orderedPts[3].x, orderedPts[3].y
-          ]);
-
-          let dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-            0, 0,
-            maxWidth - 1, 0,
-            maxWidth - 1, maxHeight - 1,
-            0, maxHeight - 1
-          ]);
-
-          let M = cv.getPerspectiveTransform(srcTri, dstTri);
-          cv.warpPerspective(src, finalMat, M, new cv.Size(maxWidth, maxHeight));
-
-          srcTri.delete(); dstTri.delete(); M.delete(); bestCnt.delete();
-        } else {
-          finalMat = src.clone();
-        }
-
-        src.delete(); processSrc.delete(); gray.delete(); blurred.delete(); edges.delete();
-        contours.delete(); hierarchy.delete();
-
-        // Resolve canvas
-        const outCanvas = document.createElement('canvas');
-        cv.imshow(outCanvas, finalMat);
-        finalMat.delete();
-        resolve(outCanvas);
-      } catch (e) {
-        console.error("OpenCV AutoCrop Failed", e);
-        reject(e);
+        if (bestScore > 0.45) break;
       }
-    });
+
+      if (bestPts) return bestPts;
+      return cvUtils.detectDocumentCornersFallback(imageElement);
+    } catch (e) {
+      console.warn('OpenCV corner detect fallback:', e);
+      return cvUtils.detectDocumentCornersFallback(imageElement);
+    } finally {
+      if (src) src.delete();
+      if (processSrc) processSrc.delete();
+      if (gray) gray.delete();
+      if (closed) closed.delete();
+      if (blurred) blurred.delete();
+      if (kernel) kernel.delete();
+      if (dilateKernel) dilateKernel.delete();
+    }
+  },
+
+  // Solve 8x8 linear system (Gaussian elimination with partial pivoting) for pure-JS homography
+  _solveLinear8: (A, b) => {
+    const n = 8;
+    const M = A.map((row, idx) => [...row, b[idx]]);
+    for (let col = 0; col < n; col++) {
+      let maxRow = col;
+      for (let row = col + 1; row < n; row++) {
+        if (Math.abs(M[row][col]) > Math.abs(M[maxRow][col])) maxRow = row;
+      }
+      [M[col], M[maxRow]] = [M[maxRow], M[col]];
+      const pivot = M[col][col];
+      if (Math.abs(pivot) < 1e-10) return null;
+      for (let j = col; j <= n; j++) M[col][j] /= pivot;
+      for (let row = 0; row < n; row++) {
+        if (row === col) continue;
+        const factor = M[row][col];
+        for (let j = col; j <= n; j++) M[row][j] -= factor * M[col][j];
+      }
+    }
+    return M.map(row => row[n]);
+  },
+
+  // Warp image from normalized 4 corners [TL, TR, BR, BL] into straightened high-res canvas
+  warpPerspectiveFromCorners: (imageElement, corners, maxDim = 2100) => {
+    const iw = imageElement.naturalWidth || imageElement.width;
+    const ih = imageElement.naturalHeight || imageElement.height;
+    const pts = cvUtils.orderPoints(corners.map(c => ({
+      x: Math.max(0, Math.min(iw, c.x * iw)),
+      y: Math.max(0, Math.min(ih, c.y * ih))
+    })));
+
+    const wTop = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    const wBot = Math.hypot(pts[2].x - pts[3].x, pts[2].y - pts[3].y);
+    const hRight = Math.hypot(pts[2].x - pts[1].x, pts[2].y - pts[1].y);
+    const hLeft = Math.hypot(pts[3].x - pts[0].x, pts[3].y - pts[0].y);
+
+    let outW = Math.max(120, Math.round(Math.max(wTop, wBot)));
+    let outH = Math.max(120, Math.round(Math.max(hLeft, hRight)));
+    if (outW > maxDim || outH > maxDim) {
+      const ratio = Math.min(maxDim / outW, maxDim / outH);
+      outW = Math.max(120, Math.round(outW * ratio));
+      outH = Math.max(120, Math.round(outH * ratio));
+    }
+
+    // Fast path: full-frame axis-aligned check
+    const isNearlyFull =
+      pts[0].x < iw * 0.01 && pts[0].y < ih * 0.01 &&
+      pts[1].x > iw * 0.99 && pts[1].y < ih * 0.01 &&
+      pts[2].x > iw * 0.99 && pts[2].y > ih * 0.99 &&
+      pts[3].x < iw * 0.01 && pts[3].y > ih * 0.99;
+
+    if (isNearlyFull) {
+      const c = document.createElement('canvas');
+      c.width = outW;
+      c.height = outH;
+      const ctx = c.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(imageElement, 0, 0, outW, outH);
+      return c;
+    }
+
+    // OpenCV perspective warp when ready
+    if (cvUtils.isReady()) {
+      let src = null, dst = null, srcTri = null, dstTri = null, M = null;
+      try {
+        src = cv.imread(imageElement);
+        dst = new cv.Mat();
+        srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          pts[0].x, pts[0].y,
+          pts[1].x, pts[1].y,
+          pts[2].x, pts[2].y,
+          pts[3].x, pts[3].y
+        ]);
+        dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          0, 0,
+          outW - 1, 0,
+          outW - 1, outH - 1,
+          0, outH - 1
+        ]);
+        M = cv.getPerspectiveTransform(srcTri, dstTri);
+        cv.warpPerspective(src, dst, M, new cv.Size(outW, outH), cv.INTER_LINEAR, cv.BORDER_REPLICATE);
+
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = outW;
+        outCanvas.height = outH;
+        cv.imshow(outCanvas, dst);
+        return outCanvas;
+      } catch (e) {
+        console.warn('OpenCV warp failed, using pure-JS homography:', e);
+      } finally {
+        if (src) src.delete();
+        if (dst) dst.delete();
+        if (srcTri) srcTri.delete();
+        if (dstTri) dstTri.delete();
+        if (M) M.delete();
+      }
+    }
+
+    // Pure-JS exact inverse homography warp with bilinear interpolation (100% offline guaranteed)
+    const srcCanvas = document.createElement('canvas');
+    const srcScale = Math.min(1, maxDim / Math.max(iw, ih));
+    const sw = Math.round(iw * srcScale);
+    const sh = Math.round(ih * srcScale);
+    srcCanvas.width = sw;
+    srcCanvas.height = sh;
+    const sCtx = srcCanvas.getContext('2d', { willReadFrequently: true });
+    sCtx.drawImage(imageElement, 0, 0, sw, sh);
+    const srcData = sCtx.getImageData(0, 0, sw, sh).data;
+
+    const dstPts = [
+      { x: 0, y: 0 },
+      { x: outW - 1, y: 0 },
+      { x: outW - 1, y: outH - 1 },
+      { x: 0, y: outH - 1 }
+    ];
+    const scaledSrc = pts.map(p => ({ x: p.x * srcScale, y: p.y * srcScale }));
+
+    // Solve dst -> src homography H
+    const A = [];
+    const b = [];
+    for (let i = 0; i < 4; i++) {
+      const dx = dstPts[i].x;
+      const dy = dstPts[i].y;
+      const sx = scaledSrc[i].x;
+      const sy = scaledSrc[i].y;
+      A.push([dx, dy, 1, 0, 0, 0, -dx * sx, -dy * sx]);
+      b.push(sx);
+      A.push([0, 0, 0, dx, dy, 1, -dx * sy, -dy * sy]);
+      b.push(sy);
+    }
+    const h = cvUtils._solveLinear8(A, b);
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = outW;
+    outCanvas.height = outH;
+    const oCtx = outCanvas.getContext('2d');
+
+    if (!h) {
+      oCtx.drawImage(imageElement, 0, 0, outW, outH);
+      return outCanvas;
+    }
+
+    const outImg = oCtx.createImageData(outW, outH);
+    const outData = outImg.data;
+    const [h0, h1, h2, h3, h4, h5, h6, h7] = h;
+
+    for (let y = 0; y < outH; y++) {
+      for (let x = 0; x < outW; x++) {
+        const denom = h6 * x + h7 * y + 1;
+        const sx = (h0 * x + h1 * y + h2) / denom;
+        const sy = (h3 * x + h4 * y + h5) / denom;
+        const x0 = Math.max(0, Math.min(sw - 2, Math.floor(sx)));
+        const y0 = Math.max(0, Math.min(sh - 2, Math.floor(sy)));
+        const fx = Math.max(0, Math.min(1, sx - x0));
+        const fy = Math.max(0, Math.min(1, sy - y0));
+
+        const idx00 = (y0 * sw + x0) * 4;
+        const idx10 = idx00 + 4;
+        const idx01 = idx00 + sw * 4;
+        const idx11 = idx01 + 4;
+
+        const w00 = (1 - fx) * (1 - fy);
+        const w10 = fx * (1 - fy);
+        const w01 = (1 - fx) * fy;
+        const w11 = fx * fy;
+
+        const outIdx = (y * outW + x) * 4;
+        outData[outIdx] = srcData[idx00] * w00 + srcData[idx10] * w10 + srcData[idx01] * w01 + srcData[idx11] * w11;
+        outData[outIdx + 1] = srcData[idx00 + 1] * w00 + srcData[idx10 + 1] * w10 + srcData[idx01 + 1] * w01 + srcData[idx11 + 1] * w11;
+        outData[outIdx + 2] = srcData[idx00 + 2] * w00 + srcData[idx10 + 2] * w10 + srcData[idx01 + 2] * w01 + srcData[idx11 + 2] * w11;
+        outData[outIdx + 3] = 255;
+      }
+    }
+    oCtx.putImageData(outImg, 0, 0);
+    return outCanvas;
+  },
+
+  // Smooth local background illumination estimator (eliminates phone shadows & yellow bulb tint)
+  _buildIlluminationMap: (srcCanvas, w, h) => {
+    const bgMax = 88;
+    const bw = Math.max(16, Math.round(w * Math.min(1, bgMax / Math.max(w, h))));
+    const bh = Math.max(16, Math.round(h * Math.min(1, bgMax / Math.max(w, h))));
+
+    const small = document.createElement('canvas');
+    small.width = bw;
+    small.height = bh;
+    const sCtx = small.getContext('2d', { willReadFrequently: true });
+    sCtx.drawImage(srcCanvas, 0, 0, bw, bh);
+
+    // 2-pass morphological local-max + smooth average to estimate paper brightness under shadows
+    const imgData = sCtx.getImageData(0, 0, bw, bh);
+    const d = imgData.data;
+    const tmp = new Uint8ClampedArray(d.length);
+    const radius = 3;
+
+    // Horizontal max-biased smooth pass
+    for (let y = 0; y < bh; y++) {
+      for (let x = 0; x < bw; x++) {
+        let mr = 0, mg = 0, mb = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const nx = Math.max(0, Math.min(bw - 1, x + k));
+          const idx = (y * bw + nx) * 4;
+          if (d[idx] > mr) mr = d[idx];
+          if (d[idx + 1] > mg) mg = d[idx + 1];
+          if (d[idx + 2] > mb) mb = d[idx + 2];
+        }
+        const oi = (y * bw + x) * 4;
+        tmp[oi] = mr; tmp[oi + 1] = mg; tmp[oi + 2] = mb; tmp[oi + 3] = 255;
+      }
+    }
+    // Vertical max-biased smooth pass
+    for (let y = 0; y < bh; y++) {
+      for (let x = 0; x < bw; x++) {
+        let mr = 0, mg = 0, mb = 0;
+        for (let k = -radius; k <= radius; k++) {
+          const ny = Math.max(0, Math.min(bh - 1, y + k));
+          const idx = (ny * bw + x) * 4;
+          if (tmp[idx] > mr) mr = tmp[idx];
+          if (tmp[idx + 1] > mg) mg = tmp[idx + 1];
+          if (tmp[idx + 2] > mb) mb = tmp[idx + 2];
+        }
+        const oi = (y * bw + x) * 4;
+        d[oi] = mr; d[oi + 1] = mg; d[oi + 2] = mb; d[oi + 3] = 255;
+      }
+    }
+    // Gentle 3x3 average blur to remove blockiness
+    const blur = new Uint8ClampedArray(d.length);
+    for (let y = 0; y < bh; y++) {
+      for (let x = 0; x < bw; x++) {
+        let sr = 0, sg = 0, sb = 0, c = 0;
+        for (let dy = -2; dy <= 2; dy++) {
+          const ny = Math.max(0, Math.min(bh - 1, y + dy));
+          for (let dx = -2; dx <= 2; dx++) {
+            const nx = Math.max(0, Math.min(bw - 1, x + dx));
+            const idx = (ny * bw + nx) * 4;
+            sr += d[idx]; sg += d[idx + 1]; sb += d[idx + 2]; c++;
+          }
+        }
+        const oi = (y * bw + x) * 4;
+        blur[oi] = sr / c; blur[oi + 1] = sg / c; blur[oi + 2] = sb / c; blur[oi + 3] = 255;
+      }
+    }
+    imgData.data.set(blur);
+    sCtx.putImageData(imgData, 0, 0);
+
+    const fullBg = document.createElement('canvas');
+    fullBg.width = w;
+    fullBg.height = h;
+    const fCtx = fullBg.getContext('2d', { willReadFrequently: true });
+    fCtx.imageSmoothingEnabled = true;
+    fCtx.imageSmoothingQuality = 'high';
+    fCtx.drawImage(small, 0, 0, w, h);
+    return fCtx.getImageData(0, 0, w, h).data;
+  },
+
+  // Studio-grade document enhancement: Magic Color, Auto Pro, Crisp B&W, Whiteboard, Grayscale, Original
+  enhanceScanCanvas: (srcCanvas, filterMode = 'magic', adjustments = { brightness: 0, contrast: 0, sharpness: 30 }, maxDim = 2000) => {
+    let w = srcCanvas.width;
+    let h = srcCanvas.height;
+    if (w > maxDim || h > maxDim) {
+      const ratio = Math.min(maxDim / w, maxDim / h);
+      w = Math.max(64, Math.round(w * ratio));
+      h = Math.max(64, Math.round(h * ratio));
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(srcCanvas, 0, 0, w, h);
+
+    const bright = Number(adjustments.brightness) || 0;
+    const contr = Number(adjustments.contrast) || 0;
+    const sharp = Math.max(0, Math.min(100, Number(adjustments.sharpness) || 0));
+
+    if (filterMode === 'original' && bright === 0 && contr === 0 && sharp === 0) {
+      return canvas;
+    }
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    const needsBg = filterMode !== 'original';
+    const bgData = needsBg ? cvUtils._buildIlluminationMap(canvas, w, h) : null;
+
+    const contrastFactor = (259 * (contr * 2.2 + 255)) / (255 * (259 - contr * 2.2));
+    const brightOffset = bright * 1.65;
+
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i];
+      let g = data[i + 1];
+      let b = data[i + 2];
+
+      if (filterMode === 'magic') {
+        const bgR = Math.max(36, bgData[i]);
+        const bgG = Math.max(36, bgData[i + 1]);
+        const bgB = Math.max(36, bgData[i + 2]);
+        // Illumination-normalized color removes shadow & yellow cast
+        let nr = Math.min(255, (r / bgR) * 252);
+        let ng = Math.min(255, (g / bgG) * 252);
+        let nb = Math.min(255, (b / bgB) * 252);
+
+        // Smooth paper white-point cleanup + ink deepening
+        const lum = nr * 0.299 + ng * 0.587 + nb * 0.114;
+        if (lum > 214) {
+          const t = Math.min(1, (lum - 214) / 28);
+          nr = nr + (255 - nr) * t;
+          ng = ng + (255 - ng) * t;
+          nb = nb + (255 - nb) * t;
+        } else {
+          // Deepen ink & boost pen/stamp saturation cleanly
+          nr = Math.max(0, (nr - 18) * 1.07);
+          ng = Math.max(0, (ng - 18) * 1.07);
+          nb = Math.max(0, (nb - 18) * 1.07);
+          const avg = (nr + ng + nb) / 3;
+          nr = avg + (nr - avg) * 1.28;
+          ng = avg + (ng - avg) * 1.28;
+          nb = avg + (nb - avg) * 1.28;
+        }
+        r = nr; g = ng; b = nb;
+      } else if (filterMode === 'autopro') {
+        const bgR = Math.max(40, bgData[i]);
+        const bgG = Math.max(40, bgData[i + 1]);
+        const bgB = Math.max(40, bgData[i + 2]);
+        const nr = Math.min(255, (r / bgR) * 246);
+        const ng = Math.min(255, (g / bgG) * 246);
+        const nb = Math.min(255, (b / bgB) * 246);
+        r = nr * 0.72 + r * 0.28;
+        g = ng * 0.72 + g * 0.28;
+        b = nb * 0.72 + b * 0.28;
+        const avg = (r + g + b) / 3;
+        r = avg + (r - avg) * 1.12;
+        g = avg + (g - avg) * 1.12;
+        b = avg + (b - avg) * 1.12;
+      } else if (filterMode === 'whiteboard') {
+        const bgR = Math.max(36, bgData[i]);
+        const bgG = Math.max(36, bgData[i + 1]);
+        const bgB = Math.max(36, bgData[i + 2]);
+        let nr = Math.min(255, (r / bgR) * 260);
+        let ng = Math.min(255, (g / bgG) * 260);
+        let nb = Math.min(255, (b / bgB) * 260);
+        const lum = nr * 0.299 + ng * 0.587 + nb * 0.114;
+        if (lum > 196) {
+          nr = ng = nb = 255;
+        } else {
+          const avg = (nr + ng + nb) / 3;
+          nr = avg + (nr - avg) * 1.42;
+          ng = avg + (ng - avg) * 1.42;
+          nb = avg + (nb - avg) * 1.42;
+        }
+        r = nr; g = ng; b = nb;
+      } else if (filterMode === 'bw') {
+        const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        const bgLum = Math.max(32, bgData[i] * 0.299 + bgData[i + 1] * 0.587 + bgData[i + 2] * 0.114);
+        const ratio = lum / bgLum;
+        // Anti-aliased crisp text curve: <0.66 black ink, >0.84 pure white paper
+        let v;
+        if (ratio >= 0.85) v = 255;
+        else if (ratio <= 0.62) v = 12;
+        else v = ((ratio - 0.62) / 0.23) * 243 + 12;
+        r = g = b = v;
+      } else if (filterMode === 'gray') {
+        const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        const bgLum = Math.max(34, bgData[i] * 0.299 + bgData[i + 1] * 0.587 + bgData[i + 2] * 0.114);
+        let v = Math.min(255, (lum / bgLum) * 250);
+        v = v > 224 ? 255 : Math.max(0, (v - 14) * 1.08);
+        r = g = b = v;
+      }
+
+      if (bright !== 0 || contr !== 0) {
+        r = contrastFactor * (r + brightOffset - 128) + 128;
+        g = contrastFactor * (g + brightOffset - 128) + 128;
+        b = contrastFactor * (b + brightOffset - 128) + 128;
+      }
+
+      data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+      data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+      data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+    }
+
+    // Fast 3x3 Unsharp Mask for razor-sharp document text
+    if (sharp > 4) {
+      const amount = (sharp / 100) * 0.85;
+      const copy = new Uint8ClampedArray(data);
+      const stride = w * 4;
+      for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+          const idx = y * stride + x * 4;
+          for (let c = 0; c < 3; c++) {
+            const center = copy[idx + c];
+            const neighbors =
+              copy[idx - 4 + c] +
+              copy[idx + 4 + c] +
+              copy[idx - stride + c] +
+              copy[idx + stride + c];
+            const val = center + amount * (center * 4 - neighbors);
+            data[idx + c] = val < 0 ? 0 : val > 255 ? 255 : val;
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+    return canvas;
   }
 };
 
@@ -668,13 +1386,12 @@ function initPdfMerger() {
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
 
-      const mergedPdfFile = await mergedPdf.save();
-      const blob = new Blob([mergedPdfFile], { type: 'application/pdf' });
-      utils.downloadBlob(blob, 'Merged_Document.pdf');
-      utils.showToast('Success', 'PDFs successfully bound together.');
-      
-      selectedFiles = [];
-      renderList();
+      const res = await utils.savePdfWithMetadata(mergedPdf, 'Merged_Document.pdf', 'Merged PDF Document');
+      if (res && res.saved) {
+        utils.showToast('Success', `Saved "${res.filename}" with custom metadata.`);
+        selectedFiles = [];
+        renderList();
+      }
     } catch (err) {
       console.error(err);
       utils.showToast('Error', 'Failed to merge PDFs.', 'error');
@@ -788,10 +1505,10 @@ function initPdfSplitter() {
       const copiedPages = await newPdf.copyPages(pdf, finalIndices);
       copiedPages.forEach((page) => newPdf.addPage(page));
 
-      const pdfBytes = await newPdf.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      utils.downloadBlob(blob, `Extracted_${currentFile.name}`);
-      utils.showToast('Success', `Extracted ${finalIndices.length} pages.`);
+      const res = await utils.savePdfWithMetadata(newPdf, `Extracted_${currentFile.name}`, currentFile.name.replace(/\.pdf$/i, '') + ' (Extracted)');
+      if (res && res.saved) {
+        utils.showToast('Success', `Extracted ${finalIndices.length} pages into ${res.filename}.`);
+      }
       
     } catch (err) {
       console.error(err);
@@ -1328,13 +2045,12 @@ function initImageToPdf() {
         });
       }
 
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      utils.downloadBlob(blob, 'Photo_Album.pdf');
-      utils.showToast('Success', 'PDF beautifully compiled.');
-      
-      selectedImages = [];
-      renderList();
+      const res = await utils.savePdfWithMetadata(pdfDoc, 'Photo_Album.pdf', 'Photo Album');
+      if (res && res.saved) {
+        utils.showToast('Success', `Saved "${res.filename}" cleanly.`);
+        selectedImages = [];
+        renderList();
+      }
     } catch (err) {
       console.error(err);
       utils.showToast('Error', 'Failed to render PDF.', 'error');
@@ -1410,528 +2126,831 @@ function initExcelCleaner() {
 }
 
 /* ==========================================================================
-   PDF Scanner
+   Pro AI Document Scanner Studio (Adobe Scan-Beating Offline Experience)
    ========================================================================== */
 function initPdfScanner() {
-  const input = document.getElementById('pdfScannerInput');
-  const list = document.getElementById('pdfScannerList');
+  const cameraInput = document.getElementById('pdfScannerInput');
+  const galleryInput = document.getElementById('pdfScannerGalleryInput');
   const emptyState = document.getElementById('pdfScannerEmptyState');
-  const actionBtn = document.getElementById('pdfScannerActionBtn');
-  
-  // Settings Logic
+  const emptyCameraBtn = document.getElementById('scanEmptyCameraBtn');
+  const emptyGalleryBtn = document.getElementById('scanEmptyGalleryBtn');
+  const studioWorkspace = document.getElementById('scanStudioWorkspace');
+  const bottomDock = document.getElementById('scanBottomDock');
+
+  const docTitleInput = document.getElementById('scanDocTitleInput');
+  const pageCounterEl = document.getElementById('scanPageCounter');
+  const activeFilterBadge = document.getElementById('scanActiveFilterBadge');
+
   const settingsBtn = document.getElementById('scanSettingsBtn');
   const settingsPanel = document.getElementById('scanSettingsPanel');
   const setPageSize = document.getElementById('scanSetPageSize');
   const setQuality = document.getElementById('scanSetQuality');
-  
-  if (settingsBtn) {
-     settingsBtn.addEventListener('click', () => {
-        settingsPanel.classList.toggle('hidden');
-     });
+  const setAutoMagic = document.getElementById('scanSetAutoMagic');
+
+  const mainPreviewImg = document.getElementById('scanMainPreviewImg');
+  const quadCropCanvas = document.getElementById('scanQuadCropCanvas');
+  const cleanupCanvas = document.getElementById('scanCleanupCanvas');
+  const prevPageBtn = document.getElementById('scanPrevPageBtn');
+  const nextPageBtn = document.getElementById('scanNextPageBtn');
+
+  const cropControlsBar = document.getElementById('scanCropControlsBar');
+  const quadAutoBtn = document.getElementById('scanQuadAutoBtn');
+  const quadFullBtn = document.getElementById('scanQuadFullBtn');
+  const quadCancelBtn = document.getElementById('scanQuadCancelBtn');
+  const quadApplyBtn = document.getElementById('scanQuadApplyBtn');
+
+  const cleanupControlsBar = document.getElementById('scanCleanupControlsBar');
+  const cleanupBrushSlider = document.getElementById('scanCleanupBrushSize');
+  const cleanupUndoBtn = document.getElementById('scanCleanupUndoBtn');
+  const cleanupDoneBtn = document.getElementById('scanCleanupDoneBtn');
+
+  const filtersDrawer = document.getElementById('scanFiltersDrawer');
+  const applyFilterAllBtn = document.getElementById('scanApplyFilterAllBtn');
+  const filterChips = document.querySelectorAll('.scan-filter-chip');
+
+  const adjustDrawer = document.getElementById('scanAdjustDrawer');
+  const adjustResetBtn = document.getElementById('scanAdjustResetBtn');
+  const adjustApplyAllBtn = document.getElementById('scanAdjustApplyAllBtn');
+  const brightSlider = document.getElementById('scanBrightSlider');
+  const brightVal = document.getElementById('scanBrightVal');
+  const contrastSlider = document.getElementById('scanContrastSlider');
+  const contrastVal = document.getElementById('scanContrastVal');
+  const sharpSlider = document.getElementById('scanSharpSlider');
+  const sharpVal = document.getElementById('scanSharpVal');
+
+  const filmstripList = document.getElementById('pdfScannerList');
+
+  const toolAiAuto = document.getElementById('scanToolAiAuto');
+  const toolCrop = document.getElementById('scanToolStraighten');
+  const toolFilters = document.getElementById('scanToolFilters');
+  const toolAdjust = document.getElementById('scanToolAdjust');
+  const toolRotate = document.getElementById('scanToolRotate');
+  const toolCleanup = document.getElementById('scanToolCleanup');
+  const toolMoveLeft = document.getElementById('scanToolMoveLeft');
+  const toolMoveRight = document.getElementById('scanToolMoveRight');
+  const toolRetake = document.getElementById('scanToolRetake');
+  const toolDeletePage = document.getElementById('scanToolDeletePage');
+
+  const addCameraBtn = document.getElementById('scanAddCameraBtn');
+  const addGalleryBtn = document.getElementById('scanAddGalleryBtn');
+  const savePdfBtn = document.getElementById('pdfScannerActionBtn');
+
+  if (!cameraInput || !studioWorkspace) return;
+
+  // Set default dated document title
+  if (docTitleInput) {
+    const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    docTitleInput.value = `PDF Bondhu Scan ${todayStr}`;
+  }
+
+  // Preferences wiring
+  if (settingsBtn && settingsPanel) {
+    settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('hidden'));
   }
   if (setPageSize) {
-     setPageSize.value = scanSettings.pageSize;
-     setPageSize.addEventListener('change', (e) => { scanSettings.pageSize = e.target.value; });
+    setPageSize.value = scanSettings.pageSize;
+    setPageSize.addEventListener('change', (e) => { scanSettings.pageSize = e.target.value; });
   }
   if (setQuality) {
-     setQuality.value = scanSettings.quality.toString();
-     setQuality.addEventListener('change', (e) => { scanSettings.quality = parseFloat(e.target.value); });
+    setQuality.value = String(scanSettings.quality);
+    setQuality.addEventListener('change', (e) => { scanSettings.quality = parseFloat(e.target.value) || 0.94; });
   }
-  
-  const modes = ['Original', 'Colour', 'BW', 'Gray', 'Ink'];
-  const modeBtns = modes.reduce((acc, mode) => {
-    const btn = document.getElementById(`scanMode${mode}`);
-    if (btn) acc[mode.toLowerCase()] = btn;
-    return acc;
-  }, {});
-  
-  let files = [];
-  let mode = 'original'; // original, colour, bw, gray, ink
-  
-  function updateModeUI() {
-    Object.keys(modeBtns).forEach(key => {
-      const btn = modeBtns[key];
-      if (!btn) return;
-      if (key === mode) {
-        btn.classList.add('border-teal-400', 'bg-white', 'dark:bg-slate-900', 'shadow-sm');
-        btn.classList.remove('border-transparent', 'bg-slate-50', 'dark:bg-slate-800');
+  if (setAutoMagic) {
+    setAutoMagic.value = scanSettings.autoMagic;
+    setAutoMagic.addEventListener('change', (e) => { scanSettings.autoMagic = e.target.value; });
+  }
+
+  const filterLabels = {
+    magic: 'AI Magic Color',
+    autopro: 'Auto Pro',
+    bw: 'Crisp B&W',
+    whiteboard: 'Whiteboard',
+    gray: 'Grayscale',
+    original: 'Original'
+  };
+
+  let pages = [];
+  let activeIndex = -1;
+  let stageMode = 'preview'; // 'preview' | 'crop' | 'cleanup'
+  let retakeTargetIndex = null;
+  let cropDraftCorners = null;
+  let draggingCornerIdx = -1;
+  let isDrawingCleanup = false;
+  let currentCleanupStroke = null;
+
+  function loadImageFromFile(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = (err) => {
+        URL.revokeObjectURL(url);
+        reject(err);
+      };
+      img.src = url;
+    });
+  }
+
+  function rotateCanvas90(srcCanvas, times = 1) {
+    const steps = ((times % 4) + 4) % 4;
+    if (steps === 0) return srcCanvas;
+    const w = srcCanvas.width;
+    const h = srcCanvas.height;
+    const out = document.createElement('canvas');
+    out.width = steps % 2 === 1 ? h : w;
+    out.height = steps % 2 === 1 ? w : h;
+    const ctx = out.getContext('2d');
+    ctx.translate(out.width / 2, out.height / 2);
+    ctx.rotate((steps * Math.PI) / 2);
+    ctx.drawImage(srcCanvas, -w / 2, -h / 2);
+    return out;
+  }
+
+  function applyCleanupStrokesToCanvas(canvas, strokes) {
+    if (!strokes || strokes.length === 0) return;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#ffffff';
+    ctx.fillStyle = '#ffffff';
+    const minDim = Math.min(canvas.width, canvas.height);
+
+    for (const stroke of strokes) {
+      if (!stroke.points || stroke.points.length === 0) continue;
+      const pxWidth = Math.max(4, stroke.sizeRatio * minDim);
+      ctx.lineWidth = pxWidth;
+      if (stroke.points.length === 1) {
+        const pt = stroke.points[0];
+        ctx.beginPath();
+        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, pxWidth / 2, 0, Math.PI * 2);
+        ctx.fill();
       } else {
-        btn.classList.remove('border-teal-400', 'bg-white', 'dark:bg-slate-900', 'shadow-sm');
-        btn.classList.add('border-transparent', 'bg-slate-50', 'dark:bg-slate-800');
+        ctx.beginPath();
+        ctx.moveTo(stroke.points[0].x * canvas.width, stroke.points[0].y * canvas.height);
+        for (let i = 1; i < stroke.points.length; i++) {
+          ctx.lineTo(stroke.points[i].x * canvas.width, stroke.points[i].y * canvas.height);
+        }
+        ctx.stroke();
       }
-    });
-    renderList();
-  }
-  
-  Object.keys(modeBtns).forEach(key => {
-    if (modeBtns[key]) {
-      modeBtns[key].addEventListener('click', () => { mode = key; updateModeUI(); });
     }
-  });
-  
-  const retakeBtn = document.getElementById('scanToolRetake');
-  if (retakeBtn) {
-    retakeBtn.addEventListener('click', () => {
-      if (files.length === 0) {
-        utils.showToast('Wait', 'No image to retake.', 'info');
-        return;
-      }
-      files.pop(); // Remove the last one
-      renderList();
-      input.click(); // Open file picker
-    });
+    ctx.restore();
   }
 
-  const rotateBtn = document.getElementById('scanToolRotate');
-  if (rotateBtn) {
-    rotateBtn.addEventListener('click', async () => {
-      if (files.length === 0) return;
-      utils.showLoader('Rotating...');
-      try {
-        const file = files[files.length - 1];
-        const imgUrl = URL.createObjectURL(file);
-        const img = new Image();
-        await new Promise(r => { img.onload = r; img.src = imgUrl; });
-        
-        const canvas = document.createElement('canvas');
-        canvas.width = img.height; // Swap width and height for 90deg rotation
-        canvas.height = img.width;
-        const ctx = canvas.getContext('2d');
-        
-        // Rotate 90 degrees clockwise
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(90 * Math.PI / 180);
-        ctx.drawImage(img, -img.width / 2, -img.height / 2);
-        
-        const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', parseFloat(scanSettings.quality)));
-        files[files.length - 1] = new File([blob], file.name, { type: 'image/jpeg' });
-        
-        URL.revokeObjectURL(imgUrl);
-        renderList();
-      } catch (err) {
-        console.error("Rotate failed", err);
-      } finally {
-        utils.hideLoader();
-      }
-    });
-  }
-
-  const shadowBtn = document.getElementById('scanToolShadow');
-  if (shadowBtn) {
-    shadowBtn.addEventListener('click', () => {
-      mode = 'colour';
-      updateModeUI();
-      renderList();
-      utils.showToast('Shadow Removed', 'Auto-enhancement applied via Colour filter.', 'info');
-    });
-  }
-
-  // Smart Crop Logic
-  let cropper = null;
-  const cropModal = document.getElementById('cropModal');
-  const cropperImage = document.getElementById('cropperImage');
-  const closeCropModal = document.getElementById('closeCropModal');
-  const cancelCropBtn = document.getElementById('cancelCropBtn');
-  const applyCropBtn = document.getElementById('applyCropBtn');
-  const scanToolStraighten = document.getElementById('scanToolStraighten');
-
-  function openCropModal() {
-    if (files.length === 0) {
-      utils.showToast('Wait', 'Please capture or select an image first.', 'info');
-      return;
+  function renderPageCanvas(page, maxDim = 1500) {
+    if (!page.warpedCanvas) {
+      page.warpedCanvas = cvUtils.warpPerspectiveFromCorners(page.originalImg, page.corners, 2100);
     }
-    // Crop the currently visible/latest file (or we could crop all, let's just do the last one for now or the first one)
-    // Actually, we should crop the raw file, but we don't have a selection UI for which file to crop if there are multiple.
-    // For simplicity, let's let them crop the last captured document
-    const fileToCrop = files[files.length - 1];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      cropperImage.src = e.target.result;
-      cropModal.classList.remove('hidden');
-      cropModal.classList.add('flex');
-      
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropperImage, {
-        viewMode: 2,
-        autoCropArea: 1,
-        background: false,
-      });
-    };
-    reader.readAsDataURL(fileToCrop);
+    const enhanced = cvUtils.enhanceScanCanvas(
+      page.warpedCanvas,
+      page.filter,
+      {
+        brightness: page.brightness,
+        contrast: page.contrast,
+        sharpness: page.sharpness
+      },
+      maxDim
+    );
+    const rotated = rotateCanvas90(enhanced, page.rotationSteps);
+    applyCleanupStrokesToCanvas(rotated, page.cleanupStrokes);
+    return rotated;
   }
 
-  function closeCrop() {
-    cropModal.classList.add('hidden');
-    cropModal.classList.remove('flex');
-    if (cropper) {
-      cropper.destroy();
-      cropper = null;
-    }
+  function refreshPagePreview(page) {
+    const previewCanvas = renderPageCanvas(page, 1300);
+    page.previewDataUrl = previewCanvas.toDataURL('image/jpeg', 0.88);
+    // Small thumbnail for crisp fast filmstrip
+    const thumbCanvas = document.createElement('canvas');
+    const ratio = Math.min(1, 180 / Math.max(previewCanvas.width, previewCanvas.height));
+    thumbCanvas.width = Math.max(40, Math.round(previewCanvas.width * ratio));
+    thumbCanvas.height = Math.max(40, Math.round(previewCanvas.height * ratio));
+    const tCtx = thumbCanvas.getContext('2d');
+    tCtx.drawImage(previewCanvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
+    page.thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.78);
   }
 
-  if (scanToolStraighten) scanToolStraighten.addEventListener('click', openCropModal);
-  if (closeCropModal) closeCropModal.addEventListener('click', closeCrop);
-  if (cancelCropBtn) cancelCropBtn.addEventListener('click', closeCrop);
-  
-  if (applyCropBtn) {
-    applyCropBtn.addEventListener('click', () => {
-      if (!cropper) return;
-      cropper.getCroppedCanvas({
-        maxWidth: 2400,
-        maxHeight: 2400
-      }).toBlob((blob) => {
-         // Replace the last file with cropped version
-         const oldFile = files[files.length - 1];
-         const newFile = new File([blob], oldFile.name, { type: 'image/jpeg' });
-         files[files.length - 1] = newFile;
-         closeCrop();
-         renderList();
-         utils.showToast('Success', 'Image cropped successfully!');
-      }, 'image/jpeg', parseFloat(scanSettings.quality));
-    });
+  function closeDrawers() {
+    if (filtersDrawer) filtersDrawer.classList.add('hidden');
+    if (adjustDrawer) adjustDrawer.classList.add('hidden');
   }
 
-  input.addEventListener('change', async (e) => {
-    const newFiles = Array.from(e.target.files);
-    if (newFiles.length === 0) return;
-    
-    input.value = ''; // Reset input
-    
-    if (cvUtils.isReady()) {
-       utils.showLoader('Auto Scanning...', 'text-cyan-600');
-       for (let file of newFiles) {
-           if (file.type.startsWith('image/')) {
-               try {
-                   // Read file to image
-                   const img = new Image();
-                   const imgUrl = URL.createObjectURL(file);
-                   await new Promise(r => { img.onload = r; img.src = imgUrl; });
-                   
-                   // Auto crop
-                   const croppedCanvas = await cvUtils.autoCrop(img);
-                   URL.revokeObjectURL(imgUrl);
-                   
-                   // Convert back to file
-                   const blob = await new Promise(r => croppedCanvas.toBlob(r, 'image/jpeg', parseFloat(scanSettings.quality)));
-                   files.push(new File([blob], file.name, { type: 'image/jpeg' }));
-               } catch (err) {
-                   console.error("Auto crop failed, using original", err);
-                   files.push(file);
-               }
-           } else {
-               files.push(file);
-           }
-       }
-       utils.hideLoader();
+  function setStageMode(nextMode) {
+    stageMode = nextMode;
+    const isCrop = nextMode === 'crop';
+    const isCleanup = nextMode === 'cleanup';
+
+    mainPreviewImg.classList.toggle('hidden', isCrop || isCleanup);
+    quadCropCanvas.classList.toggle('hidden', !isCrop);
+    cleanupCanvas.classList.toggle('hidden', !isCleanup);
+    cropControlsBar.classList.toggle('hidden', !isCrop);
+    cleanupControlsBar.classList.toggle('hidden', !isCleanup);
+
+    if (isCrop || isCleanup) {
+      closeDrawers();
+      prevPageBtn.classList.add('hidden');
+      nextPageBtn.classList.add('hidden');
     } else {
-       files = [...files, ...newFiles];
+      syncNavArrows();
     }
-    
-    renderList();
-  });
+  }
 
-  function applyFilter(imageElement, currentMode) {
-    return new Promise((resolve) => {
-      // Prevent mobile canvas crashes by limiting max dimension
-      const MAX_DIM = 2400;
-      let w = imageElement.naturalWidth;
-      let h = imageElement.naturalHeight;
-      if (w > MAX_DIM || h > MAX_DIM) {
-         const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
-         w = Math.floor(w * ratio);
-         h = Math.floor(h * ratio);
+  function syncNavArrows() {
+    const showNav = stageMode === 'preview' && pages.length > 1;
+    prevPageBtn.classList.toggle('hidden', !showNav || activeIndex <= 0);
+    nextPageBtn.classList.toggle('hidden', !showNav || activeIndex >= pages.length - 1);
+  }
+
+  function syncFilterChipsUI(filterKey) {
+    filterChips.forEach(chip => {
+      const isMatch = chip.getAttribute('data-filter') === filterKey;
+      if (isMatch) {
+        chip.className = 'scan-filter-chip px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 whitespace-nowrap min-h-[38px] shadow';
+      } else {
+        chip.className = 'scan-filter-chip px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 border border-slate-700 whitespace-nowrap min-h-[38px]';
       }
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(imageElement, 0, 0, w, h);
-      
-      if (currentMode === 'original') {
-        resolve(canvas.toDataURL('image/jpeg', 1.0));
-        return;
-      }
-      
-      if (typeof cv !== 'undefined' && cv.Mat) {
-         try {
-            let src = cv.imread(canvas);
-            let dst = new cv.Mat();
-            
-            if (currentMode === 'colour' || currentMode === 'ink') {
-                // CLAHE in LAB color space to preserve colors while enhancing contrast
-                let rgb = new cv.Mat();
-                cv.cvtColor(src, rgb, cv.COLOR_RGBA2RGB, 0);
-                
-                let lab = new cv.Mat();
-                cv.cvtColor(rgb, lab, cv.COLOR_RGB2Lab, 0);
-                
-                let labPlanes = new cv.MatVector();
-                cv.split(lab, labPlanes);
-                
-                let L = labPlanes.get(0);
-                let clahe = new cv.CLAHE(3.0, new cv.Size(8, 8)); // Clip limit 3.0
-                let L_clahe = new cv.Mat();
-                clahe.apply(L, L_clahe);
-                
-                labPlanes.set(0, L_clahe);
-                cv.merge(labPlanes, lab);
-                
-                cv.cvtColor(lab, rgb, cv.COLOR_Lab2RGB, 0);
-                cv.cvtColor(rgb, dst, cv.COLOR_RGB2RGBA, 0);
-                
-                // Cleanup
-                rgb.delete(); lab.delete(); labPlanes.delete(); L.delete(); L_clahe.delete(); clahe.delete();
-                
-                if (currentMode === 'ink') {
-                   // Custom post-process to blow out the light background for ink saving
-                   let dstData = dst.data;
-                   for (let i = 0; i < dstData.length; i += 4) {
-                       let avg = (dstData[i] + dstData[i+1] + dstData[i+2]) / 3;
-                       if (avg > 180) {
-                           dstData[i] = dstData[i+1] = dstData[i+2] = 255;
-                       }
-                   }
-                }
-            } else if (currentMode === 'bw' || currentMode === 'gray') {
-                let gray = new cv.Mat();
-                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-                
-                // Calculate average brightness
-                let mean = cv.mean(gray);
-                // Dynamically adjust clip limit based on brightness (darker image = higher clip limit needed)
-                let clipLimit = mean[0] < 128 ? 4.0 : 2.5; 
-                
-                let clahe = new cv.CLAHE(clipLimit, new cv.Size(8, 8));
-                let enhancedGray = new cv.Mat();
-                clahe.apply(gray, enhancedGray);
-                
-                if (currentMode === 'bw') {
-                    // Adaptive threshold for clean black and white document scan
-                    cv.adaptiveThreshold(enhancedGray, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 21, 10);
-                } else {
-                    cv.cvtColor(enhancedGray, dst, cv.COLOR_GRAY2RGBA, 0);
-                }
-                
-                gray.delete(); clahe.delete(); enhancedGray.delete();
-            }
-            
-            cv.imshow(canvas, dst);
-            src.delete(); dst.delete();
-            resolve(canvas.toDataURL('image/jpeg', 0.95));
-            return;
-         } catch (e) {
-            console.error("OpenCV CLAHE failed, falling back", e);
-         }
-      }
-      
-      const imageData = ctx.getImageData(0, 0, w, h);
-      const data = imageData.data;
-      
-      for (let i = 0; i < data.length; i += 4) {
-        let r = data[i];
-        let g = data[i+1];
-        let b = data[i+2];
-        let gray = (r * 0.299 + g * 0.587 + b * 0.114);
-        
-        if (currentMode === 'bw') {
-          gray = ((gray - 128) * 2.0) + 128;
-          gray = gray > 140 ? 255 : 0; 
-          data[i] = data[i+1] = data[i+2] = gray;
-        } else if (currentMode === 'gray') {
-          gray = ((gray - 128) * 1.5) + 128;
-          data[i] = data[i+1] = data[i+2] = Math.max(0, Math.min(255, gray));
-        } else if (currentMode === 'colour' || currentMode === 'ink') {
-           data[i] = Math.max(0, Math.min(255, ((r - 128) * 1.2) + 128));
-           data[i+1] = Math.max(0, Math.min(255, ((g - 128) * 1.2) + 128));
-           data[i+2] = Math.max(0, Math.min(255, ((b - 128) * 1.2) + 128));
-        }
-      }
-      ctx.putImageData(imageData, 0, 0);
-      resolve(canvas.toDataURL('image/jpeg', 1.0));
     });
   }
 
-  function renderList() {
-    if (files.length === 0) {
+  function syncAdjustSlidersUI(page) {
+    if (!page) return;
+    brightSlider.value = String(page.brightness);
+    brightVal.textContent = String(page.brightness);
+    contrastSlider.value = String(page.contrast);
+    contrastVal.textContent = String(page.contrast);
+    sharpSlider.value = String(page.sharpness);
+    sharpVal.textContent = String(page.sharpness);
+  }
+
+  function renderStudioUI() {
+    if (pages.length === 0) {
+      activeIndex = -1;
+      setStageMode('preview');
+      closeDrawers();
       emptyState.classList.remove('hidden');
-      list.classList.add('hidden');
-      actionBtn.classList.add('hidden');
+      studioWorkspace.classList.add('hidden');
+      bottomDock.classList.add('hidden');
+      pageCounterEl.textContent = 'No pages yet';
+      filmstripList.innerHTML = '';
       return;
     }
-    
-    emptyState.classList.add('hidden');
-    list.classList.remove('hidden');
-    actionBtn.classList.remove('hidden');
-    
-    list.innerHTML = '';
-    
-    files.forEach((file, index) => {
-      const li = document.createElement('li');
-      li.className = 'relative group bg-slate-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-[3/4] h-48 flex-shrink-0 snap-center flex flex-col cursor-move';
-      
-      const imgContainer = document.createElement('div');
-      imgContainer.className = 'flex-1 bg-slate-200 dark:bg-slate-900 overflow-hidden relative';
-      
-      const img = document.createElement('img');
-      img.className = 'w-full h-full object-cover';
-      
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const tempImg = new Image();
-        tempImg.onload = async () => {
-           img.src = await applyFilter(tempImg, mode);
-        };
-        tempImg.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-      
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'absolute top-2 right-2 bg-white/90 text-red-500 p-1.5 rounded-lg shadow-sm opacity-80 sm:opacity-0 group-hover:opacity-100 transition hover:bg-red-50';
-      removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-      removeBtn.onclick = (e) => {
-        e.stopPropagation();
-        files.splice(index, 1);
-        renderList();
-      };
-      
-      const pageNum = document.createElement('div');
-      pageNum.className = 'absolute bottom-2 right-2 bg-slate-900/70 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm pointer-events-none';
-      pageNum.textContent = `Page ${index + 1}`;
-      
-      const controlsDiv = document.createElement('div');
-      controlsDiv.className = 'absolute inset-0 bg-slate-900/40 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-[1px]';
-      
-      const shiftButtons = document.createElement('div');
-      shiftButtons.className = 'flex gap-2';
-      
-      const leftBtn = document.createElement('button');
-      leftBtn.className = 'bg-white/90 text-slate-700 p-2 rounded-lg hover:text-teal-600 hover:bg-white shadow-sm';
-      leftBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
-      leftBtn.onclick = (e) => {
-        e.stopPropagation();
-        if (index > 0) {
-          const temp = files[index - 1];
-          files[index - 1] = files[index];
-          files[index] = temp;
-          renderList();
-        }
-      };
-      
-      const rightBtn = document.createElement('button');
-      rightBtn.className = 'bg-white/90 text-slate-700 p-2 rounded-lg hover:text-teal-600 hover:bg-white shadow-sm';
-      rightBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
-      rightBtn.onclick = (e) => {
-        e.stopPropagation();
-        if (index < files.length - 1) {
-          const temp = files[index + 1];
-          files[index + 1] = files[index];
-          files[index] = temp;
-          renderList();
-        }
-      };
-      
-      if (index > 0) shiftButtons.appendChild(leftBtn);
-      if (index < files.length - 1) shiftButtons.appendChild(rightBtn);
-      
-      controlsDiv.appendChild(shiftButtons);
 
-      imgContainer.appendChild(img);
-      imgContainer.appendChild(controlsDiv);
-      imgContainer.appendChild(removeBtn);
-      imgContainer.appendChild(pageNum);
-      
-      li.appendChild(imgContainer);
-      
-      // Basic drag and drop
-      li.draggable = true;
-      li.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', index); });
-      li.addEventListener('dragover', (e) => { e.preventDefault(); li.classList.add('border-teal-500', 'border-2'); });
-      li.addEventListener('dragleave', () => { li.classList.remove('border-teal-500', 'border-2'); });
-      li.addEventListener('drop', (e) => {
-        e.preventDefault();
-        li.classList.remove('border-teal-500', 'border-2');
-        const draggedIdx = parseInt(e.dataTransfer.getData('text/plain'));
-        if (draggedIdx !== index) {
-          const [draggedFile] = files.splice(draggedIdx, 1);
-          files.splice(index, 0, draggedFile);
-          renderList();
-        }
+    if (activeIndex < 0) activeIndex = 0;
+    if (activeIndex >= pages.length) activeIndex = pages.length - 1;
+
+    emptyState.classList.add('hidden');
+    studioWorkspace.classList.remove('hidden');
+    bottomDock.classList.remove('hidden');
+
+    const activePage = pages[activeIndex];
+    pageCounterEl.textContent = `Page ${activeIndex + 1} of ${pages.length}`;
+    activeFilterBadge.textContent = filterLabels[activePage.filter] || 'AI Magic Color';
+    mainPreviewImg.src = activePage.previewDataUrl;
+
+    syncFilterChipsUI(activePage.filter);
+    syncAdjustSlidersUI(activePage);
+    syncNavArrows();
+
+    // Render multi-page filmstrip
+    filmstripList.innerHTML = '';
+    pages.forEach((p, idx) => {
+      const li = document.createElement('li');
+      const isSelected = idx === activeIndex;
+      li.className = `relative shrink-0 w-14 h-20 rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${
+        isSelected
+          ? 'border-cyan-400 ring-2 ring-cyan-400/40 scale-105'
+          : 'border-slate-700 opacity-75 hover:opacity-100'
+      }`;
+      li.innerHTML = `
+        <img src="${p.thumbDataUrl}" alt="Page ${idx + 1}" class="w-full h-full object-cover bg-white" />
+        <span class="absolute bottom-0.5 right-0.5 bg-slate-950/85 text-white text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${idx + 1}</span>
+      `;
+      li.addEventListener('click', () => {
+        if (stageMode !== 'preview') setStageMode('preview');
+        activeIndex = idx;
+        renderStudioUI();
       });
-      
-      list.appendChild(li);
+      filmstripList.appendChild(li);
     });
   }
 
-  actionBtn.addEventListener('click', async () => {
-    if (files.length === 0) return;
-    
-    utils.showLoader('Generating PDF...', 'text-teal-600');
+  /* ---------------- Interactive 4-Corner Perspective Crop ---------------- */
+  function drawQuadCropOverlay() {
+    const page = pages[activeIndex];
+    if (!page || !cropDraftCorners) return;
+    const img = page.originalImg;
+    const maxW = Math.min(820, window.innerWidth - 48);
+    const maxH = Math.min(520, Math.round(window.innerHeight * 0.52));
+    const scale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
+    const cw = Math.max(180, Math.round(img.naturalWidth * scale));
+    const ch = Math.max(180, Math.round(img.naturalHeight * scale));
+
+    if (quadCropCanvas.width !== cw || quadCropCanvas.height !== ch) {
+      quadCropCanvas.width = cw;
+      quadCropCanvas.height = ch;
+    }
+
+    const ctx = quadCropCanvas.getContext('2d');
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, 0, 0, cw, ch);
+
+    const pts = cropDraftCorners.map(c => ({ x: c.x * cw, y: c.y * ch }));
+
+    // Darken outside of document quad
+    ctx.save();
+    ctx.fillStyle = 'rgba(2, 6, 23, 0.56)';
+    ctx.beginPath();
+    ctx.rect(0, 0, cw, ch);
+    ctx.moveTo(pts[0].x, pts[0].y);
+    ctx.lineTo(pts[3].x, pts[3].y);
+    ctx.lineTo(pts[2].x, pts[2].y);
+    ctx.lineTo(pts[1].x, pts[1].y);
+    ctx.closePath();
+    ctx.fill('evenodd');
+    ctx.restore();
+
+    // Glowing cyan border
+    ctx.save();
+    ctx.strokeStyle = '#22d3ee';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < 4; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Draw 4 touch-friendly handles
+    pts.forEach((pt, idx) => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, idx === draggingCornerIdx ? 15 : 12, 0, Math.PI * 2);
+      ctx.fillStyle = idx === draggingCornerIdx ? '#fde047' : '#22d3ee';
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#0f172a';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  function getCanvasNormPointer(canvas, clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, (clientY - rect.top) / rect.height))
+    };
+  }
+
+  quadCropCanvas.addEventListener('pointerdown', (e) => {
+    if (stageMode !== 'crop' || !cropDraftCorners) return;
+    const pos = getCanvasNormPointer(quadCropCanvas, e.clientX, e.clientY);
+    let closest = -1;
+    let bestDist = 0.14;
+    cropDraftCorners.forEach((c, idx) => {
+      const dist = Math.hypot(c.x - pos.x, c.y - pos.y);
+      if (dist < bestDist) {
+        bestDist = dist;
+        closest = idx;
+      }
+    });
+    if (closest !== -1) {
+      draggingCornerIdx = closest;
+      quadCropCanvas.setPointerCapture(e.pointerId);
+      drawQuadCropOverlay();
+    }
+  });
+
+  quadCropCanvas.addEventListener('pointermove', (e) => {
+    if (draggingCornerIdx === -1 || !cropDraftCorners) return;
+    const pos = getCanvasNormPointer(quadCropCanvas, e.clientX, e.clientY);
+    cropDraftCorners[draggingCornerIdx] = pos;
+    drawQuadCropOverlay();
+  });
+
+  const endQuadDrag = () => {
+    if (draggingCornerIdx !== -1) {
+      draggingCornerIdx = -1;
+      drawQuadCropOverlay();
+    }
+  };
+  quadCropCanvas.addEventListener('pointerup', endQuadDrag);
+  quadCropCanvas.addEventListener('pointercancel', endQuadDrag);
+
+  toolCrop.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    const page = pages[activeIndex];
+    cropDraftCorners = page.corners.map(c => ({ x: c.x, y: c.y }));
+    setStageMode('crop');
+    drawQuadCropOverlay();
+  });
+
+  quadAutoBtn.addEventListener('click', () => {
+    const page = pages[activeIndex];
+    if (!page) return;
+    cropDraftCorners = cvUtils.detectDocumentCorners(page.originalImg);
+    drawQuadCropOverlay();
+    utils.showToast('Edges Detected', 'Adjust corners if needed, then tap Apply Crop.', 'info');
+  });
+
+  quadFullBtn.addEventListener('click', () => {
+    cropDraftCorners = [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 0, y: 1 }
+    ];
+    drawQuadCropOverlay();
+  });
+
+  quadCancelBtn.addEventListener('click', () => {
+    cropDraftCorners = null;
+    setStageMode('preview');
+  });
+
+  quadApplyBtn.addEventListener('click', async () => {
+    const page = pages[activeIndex];
+    if (!page || !cropDraftCorners) return;
+    utils.showLoader('Straightening & Enhancing...', 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 20));
     try {
-      const pdfDoc = await PDFLib.PDFDocument.create();
-      
-      for (const file of files) {
-        const dataUrl = await new Promise((resolve) => {
-           const reader = new FileReader();
-           reader.onload = async (e) => {
-             const tempImg = new Image();
-             tempImg.onload = async () => resolve(await applyFilter(tempImg, mode));
-             tempImg.src = e.target.result;
-           };
-           reader.readAsDataURL(file);
-        });
-        
-        let img;
-        if (dataUrl.includes('image/png')) {
-          img = await pdfDoc.embedPng(dataUrl);
+      page.corners = cvUtils.orderPoints(cropDraftCorners);
+      page.warpedCanvas = cvUtils.warpPerspectiveFromCorners(page.originalImg, page.corners, 2100);
+      page.cleanupStrokes = [];
+      refreshPagePreview(page);
+      cropDraftCorners = null;
+      setStageMode('preview');
+      renderStudioUI();
+      utils.showToast('Cropped', 'Document straightened cleanly!');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  /* ---------------- Interactive Cleanup Eraser Brush ---------------- */
+  function redrawCleanupStage() {
+    const page = pages[activeIndex];
+    if (!page) return;
+    const baseCanvas = renderPageCanvas(page, 1100);
+    cleanupCanvas.width = baseCanvas.width;
+    cleanupCanvas.height = baseCanvas.height;
+    const ctx = cleanupCanvas.getContext('2d');
+    ctx.drawImage(baseCanvas, 0, 0);
+  }
+
+  toolCleanup.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    setStageMode('cleanup');
+    redrawCleanupStage();
+  });
+
+  cleanupCanvas.addEventListener('pointerdown', (e) => {
+    if (stageMode !== 'cleanup' || activeIndex < 0) return;
+    const page = pages[activeIndex];
+    const pos = getCanvasNormPointer(cleanupCanvas, e.clientX, e.clientY);
+    const brushVal = parseInt(cleanupBrushSlider.value, 10) || 32;
+    currentCleanupStroke = {
+      sizeRatio: brushVal / 650,
+      points: [pos]
+    };
+    page.cleanupStrokes.push(currentCleanupStroke);
+    isDrawingCleanup = true;
+    cleanupCanvas.setPointerCapture(e.pointerId);
+    applyCleanupStrokesToCanvas(cleanupCanvas, [currentCleanupStroke]);
+  });
+
+  cleanupCanvas.addEventListener('pointermove', (e) => {
+    if (!isDrawingCleanup || !currentCleanupStroke) return;
+    const pos = getCanvasNormPointer(cleanupCanvas, e.clientX, e.clientY);
+    currentCleanupStroke.points.push(pos);
+    applyCleanupStrokesToCanvas(cleanupCanvas, [currentCleanupStroke]);
+  });
+
+  const finishCleanupStroke = () => {
+    isDrawingCleanup = false;
+    currentCleanupStroke = null;
+  };
+  cleanupCanvas.addEventListener('pointerup', finishCleanupStroke);
+  cleanupCanvas.addEventListener('pointercancel', finishCleanupStroke);
+
+  cleanupUndoBtn.addEventListener('click', () => {
+    const page = pages[activeIndex];
+    if (!page || page.cleanupStrokes.length === 0) return;
+    page.cleanupStrokes.pop();
+    redrawCleanupStage();
+  });
+
+  cleanupDoneBtn.addEventListener('click', () => {
+    const page = pages[activeIndex];
+    if (page) refreshPagePreview(page);
+    setStageMode('preview');
+    renderStudioUI();
+    utils.showToast('Cleaned Up', 'Marks erased cleanly.');
+  });
+
+  /* ---------------- Filters & Fine Adjustments ---------------- */
+  toolFilters.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    if (stageMode !== 'preview') setStageMode('preview');
+    const wasHidden = filtersDrawer.classList.contains('hidden');
+    closeDrawers();
+    if (wasHidden) filtersDrawer.classList.remove('hidden');
+  });
+
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', async () => {
+      const page = pages[activeIndex];
+      if (!page) return;
+      const modeKey = chip.getAttribute('data-filter');
+      page.filter = modeKey;
+      utils.showLoader(`Applying ${filterLabels[modeKey] || 'Filter'}...`, 'text-cyan-400');
+      await new Promise(r => setTimeout(r, 15));
+      refreshPagePreview(page);
+      renderStudioUI();
+      utils.hideLoader();
+    });
+  });
+
+  applyFilterAllBtn.addEventListener('click', async () => {
+    if (activeIndex < 0 || pages.length === 0) return;
+    const targetFilter = pages[activeIndex].filter;
+    utils.showLoader('Applying filter to all pages...', 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 20));
+    for (const p of pages) {
+      p.filter = targetFilter;
+      refreshPagePreview(p);
+    }
+    renderStudioUI();
+    utils.hideLoader();
+    utils.showToast('Applied to All', `${filterLabels[targetFilter]} applied to all ${pages.length} pages.`);
+  });
+
+  toolAdjust.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    if (stageMode !== 'preview') setStageMode('preview');
+    const wasHidden = adjustDrawer.classList.contains('hidden');
+    closeDrawers();
+    if (wasHidden) adjustDrawer.classList.remove('hidden');
+  });
+
+  let adjustDebounce = null;
+  function handleAdjustSliderChange() {
+    const page = pages[activeIndex];
+    if (!page) return;
+    page.brightness = parseInt(brightSlider.value, 10) || 0;
+    page.contrast = parseInt(contrastSlider.value, 10) || 0;
+    page.sharpness = parseInt(sharpSlider.value, 10) || 0;
+    brightVal.textContent = String(page.brightness);
+    contrastVal.textContent = String(page.contrast);
+    sharpVal.textContent = String(page.sharpness);
+
+    clearTimeout(adjustDebounce);
+    adjustDebounce = setTimeout(() => {
+      refreshPagePreview(page);
+      renderStudioUI();
+    }, 90);
+  }
+  brightSlider.addEventListener('input', handleAdjustSliderChange);
+  contrastSlider.addEventListener('input', handleAdjustSliderChange);
+  sharpSlider.addEventListener('input', handleAdjustSliderChange);
+
+  adjustResetBtn.addEventListener('click', () => {
+    const page = pages[activeIndex];
+    if (!page) return;
+    page.brightness = 0;
+    page.contrast = 0;
+    page.sharpness = 30;
+    refreshPagePreview(page);
+    renderStudioUI();
+  });
+
+  adjustApplyAllBtn.addEventListener('click', async () => {
+    const src = pages[activeIndex];
+    if (!src) return;
+    utils.showLoader('Updating all pages...', 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 20));
+    for (const p of pages) {
+      p.brightness = src.brightness;
+      p.contrast = src.contrast;
+      p.sharpness = src.sharpness;
+      refreshPagePreview(p);
+    }
+    renderStudioUI();
+    utils.hideLoader();
+    utils.showToast('Synced', 'Light & sharpness applied to every page.');
+  });
+
+  /* ---------------- 1-Tap AI Auto-Ready, Rotate, Reorder, Retake, Delete ---------------- */
+  toolAiAuto.addEventListener('click', async () => {
+    if (pages.length === 0) return;
+    if (stageMode !== 'preview') setStageMode('preview');
+    closeDrawers();
+    utils.showLoader('AI Auto-Cropping, Removing Shadows & Polishing...', 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 25));
+    try {
+      for (const p of pages) {
+        p.corners = cvUtils.detectDocumentCorners(p.originalImg);
+        p.warpedCanvas = cvUtils.warpPerspectiveFromCorners(p.originalImg, p.corners, 2100);
+        p.filter = 'magic';
+        p.brightness = 4;
+        p.contrast = 8;
+        p.sharpness = 42;
+        refreshPagePreview(p);
+      }
+      renderStudioUI();
+      utils.showToast('AI Auto-Ready!', `Auto-cropped, shadow-removed & polished ${pages.length} page${pages.length > 1 ? 's' : ''}. Tap Save PDF!`);
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  toolRotate.addEventListener('click', () => {
+    const page = pages[activeIndex];
+    if (!page) return;
+    if (stageMode !== 'preview') setStageMode('preview');
+    page.rotationSteps = (page.rotationSteps + 1) % 4;
+    refreshPagePreview(page);
+    renderStudioUI();
+  });
+
+  toolMoveLeft.addEventListener('click', () => {
+    if (activeIndex <= 0) return;
+    [pages[activeIndex - 1], pages[activeIndex]] = [pages[activeIndex], pages[activeIndex - 1]];
+    activeIndex -= 1;
+    renderStudioUI();
+  });
+
+  toolMoveRight.addEventListener('click', () => {
+    if (activeIndex < 0 || activeIndex >= pages.length - 1) return;
+    [pages[activeIndex + 1], pages[activeIndex]] = [pages[activeIndex], pages[activeIndex + 1]];
+    activeIndex += 1;
+    renderStudioUI();
+  });
+
+  prevPageBtn.addEventListener('click', () => {
+    if (activeIndex > 0) {
+      activeIndex -= 1;
+      renderStudioUI();
+    }
+  });
+
+  nextPageBtn.addEventListener('click', () => {
+    if (activeIndex < pages.length - 1) {
+      activeIndex += 1;
+      renderStudioUI();
+    }
+  });
+
+  toolRetake.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    retakeTargetIndex = activeIndex;
+    cameraInput.click();
+  });
+
+  toolDeletePage.addEventListener('click', () => {
+    if (activeIndex < 0) return;
+    pages.splice(activeIndex, 1);
+    if (activeIndex >= pages.length) activeIndex = pages.length - 1;
+    renderStudioUI();
+    utils.showToast('Removed', 'Page deleted from scan.', 'info');
+  });
+
+  /* ---------------- Capture & Gallery Ingestion ---------------- */
+  if (emptyCameraBtn) emptyCameraBtn.addEventListener('click', () => { retakeTargetIndex = null; cameraInput.click(); });
+  if (emptyGalleryBtn) emptyGalleryBtn.addEventListener('click', () => { retakeTargetIndex = null; galleryInput.click(); });
+  if (addCameraBtn) addCameraBtn.addEventListener('click', () => { retakeTargetIndex = null; cameraInput.click(); });
+  if (addGalleryBtn) addGalleryBtn.addEventListener('click', () => { retakeTargetIndex = null; galleryInput.click(); });
+
+  async function handleIncomingScanFiles(fileList) {
+    const filesArr = Array.from(fileList || []).filter(f => f.type.startsWith('image/'));
+    if (filesArr.length === 0) return;
+
+    utils.showLoader(`AI Scanning ${filesArr.length} page${filesArr.length > 1 ? 's' : ''}...`, 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 25));
+
+    try {
+      const defaultMode = scanSettings.autoMagic || 'magic';
+      for (const file of filesArr) {
+        const img = await loadImageFromFile(file);
+        const corners = cvUtils.detectDocumentCorners(img);
+        const warpedCanvas = cvUtils.warpPerspectiveFromCorners(img, corners, 2100);
+        const newPage = {
+          id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          originalImg: img,
+          corners,
+          warpedCanvas,
+          cleanupStrokes: [],
+          filter: defaultMode,
+          brightness: 0,
+          contrast: 0,
+          sharpness: defaultMode === 'original' ? 10 : 35,
+          rotationSteps: 0,
+          previewDataUrl: '',
+          thumbDataUrl: ''
+        };
+        refreshPagePreview(newPage);
+
+        if (retakeTargetIndex !== null && pages[retakeTargetIndex]) {
+          pages[retakeTargetIndex] = newPage;
+          activeIndex = retakeTargetIndex;
+          retakeTargetIndex = null;
         } else {
-          img = await pdfDoc.embedJpg(dataUrl);
+          pages.push(newPage);
+          activeIndex = pages.length - 1;
         }
-        
+      }
+      setStageMode('preview');
+      renderStudioUI();
+      utils.showToast('Scan Ready', `Auto-cropped & enhanced ${filesArr.length} page${filesArr.length > 1 ? 's' : ''}. Tap Crop to fine-tune edges anytime!`);
+    } catch (err) {
+      console.error('Scan ingest error:', err);
+      utils.showToast('Scan Error', 'Could not read image. Please try again.', 'error');
+    } finally {
+      retakeTargetIndex = null;
+      utils.hideLoader();
+    }
+  }
+
+  cameraInput.addEventListener('change', (e) => {
+    const fl = e.target.files;
+    handleIncomingScanFiles(fl);
+    cameraInput.value = '';
+  });
+
+  galleryInput.addEventListener('change', (e) => {
+    const fl = e.target.files;
+    handleIncomingScanFiles(fl);
+    galleryInput.value = '';
+  });
+
+  /* ---------------- Save Multi-Page Studio PDF with Metadata ---------------- */
+  savePdfBtn.addEventListener('click', async () => {
+    if (pages.length === 0) return;
+    if (stageMode !== 'preview') setStageMode('preview');
+    closeDrawers();
+
+    utils.showLoader('Compiling Studio HD PDF...', 'text-cyan-400');
+    await new Promise(r => setTimeout(r, 25));
+
+    try {
+      const pdfDoc = await window.PDFLib.PDFDocument.create();
+      const exportQuality = parseFloat(scanSettings.quality) || 0.92;
+      const exportMaxDim = exportQuality >= 0.9 ? 2100 : exportQuality >= 0.78 ? 1650 : 1250;
+
+      for (const pageObj of pages) {
+        const fullCanvas = renderPageCanvas(pageObj, exportMaxDim);
+        const jpegDataUrl = fullCanvas.toDataURL('image/jpeg', exportQuality);
+        const img = await pdfDoc.embedJpg(jpegDataUrl);
+
         let dims = [img.width, img.height];
         if (scanSettings.pageSize === 'a4') dims = [595.28, 841.89];
         if (scanSettings.pageSize === 'letter') dims = [612, 792];
-        
-        // If the image is landscape and we are using standard page size, rotate dimensions
         if (img.width > img.height && scanSettings.pageSize !== 'fit') {
-            dims = [dims[1], dims[0]];
+          dims = [dims[1], dims[0]];
         }
-        
-        const page = pdfDoc.addPage(dims);
-        
+
+        const pdfPage = pdfDoc.addPage(dims);
         let drawW = dims[0];
         let drawH = dims[1];
-        
+
         if (scanSettings.pageSize === 'fit') {
-            drawW = img.width; 
-            drawH = img.height;
+          drawW = img.width;
+          drawH = img.height;
         } else {
-            const imgRatio = img.width / img.height;
-            const pageRatio = dims[0] / dims[1];
-            if (imgRatio > pageRatio) {
-                drawW = dims[0];
-                drawH = dims[0] / imgRatio;
-            } else {
-                drawH = dims[1];
-                drawW = dims[1] * imgRatio;
-            }
+          // Clean subtle 14pt studio margin on A4/Letter
+          const pad = 14;
+          const availW = dims[0] - pad * 2;
+          const availH = dims[1] - pad * 2;
+          const imgRatio = img.width / img.height;
+          const boxRatio = availW / availH;
+          if (imgRatio > boxRatio) {
+            drawW = availW;
+            drawH = availW / imgRatio;
+          } else {
+            drawH = availH;
+            drawW = availH * imgRatio;
+          }
         }
-        
+
         const x = (dims[0] - drawW) / 2;
         const y = (dims[1] - drawH) / 2;
-        
-        page.drawImage(img, { x, y, width: drawW, height: drawH });
+        pdfPage.drawImage(img, { x, y, width: drawW, height: drawH });
       }
-      
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      utils.downloadBlob(blob, `scanned_document_${Date.now()}.pdf`);
-      
-      utils.showToast('Success', 'PDF generated successfully!');
-      files = [];
-      renderList();
+
+      const titleStr = (docTitleInput && docTitleInput.value.trim()) || 'PDF Bondhu Scan';
+      const safeFileBase = titleStr.replace(/[^a-zA-Z0-9 _-]+/g, '').trim().replace(/\s+/g, '_') || 'PDF_Bondhu_Scan';
+      const res = await utils.savePdfWithMetadata(pdfDoc, `${safeFileBase}.pdf`, titleStr);
+
+      if (res && res.saved) {
+        utils.showToast('PDF Saved!', `"${res.filename}" (${pages.length} page${pages.length > 1 ? 's' : ''}) ready!`);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Scanner export failed:', err);
       utils.showToast('Error', 'Failed to generate PDF.', 'error');
     } finally {
       utils.hideLoader();
@@ -2186,10 +3205,10 @@ function initOcrScanner() {
          });
       });
       
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      utils.downloadBlob(blob, `Searchable_Document_${Date.now()}.pdf`);
-      utils.showToast('Success', 'Searchable PDF generated!');
+      const res = await utils.savePdfWithMetadata(pdfDoc, `Searchable_Document_${Date.now()}.pdf`, 'OCR Searchable Document');
+      if (res && res.saved) {
+        utils.showToast('Success', `Searchable PDF "${res.filename}" saved!`);
+      }
     } catch (err) {
       console.error(err);
       utils.showToast('Error', 'Failed to generate searchable PDF.', 'error');
@@ -2809,16 +3828,26 @@ function initPdfCompressor() {
       }
 
       resultBox.classList.remove('hidden');
-      utils.downloadBlob(blob, lastCompressedFilename);
+      setProgressUI(false);
+      const metaRes = await utils.savePdfWithMetadata(
+        blob,
+        lastCompressedFilename,
+        `${baseName} (Compressed)`,
+        { useObjectStreams: useObjStreams }
+      );
+      if (metaRes && metaRes.saved && metaRes.blob) {
+        lastCompressedBlob = metaRes.blob;
+        lastCompressedFilename = metaRes.filename;
+      }
 
       if (compressMode === 'target') {
         const targetBytes = getTargetBytes();
         if (newSize > targetBytes) {
           utils.showToast('Minimum Reached', `Smallest achievable size for ${totalPages} pages is ${utils.formatBytes(newSize)}.`, 'info');
-        } else {
+        } else if (metaRes && metaRes.saved) {
           utils.showToast('Success', `Compressed from ${utils.formatBytes(origSize)} to ${utils.formatBytes(newSize)}!`);
         }
-      } else {
+      } else if (metaRes && metaRes.saved) {
         utils.showToast('Success', `PDF compressed to ${utils.formatBytes(newSize)}!`);
       }
     } catch (err) {
@@ -2839,9 +3868,13 @@ function initPdfCompressor() {
     }
   });
 
-  downloadAgainBtn.addEventListener('click', () => {
+  downloadAgainBtn.addEventListener('click', async () => {
     if (lastCompressedBlob) {
-      utils.downloadBlob(lastCompressedBlob, lastCompressedFilename || 'compressed.pdf');
+      await utils.savePdfWithMetadata(
+        lastCompressedBlob,
+        lastCompressedFilename || 'compressed.pdf',
+        (lastCompressedFilename || 'Compressed PDF').replace(/\.pdf$/i, '')
+      );
     }
   });
 }
@@ -3137,11 +4170,11 @@ function initPdfOrganizer() {
         outDoc.addPage(copied);
       }
 
-      const bytes = await outDoc.save();
-      const blob = new Blob([bytes], { type: 'application/pdf' });
       const baseName = currentFile.name.replace(/\.pdf$/i, '');
-      utils.downloadBlob(blob, `${baseName}_organized.pdf`);
-      utils.showToast('Success', `Saved organized PDF (${pagesState.length} pages).`);
+      const res = await utils.savePdfWithMetadata(outDoc, `${baseName}_organized.pdf`, `${baseName} (Organized)`);
+      if (res && res.saved) {
+        utils.showToast('Success', `Saved organized PDF (${pagesState.length} pages).`);
+      }
     } catch (err) {
       console.error(err);
       utils.showToast('Error', 'Failed to rebuild PDF.', 'error');
@@ -3348,11 +4381,11 @@ function initPdfWatermark() {
         }
       });
 
-      const outBytes = await pdfDoc.save();
-      const blob = new Blob([outBytes], { type: 'application/pdf' });
       const baseName = currentFile.name.replace(/\.pdf$/i, '');
-      utils.downloadBlob(blob, `${baseName}_watermarked.pdf`);
-      utils.showToast('Success', 'Watermark & page numbers applied cleanly!');
+      const res = await utils.savePdfWithMetadata(pdfDoc, `${baseName}_watermarked.pdf`, `${baseName} (Watermarked)`);
+      if (res && res.saved) {
+        utils.showToast('Success', 'Watermark & page numbers applied cleanly!');
+      }
     } catch (err) {
       console.error(err);
       utils.showToast('Error', 'Failed to stamp PDF.', 'error');
@@ -3537,3 +4570,793 @@ function initPhotoResizer() {
     }
   });
 }
+
+/* ==========================================================================
+   15. E-Sign & Self-Attest PDF
+   ========================================================================== */
+
+function initPdfSign() {
+  const pdfInput = document.getElementById('pdfSignInput');
+  const fileNameEl = document.getElementById('pdfSignFileName');
+  const signPad = document.getElementById('pdfSignPad');
+  const clearPadBtn = document.getElementById('pdfSignClearPadBtn');
+  const inkBtns = document.querySelectorAll('.sign-ink-btn');
+  const signImgInput = document.getElementById('pdfSignImgInput');
+  const addDateCheck = document.getElementById('pdfSignAddDate');
+  const sizeSlider = document.getElementById('pdfSignSizeSlider');
+  const sizeVal = document.getElementById('pdfSignSizeVal');
+  const saveBtn = document.getElementById('pdfSignSaveBtn');
+
+  const prevBtn = document.getElementById('pdfSignPrevPage');
+  const nextBtn = document.getElementById('pdfSignNextPage');
+  const pageLabel = document.getElementById('pdfSignPageLabel');
+  const emptyPreview = document.getElementById('pdfSignEmptyPreview');
+  const stageWrap = document.getElementById('pdfSignStageWrap');
+  const pageCanvas = document.getElementById('pdfSignPageCanvas');
+  const markerEl = document.getElementById('pdfSignMarker');
+  const markerImg = document.getElementById('pdfSignMarkerImg');
+  const markerDate = document.getElementById('pdfSignMarkerDate');
+
+  if (!pdfInput || !signPad || !saveBtn) return;
+
+  const padCtx = signPad.getContext('2d');
+  let inkColor = '#0f172a';
+  let isDrawing = false;
+  let hasDrawnSignature = false;
+  let uploadedSignDataUrl = null;
+
+  let currentFile = null;
+  let pdfBytesBuffer = null;
+  let pdfJsDoc = null;
+  let totalPages = 0;
+  let currentPageNum = 1;
+
+  // Normalized placement (center of signature on active page)
+  let placement = { x: 0.72, y: 0.84, placed: false };
+
+  function getActiveSignatureDataUrl() {
+    if (uploadedSignDataUrl) return uploadedSignDataUrl;
+    if (!hasDrawnSignature) return null;
+    // Trim transparent margins from drawn canvas for crisp placement
+    const w = signPad.width;
+    const h = signPad.height;
+    const imgData = padCtx.getImageData(0, 0, w, h).data;
+    let minX = w, minY = h, maxX = 0, maxY = 0, found = false;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (imgData[(y * w + x) * 4 + 3] > 10) {
+          if (x < minX) minX = x;
+          if (y < minY) minY = y;
+          if (x > maxX) maxX = x;
+          if (y > maxY) maxY = y;
+          found = true;
+        }
+      }
+    }
+    if (!found) return null;
+    const padPx = 8;
+    const sx = Math.max(0, minX - padPx);
+    const sy = Math.max(0, minY - padPx);
+    const sw = Math.min(w - sx, maxX - minX + padPx * 2);
+    const sh = Math.min(h - sy, maxY - minY + padPx * 2);
+    const trimmed = document.createElement('canvas');
+    trimmed.width = Math.max(20, sw);
+    trimmed.height = Math.max(20, sh);
+    trimmed.getContext('2d').drawImage(signPad, sx, sy, sw, sh, 0, 0, sw, sh);
+    return trimmed.toDataURL('image/png');
+  }
+
+  function updateMarkerOverlay() {
+    const sigUrl = getActiveSignatureDataUrl();
+    const pctWidth = parseInt(sizeSlider.value, 10) || 24;
+    sizeVal.textContent = `${pctWidth}%`;
+
+    const ready = Boolean(pdfBytesBuffer && sigUrl);
+    saveBtn.disabled = !ready;
+
+    if (!pdfJsDoc || !sigUrl) {
+      markerEl.classList.add('hidden');
+      return;
+    }
+    if (!placement.placed) {
+      placement.placed = true;
+    }
+
+    markerImg.src = sigUrl;
+    markerEl.style.width = `${pctWidth}%`;
+    markerEl.style.left = `${Math.max(4, Math.min(96 - pctWidth, placement.x * 100 - pctWidth / 2))}%`;
+    markerEl.style.top = `${Math.max(2, Math.min(92, placement.y * 100 - 4))}%`;
+
+    if (addDateCheck.checked) {
+      const dStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      markerDate.textContent = `Self-Attested · ${dStr}`;
+      markerDate.classList.remove('hidden');
+    } else {
+      markerDate.classList.add('hidden');
+    }
+    markerEl.classList.remove('hidden');
+  }
+
+  // Ink color buttons
+  inkBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      inkColor = btn.getAttribute('data-ink') || '#0f172a';
+      inkBtns.forEach(b => b.classList.remove('ring-2', 'ring-indigo-500'));
+      btn.classList.add('ring-2', 'ring-indigo-500');
+    });
+  });
+
+  function getPadCoords(e) {
+    const rect = signPad.getBoundingClientRect();
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * signPad.width,
+      y: ((e.clientY - rect.top) / rect.height) * signPad.height
+    };
+  }
+
+  signPad.addEventListener('pointerdown', (e) => {
+    uploadedSignDataUrl = null;
+    isDrawing = true;
+    hasDrawnSignature = true;
+    const pt = getPadCoords(e);
+    padCtx.strokeStyle = inkColor;
+    padCtx.lineWidth = 3.2;
+    padCtx.lineCap = 'round';
+    padCtx.lineJoin = 'round';
+    padCtx.beginPath();
+    padCtx.moveTo(pt.x, pt.y);
+    signPad.setPointerCapture(e.pointerId);
+  });
+
+  signPad.addEventListener('pointermove', (e) => {
+    if (!isDrawing) return;
+    const pt = getPadCoords(e);
+    padCtx.lineTo(pt.x, pt.y);
+    padCtx.stroke();
+  });
+
+  const endPadStroke = () => {
+    if (!isDrawing) return;
+    isDrawing = false;
+    updateMarkerOverlay();
+  };
+  signPad.addEventListener('pointerup', endPadStroke);
+  signPad.addEventListener('pointercancel', endPadStroke);
+
+  clearPadBtn.addEventListener('click', () => {
+    padCtx.clearRect(0, 0, signPad.width, signPad.height);
+    hasDrawnSignature = false;
+    uploadedSignDataUrl = null;
+    updateMarkerOverlay();
+  });
+
+  signImgInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    signImgInput.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        // Convert uploaded signature photo into crisp transparent PNG (removes white paper bg!)
+        const c = document.createElement('canvas');
+        const maxS = 600;
+        const scale = Math.min(1, maxS / Math.max(img.naturalWidth, img.naturalHeight));
+        c.width = Math.max(40, Math.round(img.naturalWidth * scale));
+        c.height = Math.max(40, Math.round(img.naturalHeight * scale));
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        const id = ctx.getImageData(0, 0, c.width, c.height);
+        const d = id.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const lum = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+          if (lum > 210) {
+            d[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(id, 0, 0);
+        uploadedSignDataUrl = c.toDataURL('image/png');
+        padCtx.clearRect(0, 0, signPad.width, signPad.height);
+        padCtx.drawImage(c, 10, 10, signPad.width - 20, signPad.height - 20);
+        updateMarkerOverlay();
+        utils.showToast('Signature Loaded', 'White paper background automatically removed!');
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  addDateCheck.addEventListener('change', updateMarkerOverlay);
+  sizeSlider.addEventListener('input', updateMarkerOverlay);
+
+  async function renderPdfSignPage(num) {
+    if (!pdfJsDoc) return;
+    const page = await pdfJsDoc.getPage(num);
+    const vp = page.getViewport({ scale: 1.15 });
+    pageCanvas.width = vp.width;
+    pageCanvas.height = vp.height;
+    const ctx = pageCanvas.getContext('2d');
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    pageLabel.textContent = `Page ${num} / ${totalPages}`;
+    prevBtn.disabled = num <= 1;
+    nextBtn.disabled = num >= totalPages;
+    updateMarkerOverlay();
+  }
+
+  pdfInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    pdfInput.value = '';
+    if (!file) return;
+    utils.showLoader('Loading PDF for Signing...', 'text-indigo-600');
+    try {
+      const buf = await file.arrayBuffer();
+      pdfBytesBuffer = new Uint8Array(buf);
+      currentFile = file;
+      fileNameEl.textContent = file.name;
+
+      pdfJsDoc = await pdfjsLib.getDocument({ data: pdfBytesBuffer.slice() }).promise;
+      totalPages = pdfJsDoc.numPages;
+      currentPageNum = 1;
+      emptyPreview.classList.add('hidden');
+      stageWrap.classList.remove('hidden');
+      await renderPdfSignPage(currentPageNum);
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not open PDF file.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPageNum > 1) {
+      currentPageNum--;
+      renderPdfSignPage(currentPageNum);
+    }
+  });
+  nextBtn.addEventListener('click', () => {
+    if (currentPageNum < totalPages) {
+      currentPageNum++;
+      renderPdfSignPage(currentPageNum);
+    }
+  });
+
+  stageWrap.addEventListener('click', (e) => {
+    if (!pdfJsDoc) return;
+    const rect = pageCanvas.getBoundingClientRect();
+    placement.x = Math.max(0.05, Math.min(0.95, (e.clientX - rect.left) / rect.width));
+    placement.y = Math.max(0.05, Math.min(0.95, (e.clientY - rect.top) / rect.height));
+    placement.placed = true;
+    updateMarkerOverlay();
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    const sigUrl = getActiveSignatureDataUrl();
+    if (!pdfBytesBuffer || !sigUrl) return;
+
+    utils.showLoader('Embedding Signature...', 'text-indigo-600');
+    try {
+      const pdfDoc = await window.PDFLib.PDFDocument.load(pdfBytesBuffer, { ignoreEncryption: true });
+      const sigPng = await pdfDoc.embedPng(sigUrl);
+      const targetPage = pdfDoc.getPages()[currentPageNum - 1];
+      const { width, height } = targetPage.getSize();
+
+      const widthFrac = (parseInt(sizeSlider.value, 10) || 24) / 100;
+      const drawW = width * widthFrac;
+      const drawH = drawW * (sigPng.height / Math.max(1, sigPng.width));
+
+      const leftPct = Math.max(0.04, Math.min(0.96 - widthFrac, placement.x - widthFrac / 2));
+      const drawX = leftPct * width;
+      const topPct = Math.max(0.02, Math.min(0.92, placement.y - 0.04));
+      const drawY = Math.max(18, height - topPct * height - drawH);
+
+      targetPage.drawImage(sigPng, {
+        x: drawX,
+        y: drawY,
+        width: drawW,
+        height: drawH
+      });
+
+      if (addDateCheck.checked) {
+        const font = await pdfDoc.embedFont(window.PDFLib.StandardFonts.HelveticaBold);
+        const dStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const stamp = `Self-Attested  ${dStr}`;
+        targetPage.drawText(stamp, {
+          x: drawX,
+          y: Math.max(6, drawY - 12),
+          size: 9,
+          font,
+          color: window.PDFLib.rgb(0.12, 0.16, 0.24)
+        });
+      }
+
+      const base = currentFile.name.replace(/\.pdf$/i, '');
+      const res = await utils.savePdfWithMetadata(pdfDoc, `${base}_signed.pdf`, `${base} (Signed)`);
+      if (res && res.saved) {
+        utils.showToast('Signed PDF Saved!', `"${res.filename}" is ready.`);
+      }
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Failed to apply signature to PDF.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
+/* ==========================================================================
+   16. ID Card 2-in-1 A4 PDF Maker (Aadhaar / PAN / Voter / DL)
+   ========================================================================== */
+
+function initIdCardMaker() {
+  const frontInput = document.getElementById('idFrontInput');
+  const backInput = document.getElementById('idBackInput');
+  const frontPreview = document.getElementById('idFrontPreview');
+  const backPreview = document.getElementById('idBackPreview');
+  const layoutSelect = document.getElementById('idCardLayout');
+  const scaleSelect = document.getElementById('idCardScale');
+  const selfAttestCheck = document.getElementById('idSelfAttestCheck');
+  const generateBtn = document.getElementById('idCardGenerateBtn');
+
+  if (!frontInput || !backInput || !generateBtn) return;
+
+  let frontImg = null;
+  let backImg = null;
+
+  function syncBtn() {
+    generateBtn.disabled = !(frontImg || backImg);
+  }
+
+  function loadIdSide(file, isFront) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        if (isFront) {
+          frontImg = img;
+          frontPreview.src = e.target.result;
+          frontPreview.classList.remove('hidden');
+        } else {
+          backImg = img;
+          backPreview.src = e.target.result;
+          backPreview.classList.remove('hidden');
+        }
+        syncBtn();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  frontInput.addEventListener('change', (e) => { loadIdSide(e.target.files[0], true); frontInput.value = ''; });
+  backInput.addEventListener('change', (e) => { loadIdSide(e.target.files[0], false); backInput.value = ''; });
+
+  function imgToCleanJpegDataUrl(img) {
+    const maxW = 1400;
+    const ratio = Math.min(1, maxW / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.max(100, Math.round(img.naturalWidth * ratio));
+    c.height = Math.max(100, Math.round(img.naturalHeight * ratio));
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.93);
+  }
+
+  generateBtn.addEventListener('click', async () => {
+    if (!frontImg && !backImg) return;
+    utils.showLoader('Creating Print-Ready A4 ID Card PDF...', 'text-emerald-600');
+    try {
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([595.28, 841.89]); // Exact A4 in pt
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // Standard smart card = 85.6mm x 54mm = 242.6pt x 153pt
+      const multiplier = scaleSelect.value === 'large' ? 1.25 : 1.0;
+      const cardW = 243 * multiplier;
+      const cardH = 153 * multiplier;
+
+      const drawCard = async (imgObj, x, y, label) => {
+        if (!imgObj) return;
+        const embedded = await pdfDoc.embedJpg(imgToCleanJpegDataUrl(imgObj));
+        // Subtle card outline
+        page.drawRectangle({
+          x: x - 2,
+          y: y - 2,
+          width: cardW + 4,
+          height: cardH + 4,
+          borderColor: rgb(0.75, 0.78, 0.84),
+          borderWidth: 0.8,
+          color: rgb(1, 1, 1)
+        });
+        // Contain cleanly inside card box
+        const imgRatio = embedded.width / embedded.height;
+        const boxRatio = cardW / cardH;
+        let dw = cardW, dh = cardH;
+        if (imgRatio > boxRatio) {
+          dh = cardW / imgRatio;
+        } else {
+          dw = cardH * imgRatio;
+        }
+        page.drawImage(embedded, {
+          x: x + (cardW - dw) / 2,
+          y: y + (cardH - dh) / 2,
+          width: dw,
+          height: dh
+        });
+        page.drawText(label, {
+          x,
+          y: y - 14,
+          size: 8,
+          font,
+          color: rgb(0.45, 0.5, 0.58)
+        });
+      };
+
+      if (layoutSelect.value === 'horizontal') {
+        const horizW = Math.min(cardW, 250);
+        const horizH = horizW * (153 / 243);
+        const gap = 22;
+        const totalW = horizW * 2 + gap;
+        const startX = (595.28 - totalW) / 2;
+        const yPos = 841.89 - 70 - horizH;
+
+        const drawScaled = async (imgObj, x, label) => {
+          if (!imgObj) return;
+          const embedded = await pdfDoc.embedJpg(imgToCleanJpegDataUrl(imgObj));
+          page.drawRectangle({
+            x: x - 2,
+            y: yPos - 2,
+            width: horizW + 4,
+            height: horizH + 4,
+            borderColor: rgb(0.75, 0.78, 0.84),
+            borderWidth: 0.8,
+            color: rgb(1, 1, 1)
+          });
+          page.drawImage(embedded, { x, y: yPos, width: horizW, height: horizH });
+          page.drawText(label, { x, y: yPos - 14, size: 8, font, color: rgb(0.45, 0.5, 0.58) });
+        };
+
+        await drawScaled(frontImg, startX, 'FRONT SIDE');
+        await drawScaled(backImg, startX + horizW + gap, 'BACK SIDE');
+      } else {
+        const cx = (595.28 - cardW) / 2;
+        const topY = 841.89 - 90 - cardH;
+        const botY = topY - cardH - 46;
+        await drawCard(frontImg, cx, topY, 'FRONT SIDE');
+        await drawCard(backImg, cx, botY, 'BACK SIDE');
+      }
+
+      if (selfAttestCheck.checked) {
+        const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        page.drawText('Self-Attested Signature: ___________________________', {
+          x: 64,
+          y: 120,
+          size: 11,
+          font,
+          color: rgb(0.15, 0.2, 0.28)
+        });
+        page.drawText(`Date: ${today}`, {
+          x: 64,
+          y: 96,
+          size: 10,
+          font,
+          color: rgb(0.3, 0.35, 0.45)
+        });
+      }
+
+      const res = await utils.savePdfWithMetadata(pdfDoc, 'ID_Card_A4_2in1.pdf', 'ID Card 2-in-1 A4');
+      if (res && res.saved) {
+        utils.showToast('A4 ID PDF Ready!', `"${res.filename}" saved cleanly.`);
+      }
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Failed to create ID Card PDF.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
+/* ==========================================================================
+   17. Notes & Application Letter to PDF (Supports English + Bengali Unicode)
+   ========================================================================== */
+
+function initTextToPdf() {
+  const headingInput = document.getElementById('textPdfHeading');
+  const fontSizeSelect = document.getElementById('textPdfFontSize');
+  const includeDateCheck = document.getElementById('textPdfIncludeDate');
+  const bodyInput = document.getElementById('textPdfBody');
+  const generateBtn = document.getElementById('textPdfGenerateBtn');
+
+  if (!bodyInput || !generateBtn) return;
+
+  function hasNonLatinChars(str) {
+    return /[^\x00-\x7F]/.test(str);
+  }
+
+  function wrapCanvasText(ctx, text, maxWidth) {
+    const paragraphs = text.split(/\r?\n/);
+    const lines = [];
+    for (const para of paragraphs) {
+      if (!para.trim()) {
+        lines.push('');
+        continue;
+      }
+      const words = para.split(/\s+/);
+      let current = '';
+      for (const word of words) {
+        const test = current ? `${current} ${word}` : word;
+        if (ctx.measureText(test).width <= maxWidth) {
+          current = test;
+        } else {
+          if (current) lines.push(current);
+          current = word;
+        }
+      }
+      if (current) lines.push(current);
+    }
+    return lines;
+  }
+
+  generateBtn.addEventListener('click', async () => {
+    const heading = (headingInput.value || '').trim();
+    const body = (bodyInput.value || '').trim();
+    if (!heading && !body) {
+      utils.showToast('Empty Note', 'Please write a heading or body text first.', 'info');
+      return;
+    }
+
+    utils.showLoader('Generating Clean A4 PDF...', 'text-sky-600');
+    try {
+      const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+      const pdfDoc = await PDFDocument.create();
+      const basePt = parseInt(fontSizeSelect.value, 10) || 12;
+      const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+      const combinedText = `${heading}\n${body}`;
+
+      if (hasNonLatinChars(combinedText)) {
+        // High-DPI Canvas A4 rendering so Bengali / Hindi / Unicode fonts render crisply without WinAnsi errors
+        const pageW = 1240;
+        const pageH = 1754;
+        const margin = 110;
+        const maxW = pageW - margin * 2;
+        const fontPx = Math.round(basePt * 2.25);
+        const lineH = Math.round(fontPx * 1.55);
+
+        const scratch = document.createElement('canvas');
+        scratch.width = pageW;
+        scratch.height = pageH;
+        const sCtx = scratch.getContext('2d');
+        sCtx.font = `${fontPx}px "Inter", "Noto Sans Bengali", system-ui, sans-serif`;
+        const bodyLines = wrapCanvasText(sCtx, body, maxW);
+
+        let lineIdx = 0;
+        let pageIdx = 0;
+
+        while (pageIdx === 0 || lineIdx < bodyLines.length) {
+          const canvas = document.createElement('canvas');
+          canvas.width = pageW;
+          canvas.height = pageH;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, pageW, pageH);
+
+          let y = margin;
+          if (pageIdx === 0) {
+            if (includeDateCheck.checked) {
+              ctx.fillStyle = '#64748b';
+              ctx.font = `600 22px "Inter", system-ui, sans-serif`;
+              ctx.fillText(`Date: ${dateStr}`, margin, y);
+              y += 42;
+            }
+            if (heading) {
+              ctx.fillStyle = '#0f172a';
+              ctx.font = `700 ${Math.round(fontPx * 1.45)}px "Inter", "Noto Sans Bengali", system-ui, sans-serif`;
+              const headLines = wrapCanvasText(ctx, heading, maxW);
+              for (const hl of headLines) {
+                ctx.fillText(hl, margin, y);
+                y += Math.round(fontPx * 1.9);
+              }
+              ctx.strokeStyle = '#e2e8f0';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(margin, y - 10);
+              ctx.lineTo(pageW - margin, y - 10);
+              ctx.stroke();
+              y += 30;
+            }
+          }
+
+          ctx.fillStyle = '#1e293b';
+          ctx.font = `${fontPx}px "Inter", "Noto Sans Bengali", system-ui, sans-serif`;
+          while (lineIdx < bodyLines.length && y < pageH - margin) {
+            ctx.fillText(bodyLines[lineIdx], margin, y);
+            y += lineH;
+            lineIdx++;
+          }
+
+          const jpg = await pdfDoc.embedJpg(canvas.toDataURL('image/jpeg', 0.92));
+          const pdfPage = pdfDoc.addPage([595.28, 841.89]);
+          pdfPage.drawImage(jpg, { x: 0, y: 0, width: 595.28, height: 841.89 });
+          pageIdx++;
+        }
+      } else {
+        // Pure crisp vector text PDF for English / ASCII notes & applications
+        const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const pageW = 595.28;
+        const pageH = 841.89;
+        const margin = 56;
+        const maxW = pageW - margin * 2;
+        const lineH = basePt * 1.5;
+
+        const wrapPdfLines = (text, font, size) => {
+          const out = [];
+          for (const para of text.split(/\r?\n/)) {
+            if (!para.trim()) {
+              out.push('');
+              continue;
+            }
+            const words = para.split(/\s+/);
+            let cur = '';
+            for (const word of words) {
+              const test = cur ? `${cur} ${word}` : word;
+              if (font.widthOfTextAtSize(test, size) <= maxW) {
+                cur = test;
+              } else {
+                if (cur) out.push(cur);
+                cur = word;
+              }
+            }
+            if (cur) out.push(cur);
+          }
+          return out;
+        };
+
+        let page = pdfDoc.addPage([pageW, pageH]);
+        let y = pageH - margin;
+
+        if (includeDateCheck.checked) {
+          page.drawText(`Date: ${dateStr}`, {
+            x: margin,
+            y,
+            size: 10,
+            font: fontRegular,
+            color: rgb(0.4, 0.45, 0.55)
+          });
+          y -= 24;
+        }
+
+        if (heading) {
+          const headLines = wrapPdfLines(heading, fontBold, basePt + 6);
+          for (const hl of headLines) {
+            page.drawText(hl, { x: margin, y, size: basePt + 6, font: fontBold, color: rgb(0.06, 0.09, 0.16) });
+            y -= (basePt + 10);
+          }
+          page.drawLine({
+            start: { x: margin, y: y + 4 },
+            end: { x: pageW - margin, y: y + 4 },
+            thickness: 1,
+            color: rgb(0.85, 0.88, 0.92)
+          });
+          y -= 18;
+        }
+
+        const lines = wrapPdfLines(body, fontRegular, basePt);
+        for (const line of lines) {
+          if (y < margin + 16) {
+            page = pdfDoc.addPage([pageW, pageH]);
+            y = pageH - margin;
+          }
+          if (line) {
+            page.drawText(line, { x: margin, y, size: basePt, font: fontRegular, color: rgb(0.12, 0.16, 0.23) });
+          }
+          y -= lineH;
+        }
+      }
+
+      const defaultTitle = heading || 'Notes Document';
+      const safeName = (heading || 'PDF_Bondhu_Notes').replace(/[^a-zA-Z0-9 _-]+/g, '').trim().replace(/\s+/g, '_') || 'PDF_Bondhu_Notes';
+      const res = await utils.savePdfWithMetadata(pdfDoc, `${safeName}.pdf`, defaultTitle);
+      if (res && res.saved) {
+        utils.showToast('PDF Created!', `"${res.filename}" saved cleanly.`);
+      }
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not generate PDF from text.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
+/* ==========================================================================
+   18. Standalone PDF Metadata Editor (Inspect & Update Any Existing PDF)
+   ========================================================================== */
+
+function initPdfMetadataTool() {
+  const input = document.getElementById('metaToolInput');
+  const fileNameEl = document.getElementById('metaToolFileName');
+  const formWrap = document.getElementById('metaToolForm');
+  const titleInput = document.getElementById('metaToolTitle');
+  const authorInput = document.getElementById('metaToolAuthor');
+  const dateInput = document.getElementById('metaToolCreationDate');
+  const subjectInput = document.getElementById('metaToolSubject');
+  const keywordsInput = document.getElementById('metaToolKeywords');
+  const saveBtn = document.getElementById('metaToolSaveBtn');
+
+  if (!input || !saveBtn) return;
+
+  let currentFile = null;
+  let sourceBytes = null;
+
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    input.value = '';
+    if (!file) return;
+
+    utils.showLoader('Reading PDF Properties...', 'text-violet-600');
+    try {
+      const buf = await file.arrayBuffer();
+      const doc = await window.PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+      sourceBytes = new Uint8Array(buf);
+      currentFile = file;
+
+      fileNameEl.textContent = `${file.name} (${utils.formatBytes(file.size)} · ${doc.getPageCount()} pages)`;
+      titleInput.value = doc.getTitle() || file.name.replace(/\.pdf$/i, '');
+      authorInput.value = doc.getAuthor() || '';
+      subjectInput.value = doc.getSubject() || '';
+      keywordsInput.value = doc.getKeywords() || '';
+
+      const cDate = doc.getCreationDate();
+      dateInput.value = utils.toLocalDateTimeInputValue(cDate instanceof Date && !isNaN(cDate.getTime()) ? cDate : new Date());
+
+      formWrap.classList.remove('hidden');
+      utils.showToast('Metadata Loaded', 'Edit any field and tap Save Updated PDF.');
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not read PDF metadata.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (!sourceBytes || !currentFile) return;
+
+    utils.showLoader('Updating PDF Metadata...', 'text-violet-600');
+    try {
+      const doc = await window.PDFLib.PDFDocument.load(sourceBytes, { ignoreEncryption: true });
+      doc.setTitle(titleInput.value.trim());
+      doc.setAuthor(authorInput.value.trim());
+      doc.setSubject(subjectInput.value.trim());
+      const kwList = keywordsInput.value
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+      if (kwList.length > 0) doc.setKeywords(kwList);
+
+      const parsedDate = dateInput.value ? new Date(dateInput.value) : new Date();
+      const finalDate = !isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+      doc.setCreationDate(finalDate);
+      doc.setModificationDate(new Date());
+      doc.setCreator('PDF Bondhu by Suman Nayak');
+
+      const outBytes = await doc.save();
+      const blob = new Blob([outBytes], { type: 'application/pdf' });
+      const base = currentFile.name.replace(/\.pdf$/i, '');
+      utils.downloadBlob(blob, `${base}_metadata_updated.pdf`);
+      utils.showToast('Metadata Saved!', 'Updated Title, Author & Creation Date written to PDF.');
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Failed to update PDF metadata.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
