@@ -1,0 +1,56 @@
+name: Deploy PDF Bondhu Website
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy-website:
+    name: Publish Live Website (GitHub Pages)
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare static website bundle
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp public/app.js _site/app.js
+          [ -f public/admob-service.js ] && cp public/admob-service.js _site/admob-service.js || true
+          [ -f public/manifest.json ] && cp public/manifest.json _site/manifest.json || true
+          [ -f public/sw.js ] && cp public/sw.js _site/sw.js || true
+          for f in public/*.svg public/*.png public/*.ico; do
+            [ -f "$f" ] && cp "$f" _site/
+          done
+          touch _site/.nojekyll
+          ls -lh _site
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -190,7 +190,7 @@ function initPWA() {
   const isBundledApkOrigin = window.location.hostname === 'appassets.androidplatform.net';
   if ('serviceWorker' in navigator && !isBundledApkOrigin) {
     let hadController = Boolean(navigator.serviceWorker.controller);
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('./sw.js')
       .then((reg) => {
         // Proactively check for fresh published builds on launch
         reg.update().catch(() => {});

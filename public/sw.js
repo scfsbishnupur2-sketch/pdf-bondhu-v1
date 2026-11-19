@@ -1,14 +1,14 @@
-const APP_SHELL_CACHE = 'pdf-bondhu-shell-v4';
+const APP_SHELL_CACHE = 'pdf-bondhu-shell-v5';
 const CDN_CACHE = 'pdf-bondhu-cdn-v3';
 
 const APP_SHELL_ASSETS = [
-  '/',
-  '/index.html',
-  '/app.js',
-  '/manifest.json',
-  '/icon.svg',
-  '/pwa-192x192.png',
-  '/pwa-512x512.png'
+  './',
+  './index.html',
+  './app.js',
+  './manifest.json',
+  './icon.svg',
+  './pwa-192x192.png',
+  './pwa-512x512.png'
 ];
 
 const CDN_ASSETS = [
@@ -70,7 +70,7 @@ self.addEventListener('fetch', (event) => {
           caches.match(request).then((cached) => {
             if (cached) return cached;
             if (request.mode === 'navigate') {
-              return caches.match('/index.html') || caches.match('/');
+              return caches.match('./index.html') || caches.match('./');
             }
             return new Response('Offline', { status: 503, statusText: 'Offline' });
           })
