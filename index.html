@@ -344,7 +344,7 @@
       </nav>
 
       <!-- Main Panel -->
-      <main class="flex-1 p-4 sm:p-6 lg:p-8 w-full overflow-x-hidden transition-colors">
+      <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 w-full overflow-x-hidden transition-colors">
 
         <!-- Global Loading Overlay -->
         <div id="loadingOverlay" class="fixed inset-0 bg-white/85 dark:bg-[#0F1526]/85 z-50 hidden flex-col items-center justify-center backdrop-blur-md transition-opacity">
@@ -2434,33 +2434,33 @@
         <!-- =============================================================== -->
 
         <!-- TAB: All Tools Directory Hub -->
-        <section id="allToolsHub" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
-          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-            <div>
-              <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Complete Toolkit</p>
+        <section id="allToolsHub" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
+          <div class="bg-white/95 dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 sm:p-6 shadow-[0_6px_22px_rgba(49,70,158,0.07)] space-y-4">
+            <div class="text-center max-w-2xl mx-auto space-y-1.5">
+              <p class="text-xs font-extrabold tracking-wide uppercase text-indigo-600 dark:text-cyan-400">Complete Toolkit · 100% Free</p>
               <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_tools">All Tools</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Every PDF, Image, Office, Daily Utility, and India Essentials tool — 100% free &amp; private.</p>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">PDF Studio, Image Studio, Office Studio, Daily Utilities &amp; India Essentials — neatly organized in one place.</p>
             </div>
-            <div class="relative w-full sm:w-72">
-              <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="search" id="allToolsSearchInput" placeholder="Filter 45+ tools..." class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700/80 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#293B80] dark:focus:border-[#7666D8] min-h-[44px]" />
+            <div class="relative max-w-xl mx-auto w-full">
+              <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="allToolsSearchInput" placeholder="Search any tool (e.g. Compress, Passport, Calculator, Notes)..." class="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-indigo-50/60 dark:bg-[#151B2B] border border-indigo-200/80 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 min-h-[46px]" />
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <button type="button" data-cat="all" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm whitespace-nowrap min-h-[38px] transition">All Tools</button>
+              <button type="button" data-cat="pdf" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_pdf">PDF Studio</button>
+              <button type="button" data-cat="image" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_image">Image Studio</button>
+              <button type="button" data-cat="office" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_office">Office Studio</button>
+              <button type="button" data-cat="daily" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_daily">Daily Utilities</button>
+              <button type="button" data-cat="india" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_india">India Essentials</button>
+              <button type="button" data-cat="vault" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#151B2B] text-slate-600 dark:text-slate-300 border border-indigo-100 dark:border-slate-700 whitespace-nowrap min-h-[38px] transition">My Vault</button>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            <button type="button" data-cat="all" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#293B80] text-white whitespace-nowrap min-h-[38px] transition">All</button>
-            <button type="button" data-cat="pdf" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_pdf">PDF Studio</button>
-            <button type="button" data-cat="image" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_image">Image Studio</button>
-            <button type="button" data-cat="office" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_office">Office Studio</button>
-            <button type="button" data-cat="daily" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_daily">Daily Utilities</button>
-            <button type="button" data-cat="india" class="alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 whitespace-nowrap min-h-[38px] transition" data-i18n="cat_india">India Essentials</button>
-          </div>
-
-          <div id="allToolsHubGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+          <div id="allToolsHubGrid" class="w-full space-y-6"></div>
         </section>
 
         <!-- TAB: Personal Document Center (Encrypted Local Vault) -->
-        <section id="documentCenter" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="documentCenter" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p class="text-xs font-bold tracking-wide uppercase text-[#20A779]">AES-256 Encrypted · 100% On-Device</p>
@@ -2560,7 +2560,7 @@
         </section>
 
         <!-- TAB: Recent Activity (Tools + Processed Documents) -->
-        <section id="recentActivityTab" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-6">
+        <section id="recentActivityTab" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-6">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Activity History</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_recent">Recent</h2>
@@ -2579,7 +2579,7 @@
         </section>
 
         <!-- TAB: Profile & Settings -->
-        <section id="profileSettingsTab" class="tab-content hidden animate-fade-in max-w-3xl mx-auto space-y-5">
+        <section id="profileSettingsTab" class="tab-content hidden animate-fade-in flex-col w-full max-w-3xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Preferences &amp; Privacy</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_profile">Profile &amp; Settings</h2>
@@ -2667,19 +2667,21 @@
         </section>
 
         <!-- TAB: Daily Utility Center (Calculators, Converters, Productivity, Smart Tools) -->
-        <section id="dailyUtilitiesHub" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
-          <div>
-            <p class="text-xs font-bold tracking-wide uppercase text-[#20A779]">All-in-One Everyday Toolkit</p>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="cat_daily">Daily Utilities</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Calculators, Unit Converters, Productivity Tools, QR Scanner/Generator &amp; Real Internet Speed Test.</p>
-          </div>
+        <section id="dailyUtilitiesHub" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
+          <div class="bg-white/95 dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 sm:p-6 shadow-[0_6px_22px_rgba(49,70,158,0.07)] space-y-4">
+            <div class="text-center max-w-2xl mx-auto space-y-1">
+              <p class="text-xs font-extrabold tracking-wide uppercase text-emerald-600 dark:text-emerald-400">All-in-One Everyday Toolkit</p>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="cat_daily">Daily Utilities</h2>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Calculators, Unit Converters, Notes &amp; Productivity Tools, QR Scanner/Generator &amp; Speed Test.</p>
+            </div>
 
-          <!-- 4 Sub-Tab Switcher -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-white dark:bg-[#1C2438] p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800">
-            <button type="button" data-subtab="dailyPanelCalc" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-[#293B80] text-white min-h-[42px] transition">Calculators</button>
-            <button type="button" data-subtab="dailyPanelConv" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 min-h-[42px] transition">Converters</button>
-            <button type="button" data-subtab="dailyPanelProd" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 min-h-[42px] transition">Productivity</button>
-            <button type="button" data-subtab="dailyPanelSmart" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 min-h-[42px] transition">QR &amp; Speed</button>
+            <!-- 4 Sub-Tab Switcher -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-indigo-50/70 dark:bg-[#151B2B] p-1.5 rounded-2xl border border-indigo-100 dark:border-slate-800">
+              <button type="button" data-subtab="dailyPanelCalc" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm min-h-[42px] transition">Calculators</button>
+              <button type="button" data-subtab="dailyPanelConv" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 min-h-[42px] transition">Converters</button>
+              <button type="button" data-subtab="dailyPanelProd" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 min-h-[42px] transition">Notes &amp; Planner</button>
+              <button type="button" data-subtab="dailyPanelSmart" class="daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 min-h-[42px] transition">QR &amp; Speed</button>
+            </div>
           </div>
 
           <!-- SUB-PANEL 1: CALCULATORS -->
@@ -2708,26 +2710,26 @@
                 </div>
                 <!-- Standard Keypad -->
                 <div class="grid grid-cols-4 gap-2">
-                  <button type="button" data-val="C" class="calc-key py-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-sm font-extrabold">C</button>
+                  <button type="button" data-val="C" class="calc-key py-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-sm font-extrabold">AC</button>
                   <button type="button" data-val="DEL" class="calc-key py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold">⌫</button>
-                  <button type="button" data-val="(" class="calc-key py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold">(</button>
-                  <button type="button" data-val="/" class="calc-key py-3 rounded-xl bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#A5B4FC] text-base font-extrabold">÷</button>
+                  <button type="button" data-val="%" class="calc-key py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold">%</button>
+                  <button type="button" data-val="/" class="calc-key py-3 rounded-xl bg-indigo-50 dark:bg-[#7666D8]/20 text-indigo-700 dark:text-[#A5B4FC] text-base font-extrabold">÷</button>
                   <button type="button" data-val="7" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">7</button>
                   <button type="button" data-val="8" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">8</button>
                   <button type="button" data-val="9" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">9</button>
-                  <button type="button" data-val="*" class="calc-key py-3 rounded-xl bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#A5B4FC] text-base font-extrabold">×</button>
+                  <button type="button" data-val="*" class="calc-key py-3 rounded-xl bg-indigo-50 dark:bg-[#7666D8]/20 text-indigo-700 dark:text-[#A5B4FC] text-base font-extrabold">×</button>
                   <button type="button" data-val="4" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">4</button>
                   <button type="button" data-val="5" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">5</button>
                   <button type="button" data-val="6" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">6</button>
-                  <button type="button" data-val="-" class="calc-key py-3 rounded-xl bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#A5B4FC] text-base font-extrabold">−</button>
+                  <button type="button" data-val="-" class="calc-key py-3 rounded-xl bg-indigo-50 dark:bg-[#7666D8]/20 text-indigo-700 dark:text-[#A5B4FC] text-base font-extrabold">−</button>
                   <button type="button" data-val="1" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">1</button>
                   <button type="button" data-val="2" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">2</button>
                   <button type="button" data-val="3" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">3</button>
-                  <button type="button" data-val="+" class="calc-key py-3 rounded-xl bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#A5B4FC] text-base font-extrabold">+</button>
+                  <button type="button" data-val="+" class="calc-key py-3 rounded-xl bg-indigo-50 dark:bg-[#7666D8]/20 text-indigo-700 dark:text-[#A5B4FC] text-base font-extrabold">+</button>
+                  <button type="button" data-val="(" class="calc-key py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold">(</button>
                   <button type="button" data-val="0" class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">0</button>
                   <button type="button" data-val="." class="calc-key py-3 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-slate-900 dark:text-white text-sm font-bold">.</button>
-                  <button type="button" data-val=")" class="calc-key py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold">)</button>
-                  <button type="button" data-val="=" class="calc-key py-3 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-base font-extrabold">=</button>
+                  <button type="button" data-val="=" class="calc-key py-3 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:brightness-105 text-white text-base font-extrabold shadow-sm">=</button>
                 </div>
               </div>
 
@@ -2916,46 +2918,56 @@
           <!-- SUB-PANEL 3: PRODUCTIVITY SUITE -->
           <div id="dailyPanelProd" class="daily-subtab-panel hidden space-y-5">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <!-- Quick Notes + Export PDF -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">Notes</h3>
-                  <button type="button" id="prodNoteExportPdfBtn" class="px-3 py-1.5 rounded-lg bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#A5B4FC] text-[11px] font-bold">Export PDF</button>
+              <!-- Quick Notes + Edit + Copy + Unicode PDF Export -->
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Quick Notes</h3>
+                    <span id="prodNoteEditBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300">New Note</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" id="prodNoteNewBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition">+ New</button>
+                    <button type="button" id="prodNoteCopyBtn" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition">Copy</button>
+                    <button type="button" id="prodNoteExportPdfBtn" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-[#7666D8]/20 text-indigo-700 dark:text-[#A5B4FC] text-[11px] font-bold transition">Export PDF</button>
+                  </div>
                 </div>
-                <input type="text" id="prodNoteTitle" placeholder="Note title..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-900 dark:text-white min-h-[38px]" />
-                <textarea id="prodNoteBody" rows="3" placeholder="Write your note here..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white"></textarea>
-                <button type="button" id="prodNoteSaveBtn" class="w-full py-2.5 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-xs font-bold min-h-[40px]">Save Note</button>
-                <div id="prodNoteList" class="space-y-2 max-h-44 overflow-y-auto"></div>
+                <input type="text" id="prodNoteTitle" placeholder="Note title (English / বাংলা / हिन्दी)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 min-h-[40px]" />
+                <textarea id="prodNoteBody" rows="4" placeholder="Write your note here... Supports English, Bengali & Hindi." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white leading-relaxed outline-none focus:border-indigo-500"></textarea>
+                <div class="flex items-center gap-2">
+                  <button type="button" id="prodNoteSaveBtn" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:brightness-105 text-white text-xs font-extrabold min-h-[42px] shadow-sm transition">Save Note</button>
+                  <span id="prodNoteCount" class="text-[11px] font-bold text-slate-400 tabular-nums shrink-0">0 saved</span>
+                </div>
+                <div id="prodNoteList" class="space-y-2 max-h-56 overflow-y-auto pt-1"></div>
               </div>
 
               <!-- To-Do List -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white">To-Do List</h3>
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
+                <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">To-Do List</h3>
                 <div class="flex gap-2">
                   <input type="text" id="prodTodoInput" placeholder="Add a daily task..." class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white min-h-[40px]" />
-                  <button type="button" id="prodTodoAddBtn" class="px-4 py-2 rounded-xl bg-[#293B80] text-white text-xs font-bold min-h-[40px]">Add</button>
+                  <button type="button" id="prodTodoAddBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold min-h-[40px]">Add</button>
                 </div>
-                <div id="prodTodoList" class="space-y-1.5 max-h-56 overflow-y-auto"></div>
+                <ul id="prodTodoList" class="list-none p-0 m-0 space-y-1.5 max-h-56 overflow-y-auto"></ul>
               </div>
 
               <!-- Shopping List -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">Shopping List</h3>
+                  <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Shopping List</h3>
                   <span id="prodShopTotal" class="text-xs font-extrabold text-[#20A779] tabular-nums">Total: ₹0</span>
                 </div>
                 <div class="flex gap-2">
                   <input type="text" id="prodShopItem" placeholder="Item name" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white min-h-[40px]" />
                   <input type="number" id="prodShopPrice" placeholder="₹" class="w-20 px-2.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-900 dark:text-white tabular-nums min-h-[40px]" />
-                  <button type="button" id="prodShopAddBtn" class="px-3.5 py-2 rounded-xl bg-[#293B80] text-white text-xs font-bold min-h-[40px]">Add</button>
+                  <button type="button" id="prodShopAddBtn" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold min-h-[40px]">Add</button>
                 </div>
-                <div id="prodShopList" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+                <ul id="prodShopList" class="list-none p-0 m-0 space-y-1.5 max-h-48 overflow-y-auto"></ul>
               </div>
 
               <!-- Daily Expense Tracker -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-bold text-slate-900 dark:text-white">Daily Expense Tracker</h3>
+                  <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Daily Expense Tracker</h3>
                   <div class="flex items-center gap-2">
                     <span id="prodExpTotal" class="text-xs font-extrabold text-rose-600 dark:text-rose-400 tabular-nums">₹0</span>
                     <button type="button" id="prodExpExportCsvBtn" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-200">CSV</button>
@@ -2972,50 +2984,53 @@
                     <option value="Other">Other</option>
                   </select>
                 </div>
-                <button type="button" id="prodExpAddBtn" class="w-full py-2 rounded-xl bg-[#20A779] hover:bg-[#1a8e66] text-white text-xs font-bold min-h-[38px]">Log Expense</button>
-                <div id="prodExpList" class="space-y-1.5 max-h-44 overflow-y-auto"></div>
+                <button type="button" id="prodExpAddBtn" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-105 text-white text-xs font-bold min-h-[38px]">Log Expense</button>
+                <ul id="prodExpList" class="list-none p-0 m-0 space-y-1.5 max-h-44 overflow-y-auto"></ul>
               </div>
 
               <!-- Indian Calendar -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-3 shadow-sm">
                 <div class="flex items-center justify-between">
-                  <button type="button" id="prodCalPrev" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200">◀</button>
+                  <button type="button" id="prodCalPrev" class="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-xs font-bold text-indigo-700 dark:text-slate-200">◀</button>
                   <h3 id="prodCalMonthLabel" class="text-sm font-extrabold text-slate-900 dark:text-white">Calendar</h3>
-                  <button type="button" id="prodCalNext" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200">▶</button>
+                  <button type="button" id="prodCalNext" class="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-xs font-bold text-indigo-700 dark:text-slate-200">▶</button>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-extrabold uppercase tracking-wide text-slate-400">
+                  <div class="text-rose-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                 </div>
                 <div id="prodCalGrid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
                 <div id="prodCalHolidays" class="text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1"></div>
               </div>
 
               <!-- Stopwatch, Timer & Reminders -->
-              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-sm">
+              <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 space-y-4 shadow-sm">
                 <div class="grid grid-cols-2 gap-3">
                   <div class="rounded-xl bg-slate-50 dark:bg-[#151B2B] p-3 text-center space-y-2">
                     <p class="text-[11px] font-bold text-slate-400">Stopwatch</p>
-                    <div id="prodSwDisplay" class="text-lg font-extrabold text-slate-900 dark:text-white font-mono tabular-nums">00:00.0</div>
+                    <div id="prodSwDisplay" class="text-lg font-extrabold text-slate-900 dark:text-white font-mono tabular-nums">00:00.00</div>
                     <div class="flex gap-1.5 justify-center">
-                      <button type="button" id="prodSwStartBtn" class="px-3 py-1.5 rounded-lg bg-[#293B80] text-white text-[11px] font-bold">Start</button>
+                      <button type="button" id="prodSwStartBtn" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-[11px] font-bold">Start</button>
                       <button type="button" id="prodSwResetBtn" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold">Reset</button>
                     </div>
                   </div>
                   <div class="rounded-xl bg-slate-50 dark:bg-[#151B2B] p-3 text-center space-y-2">
                     <p class="text-[11px] font-bold text-slate-400">Countdown Timer</p>
-                    <div id="prodTimerDisplay" class="text-lg font-extrabold text-[#7666D8] font-mono tabular-nums">05:00</div>
+                    <div id="prodTimerDisplay" class="text-lg font-extrabold text-violet-600 dark:text-violet-400 font-mono tabular-nums">05:00</div>
                     <div class="flex gap-1.5 items-center justify-center">
                       <input type="number" id="prodTimerMins" value="5" min="1" max="180" class="w-12 px-1.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1C2438] text-xs font-bold text-center tabular-nums" />
-                      <button type="button" id="prodTimerStartBtn" class="px-3 py-1.5 rounded-lg bg-[#20A779] text-white text-[11px] font-bold">Start</button>
+                      <button type="button" id="prodTimerStartBtn" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-bold">Start</button>
                     </div>
                   </div>
                 </div>
 
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                  <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Reminders</h4>
+                  <h4 class="text-xs font-extrabold text-slate-800 dark:text-slate-200">Daily Reminders</h4>
                   <div class="flex gap-2">
                     <input type="text" id="prodRemTitle" placeholder="Reminder..." class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white min-h-[38px]" />
                     <input type="time" id="prodRemTime" value="09:00" class="px-2.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-900 dark:text-white min-h-[38px]" />
-                    <button type="button" id="prodRemAddBtn" class="px-3.5 py-2 rounded-xl bg-[#293B80] text-white text-xs font-bold min-h-[38px]">Set</button>
+                    <button type="button" id="prodRemAddBtn" class="px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold min-h-[38px]">Set</button>
                   </div>
-                  <div id="prodRemList" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
+                  <ul id="prodRemList" class="list-none p-0 m-0 space-y-1.5 max-h-32 overflow-y-auto"></ul>
                 </div>
               </div>
             </div>
@@ -3097,7 +3112,7 @@
         </section>
 
         <!-- TAB: India Essentials (Verified Portals & Document Checklists) -->
-        <section id="indiaEssentials" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="indiaEssentials" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p class="text-xs font-bold tracking-wide uppercase text-amber-600 dark:text-amber-400">Verified Official Directories · Last Updated: Nov 2026</p>
@@ -3191,7 +3206,7 @@
         </section>
 
         <!-- TAB: PDF Password Protect & Authorized Unlock -->
-        <section id="pdfSecurityTool" class="tab-content hidden animate-fade-in max-w-3xl mx-auto space-y-5">
+        <section id="pdfSecurityTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-3xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#293B80] dark:text-[#A5B4FC]">PDF Studio · 128-bit Local Encryption</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Protect &amp; Unlock PDF</h2>
@@ -3237,7 +3252,7 @@
         </section>
 
         <!-- TAB: PDF to High-Res Images + ZIP -->
-        <section id="pdfToImgTool" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="pdfToImgTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">PDF Studio · HD Page Export</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">PDF to Images</h2>
@@ -3268,7 +3283,7 @@
         </section>
 
         <!-- TAB: PDF Comparison Studio -->
-        <section id="pdfCompareTool" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="pdfCompareTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">PDF Studio · Text &amp; Visual Diff</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Compare Two PDFs</h2>
@@ -3314,7 +3329,7 @@
         </section>
 
         <!-- TAB: Image Cropper & Format Converter -->
-        <section id="imgCropTool" class="tab-content hidden animate-fade-in max-w-4xl mx-auto space-y-5">
+        <section id="imgCropTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-4xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#20A779]">Image Studio · Precision Crop &amp; Format Convert</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Image Cropper &amp; Converter</h2>
@@ -3360,7 +3375,7 @@
         </section>
 
         <!-- TAB: CSV & Spreadsheet Viewer / Converter -->
-        <section id="csvViewerTool" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="csvViewerTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#20A779]">Office Studio · CSV ↔ Excel Preview</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">CSV &amp; Spreadsheet Viewer</h2>
@@ -3390,7 +3405,7 @@
         </section>
 
         <!-- TAB: ZIP Archive Creator & Extractor -->
-        <section id="zipStudioTool" class="tab-content hidden animate-fade-in max-w-5xl mx-auto space-y-5">
+        <section id="zipStudioTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
           <div>
             <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Office Studio · Archive Utility</p>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">ZIP Creator &amp; Extractor</h2>

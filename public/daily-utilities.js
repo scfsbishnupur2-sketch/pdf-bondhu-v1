@@ -36,8 +36,8 @@
       subBtns.forEach((b) => {
         const act = b.getAttribute('data-subtab') === targetId;
         b.className = act
-          ? 'daily-subtab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#293B80] text-white shadow-sm whitespace-nowrap min-h-[40px]'
-          : 'daily-subtab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 hover:border-[#7666D8] whitespace-nowrap min-h-[40px]';
+          ? 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm whitespace-nowrap min-h-[42px] transition'
+          : 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 hover:border-indigo-400 whitespace-nowrap min-h-[42px] transition';
       });
     }
 
@@ -71,14 +71,19 @@
       const sanitized = raw
         .replace(/×/g, '*')
         .replace(/÷/g, '/')
+        .replace(/−/g, '-')
+        .replace(/(\d)\s*(pi|π|\()/gi, '$1*$2')
+        .replace(/\)\s*(\d|pi|π|\()/gi, ')*$1')
         .replace(/π/g, 'Math.PI')
+        .replace(/\bpi\b/gi, 'Math.PI')
         .replace(/\be\b/g, 'Math.E')
         .replace(/√\(/g, 'Math.sqrt(')
-        .replace(/sin\(/g, 'Math.sin((Math.PI/180)*')
-        .replace(/cos\(/g, 'Math.cos((Math.PI/180)*')
-        .replace(/tan\(/g, 'Math.tan((Math.PI/180)*')
-        .replace(/log\(/g, 'Math.log10(')
-        .replace(/ln\(/g, 'Math.log(')
+        .replace(/\bsqrt\(/gi, 'Math.sqrt(')
+        .replace(/\bsin\(/gi, 'Math.sin((Math.PI/180)*')
+        .replace(/\bcos\(/gi, 'Math.cos((Math.PI/180)*')
+        .replace(/\btan\(/gi, 'Math.tan((Math.PI/180)*')
+        .replace(/\blog\(/gi, 'Math.log10(')
+        .replace(/\bln\(/gi, 'Math.log(')
         .replace(/\^/g, '**');
 
       // Validate only safe math tokens exist
@@ -122,7 +127,7 @@
     keyBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const val = btn.getAttribute('data-val');
-        if (val === 'AC') {
+        if (val === 'AC' || val === 'C') {
           expr = '';
           updateCalcScreen('0');
         } else if (val === 'DEL') {
@@ -225,7 +230,7 @@
       const m = pctMode?.value || 'of';
       let out = '';
       if (m === 'of') out = `${a}% of ${b} = ${((a / 100) * b).toFixed(2)}`;
-      else if (m === 'isWhat') out = b === 0 ? 'Cannot divide by 0' : `${a} is ${((a / b) * 100).toFixed(2)}% of ${b}`;
+      else if (m === 'is' || m === 'isWhat') out = b === 0 ? 'Cannot divide by 0' : `${a} is ${((a / b) * 100).toFixed(2)}% of ${b}`;
       else if (m === 'change') out = a === 0 ? 'Base cannot be 0' : `Change: ${(((b - a) / a) * 100).toFixed(2)}%`;
       pctResult.textContent = out;
     }
@@ -442,13 +447,18 @@
      3. PRODUCTIVITY SUITE (Notes, To-Do, Shopping, Expenses, Calendar, Timer, Reminders)
      ======================================================================== */
   function initProductivitySuite() {
-    // --- A. Persistent Notes + Export PDF ---
+    // --- A. Persistent Notes (Create, Edit/Update, Copy & Unicode Multi-Page PDF Export) ---
     const noteTitle = document.getElementById('prodNoteTitle');
     const noteBody = document.getElementById('prodNoteBody');
     const noteSaveBtn = document.getElementById('prodNoteSaveBtn');
+    const noteNewBtn = document.getElementById('prodNoteNewBtn');
+    const noteCopyBtn = document.getElementById('prodNoteCopyBtn');
     const notePdfBtn = document.getElementById('prodNoteExportPdfBtn');
+    const noteEditBadge = document.getElementById('prodNoteEditBadge');
+    const noteCountEl = document.getElementById('prodNoteCount');
     const noteList = document.getElementById('prodNoteList');
     const NOTES_KEY = 'pdfBondhuNotes_v2';
+    let editingNoteId = null;
 
     function loadJson(key, fallback) {
       try { return JSON.parse(localStorage.getItem(key) || '') || fallback; } catch { return fallback; }
@@ -457,40 +467,265 @@
       try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
     }
 
+    function loadNotesNormalized() {
+      const raw = loadJson(NOTES_KEY, []);
+      let changed = false;
+      const items = raw.map((n, i) => {
+        if (!n.id) {
+          changed = true;
+          return { ...n, id: `note_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}` };
+        }
+        return n;
+      });
+      if (changed) saveJson(NOTES_KEY, items);
+      return items;
+    }
+
+    function setNoteEditorMode(noteObj) {
+      if (noteObj) {
+        editingNoteId = noteObj.id;
+        if (noteTitle) noteTitle.value = noteObj.title || '';
+        if (noteBody) noteBody.value = noteObj.body || '';
+        if (noteSaveBtn) noteSaveBtn.textContent = 'Update Saved Note';
+        if (noteEditBadge) {
+          noteEditBadge.textContent = 'Editing Note';
+          noteEditBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300';
+        }
+      } else {
+        editingNoteId = null;
+        if (noteTitle) noteTitle.value = '';
+        if (noteBody) noteBody.value = '';
+        if (noteSaveBtn) noteSaveBtn.textContent = 'Save Note';
+        if (noteEditBadge) {
+          noteEditBadge.textContent = 'New Note';
+          noteEditBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300';
+        }
+      }
+    }
+
+    async function exportSingleNoteToPdf(titleRaw, bodyRaw) {
+      const title = (titleRaw || 'My Note').trim();
+      const body = (bodyRaw || '').trim();
+      if (!title && !body) {
+        global.utils.showToast('Empty Note', 'Write something before exporting to PDF.', 'info');
+        return;
+      }
+      try {
+        const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+        const doc = await PDFDocument.create();
+        const combined = `${title}\n${body}`;
+        const hasUnicode = /[^\x00-\x7F]/.test(combined);
+        const dateLabel = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        if (hasUnicode) {
+          // High-DPI A4 Canvas renderer for crisp Bengali / Hindi / Unicode multi-page PDF
+          const pageW = 1240;
+          const pageH = 1754;
+          const margin = 100;
+          const maxW = pageW - margin * 2;
+          const bodyFont = '26px "Plus Jakarta Sans", "Noto Sans Bengali", "Noto Sans Devanagari", system-ui, sans-serif';
+          const lineH = 42;
+
+          const measureCanvas = document.createElement('canvas');
+          const mCtx = measureCanvas.getContext('2d');
+          mCtx.font = bodyFont;
+
+          const wrappedLines = [];
+          for (const para of body.split(/\r?\n/)) {
+            if (!para.trim()) { wrappedLines.push(''); continue; }
+            const words = para.split(/\s+/);
+            let cur = '';
+            for (const w of words) {
+              const test = cur ? `${cur} ${w}` : w;
+              if (mCtx.measureText(test).width <= maxW) {
+                cur = test;
+              } else {
+                if (cur) wrappedLines.push(cur);
+                cur = w;
+              }
+            }
+            if (cur) wrappedLines.push(cur);
+          }
+
+          let idx = 0;
+          let pageNum = 0;
+          while (pageNum === 0 || idx < wrappedLines.length) {
+            const c = document.createElement('canvas');
+            c.width = pageW;
+            c.height = pageH;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, pageW, pageH);
+
+            let y = margin;
+            if (pageNum === 0) {
+              ctx.fillStyle = '#64748b';
+              ctx.font = '600 20px "Plus Jakarta Sans", system-ui, sans-serif';
+              ctx.fillText(`PDF Bondhu Notes  ·  ${dateLabel}`, margin, y);
+              y += 48;
+              ctx.fillStyle = '#1e3a8a';
+              ctx.font = '800 36px "Plus Jakarta Sans", "Noto Sans Bengali", "Noto Sans Devanagari", system-ui, sans-serif';
+              ctx.fillText(title, margin, y, maxW);
+              y += 22;
+              ctx.strokeStyle = '#c7d2fe';
+              ctx.lineWidth = 3;
+              ctx.beginPath();
+              ctx.moveTo(margin, y);
+              ctx.lineTo(pageW - margin, y);
+              ctx.stroke();
+              y += 46;
+            }
+
+            ctx.fillStyle = '#151b2b';
+            ctx.font = bodyFont;
+            while (idx < wrappedLines.length && y < pageH - margin) {
+              ctx.fillText(wrappedLines[idx], margin, y);
+              y += lineH;
+              idx++;
+            }
+
+            const jpgUrl = c.toDataURL('image/jpeg', 0.92);
+            const jpgBytes = await fetch(jpgUrl).then((r) => r.arrayBuffer());
+            const img = await doc.embedJpg(jpgBytes);
+            const pdfPage = doc.addPage([595.28, 841.89]);
+            pdfPage.drawImage(img, { x: 0, y: 0, width: 595.28, height: 841.89 });
+            pageNum++;
+          }
+        } else {
+          // Crisp vector multi-page PDF with automatic word wrapping
+          const font = await doc.embedFont(StandardFonts.Helvetica);
+          const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+          const pageW = 595.28;
+          const pageH = 841.89;
+          const margin = 48;
+          const maxW = pageW - margin * 2;
+          const fontSize = 11.5;
+          const lineH = 17.5;
+
+          const wrappedLines = [];
+          for (const para of body.split(/\r?\n/)) {
+            if (!para.trim()) { wrappedLines.push(''); continue; }
+            const words = para.split(/\s+/);
+            let cur = '';
+            for (const w of words) {
+              const test = cur ? `${cur} ${w}` : w;
+              if (font.widthOfTextAtSize(test, fontSize) <= maxW) {
+                cur = test;
+              } else {
+                if (cur) wrappedLines.push(cur);
+                cur = w;
+              }
+            }
+            if (cur) wrappedLines.push(cur);
+          }
+
+          let idx = 0;
+          let pageNum = 0;
+          while (pageNum === 0 || idx < wrappedLines.length) {
+            const page = doc.addPage([pageW, pageH]);
+            let y = pageH - margin;
+            if (pageNum === 0) {
+              page.drawText(`PDF Bondhu Notes  |  ${dateLabel}`, { x: margin, y, size: 9.5, font, color: rgb(0.45, 0.5, 0.6) });
+              y -= 24;
+              page.drawText(title.slice(0, 72), { x: margin, y, size: 16, font: bold, color: rgb(0.14, 0.23, 0.54) });
+              y -= 12;
+              page.drawLine({ start: { x: margin, y }, end: { x: pageW - margin, y }, thickness: 1, color: rgb(0.8, 0.84, 0.96) });
+              y -= 22;
+            }
+            while (idx < wrappedLines.length && y > margin) {
+              page.drawText(wrappedLines[idx], { x: margin, y, size: fontSize, font, color: rgb(0.1, 0.13, 0.2) });
+              y -= lineH;
+              idx++;
+            }
+            pageNum++;
+          }
+        }
+
+        const safeFile = title.replace(/[^a-zA-Z0-9_\- ]/g, '').trim().replace(/\s+/g, '_') || 'PDF_Bondhu_Note';
+        await global.utils.savePdfWithMetadata(doc, `${safeFile}.pdf`, title);
+      } catch (err) {
+        console.error(err);
+        global.utils.showToast('Error', 'Could not export note to PDF.', 'error');
+      }
+    }
+
     function renderNotes() {
       if (!noteList) return;
-      const items = loadJson(NOTES_KEY, []);
+      const items = loadNotesNormalized();
+      if (noteCountEl) noteCountEl.textContent = `${items.length} saved`;
       if (!items.length) {
-        noteList.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No saved notes yet.</p>';
+        noteList.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No saved notes yet. Write one above and tap Save Note.</p>';
         return;
       }
       noteList.innerHTML = items
-        .map(
-          (n, idx) => `
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start justify-between gap-2">
-            <div class="min-w-0 flex-1 cursor-pointer prod-note-open" data-idx="${idx}">
-              <div class="text-xs font-bold text-slate-800 dark:text-white truncate">${escHtml(n.title || 'Untitled Note')}</div>
+        .map((n) => {
+          const isEditing = editingNoteId === n.id;
+          const dt = n.updatedAt ? new Date(n.updatedAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+          return `
+          <div class="p-3 rounded-xl ${isEditing ? 'bg-indigo-50/90 dark:bg-indigo-950/40 border-indigo-400' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'} border flex items-start justify-between gap-2 transition">
+            <div class="min-w-0 flex-1 cursor-pointer prod-note-open" data-id="${escHtml(n.id)}">
+              <div class="text-xs font-extrabold text-slate-800 dark:text-white truncate">${escHtml(n.title || 'Untitled Note')}</div>
               <div class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">${escHtml(n.body)}</div>
+              ${dt ? `<div class="text-[10px] text-slate-400 mt-1 tabular-nums">${escHtml(dt)}</div>` : ''}
             </div>
-            <button type="button" data-idx="${idx}" class="prod-note-del text-xs text-rose-500 font-bold px-2 py-1">Delete</button>
-          </div>`
-        )
+            <div class="flex flex-col gap-1 shrink-0">
+              <button type="button" data-id="${escHtml(n.id)}" class="prod-note-pdf text-[10px] bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold px-2 py-1 rounded-md">PDF</button>
+              <button type="button" data-id="${escHtml(n.id)}" class="prod-note-del text-[10px] bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 font-bold px-2 py-1 rounded-md">Delete</button>
+            </div>
+          </div>`;
+        })
         .join('');
+
       noteList.querySelectorAll('.prod-note-open').forEach((el) => {
         el.addEventListener('click', () => {
-          const item = loadJson(NOTES_KEY, [])[parseInt(el.getAttribute('data-idx'), 10)];
-          if (item && noteTitle && noteBody) {
-            noteTitle.value = item.title;
-            noteBody.value = item.body;
+          const id = el.getAttribute('data-id');
+          const item = loadNotesNormalized().find((x) => x.id === id);
+          if (item) {
+            setNoteEditorMode(item);
+            renderNotes();
           }
         });
       });
+      noteList.querySelectorAll('.prod-note-pdf').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const item = loadNotesNormalized().find((x) => x.id === id);
+          if (item) exportSingleNoteToPdf(item.title, item.body);
+        });
+      });
       noteList.querySelectorAll('.prod-note-del').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const arr = loadJson(NOTES_KEY, []);
-          arr.splice(parseInt(btn.getAttribute('data-idx'), 10), 1);
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const arr = loadNotesNormalized().filter((x) => x.id !== id);
           saveJson(NOTES_KEY, arr);
+          if (editingNoteId === id) setNoteEditorMode(null);
           renderNotes();
+          global.utils.showToast('Deleted', 'Note removed.');
+        });
+      });
+    }
+
+    if (noteNewBtn) {
+      noteNewBtn.addEventListener('click', () => {
+        setNoteEditorMode(null);
+        renderNotes();
+        if (noteTitle) noteTitle.focus();
+      });
+    }
+
+    if (noteCopyBtn) {
+      noteCopyBtn.addEventListener('click', () => {
+        const title = (noteTitle?.value || '').trim();
+        const body = (noteBody?.value || '').trim();
+        const full = [title, body].filter(Boolean).join('\n\n');
+        if (!full) {
+          global.utils.showToast('Nothing to Copy', 'Write or open a note first.', 'info');
+          return;
+        }
+        navigator.clipboard?.writeText(full).then(() => {
+          global.utils.showToast('Copied!', 'Note copied to clipboard.');
         });
       });
     }
@@ -499,44 +734,38 @@
       noteSaveBtn.addEventListener('click', () => {
         const title = (noteTitle?.value || '').trim();
         const body = (noteBody?.value || '').trim();
-        if (!title && !body) return;
-        const arr = loadJson(NOTES_KEY, []);
-        arr.unshift({ title: title || 'Quick Note', body, updatedAt: new Date().toISOString() });
-        saveJson(NOTES_KEY, arr);
-        noteTitle.value = '';
-        noteBody.value = '';
-        renderNotes();
-        global.utils.showToast('Note Saved', 'Stored privately on your device.');
+        if (!title && !body) {
+          global.utils.showToast('Empty Note', 'Please enter a note title or text first.', 'info');
+          return;
+        }
+        const arr = loadNotesNormalized();
+        const nowIso = new Date().toISOString();
+        if (editingNoteId) {
+          const idx = arr.findIndex((x) => x.id === editingNoteId);
+          if (idx >= 0) {
+            arr[idx] = { ...arr[idx], title: title || 'Quick Note', body, updatedAt: nowIso };
+            const updated = arr.splice(idx, 1)[0];
+            arr.unshift(updated);
+          } else {
+            arr.unshift({ id: `note_${Date.now()}`, title: title || 'Quick Note', body, updatedAt: nowIso });
+          }
+          saveJson(NOTES_KEY, arr);
+          setNoteEditorMode(null);
+          renderNotes();
+          global.utils.showToast('Note Updated', 'Changes saved privately on your device.');
+        } else {
+          arr.unshift({ id: `note_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, title: title || 'Quick Note', body, updatedAt: nowIso });
+          saveJson(NOTES_KEY, arr);
+          setNoteEditorMode(null);
+          renderNotes();
+          global.utils.showToast('Note Saved', 'Stored privately on your device.');
+        }
       });
     }
 
     if (notePdfBtn) {
-      notePdfBtn.addEventListener('click', async () => {
-        const title = (noteTitle?.value || 'My Note').trim();
-        const body = (noteBody?.value || '').trim();
-        if (!body) {
-          global.utils.showToast('Empty Note', 'Write something before exporting to PDF.', 'info');
-          return;
-        }
-        try {
-          const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
-          const doc = await PDFDocument.create();
-          const font = await doc.embedFont(StandardFonts.Helvetica);
-          const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-          const page = doc.addPage([595.28, 841.89]);
-          page.drawText(title.replace(/[^\x20-\x7E]/g, ' '), { x: 48, y: 780, size: 16, font: bold, color: rgb(0.16, 0.23, 0.5) });
-          const lines = body.replace(/[^\x20-\x7E\n]/g, ' ').split('\n');
-          let y = 748;
-          for (const ln of lines) {
-            if (y < 54) break;
-            page.drawText(ln.slice(0, 88), { x: 48, y, size: 11, font, color: rgb(0.12, 0.15, 0.22) });
-            y -= 17;
-          }
-          await global.utils.savePdfWithMetadata(doc, `${title.replace(/\s+/g, '_')}.pdf`, title);
-        } catch (err) {
-          console.error(err);
-          global.utils.showToast('Error', 'Could not export note to PDF.', 'error');
-        }
+      notePdfBtn.addEventListener('click', () => {
+        exportSingleNoteToPdf(noteTitle?.value || 'My Note', noteBody?.value || '');
       });
     }
     renderNotes();
@@ -649,7 +878,7 @@
       });
     }
     if (shopAddBtn && shopName) {
-      shopAddBtn.addEventListener('click', () => {
+      const addShopItem = () => {
         const name = shopName.value.trim();
         if (!name) return;
         const price = Math.max(0, parseFloat(shopPrice?.value || '0') || 0);
@@ -659,7 +888,10 @@
         shopName.value = '';
         if (shopPrice) shopPrice.value = '';
         renderShopping();
-      });
+      };
+      shopAddBtn.addEventListener('click', addShopItem);
+      shopName.addEventListener('keydown', (e) => e.key === 'Enter' && addShopItem());
+      if (shopPrice) shopPrice.addEventListener('keydown', (e) => e.key === 'Enter' && addShopItem());
     }
     renderShopping();
 
@@ -879,12 +1111,38 @@
       });
     }
 
-    // --- G. Local Reminders ---
+    // --- G. Local Daily Reminders (Proper HH:MM Target Timestamp) ---
     const remTitle = document.getElementById('prodRemTitle');
     const remTime = document.getElementById('prodRemTime');
     const remAddBtn = document.getElementById('prodRemAddBtn');
     const remList = document.getElementById('prodRemList');
     const REM_KEY = 'pdfBondhuReminders_v2';
+
+    function computeNextTriggerMs(timeStr) {
+      if (!timeStr) return Date.now() + 60000;
+      if (timeStr.includes('T')) {
+        const parsed = new Date(timeStr).getTime();
+        if (!isNaN(parsed)) return parsed;
+      }
+      const parts = String(timeStr).split(':');
+      const hh = parseInt(parts[0], 10);
+      const mm = parseInt(parts[1], 10);
+      if (isNaN(hh) || isNaN(mm)) return Date.now() + 60000;
+      const target = new Date();
+      target.setSeconds(0, 0);
+      target.setHours(hh, mm, 0, 0);
+      if (target.getTime() <= Date.now()) {
+        target.setDate(target.getDate() + 1);
+      }
+      return target.getTime();
+    }
+
+    function formatRemTimeLabel(r) {
+      if (r.triggerAt) {
+        return new Date(r.triggerAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      }
+      return String(r.when || '').replace('T', ' ');
+    }
 
     function renderReminders() {
       if (!remList) return;
@@ -898,8 +1156,8 @@
           (r, i) => `
           <li class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
             <div class="min-w-0">
-              <div class="font-bold text-slate-800 dark:text-slate-100 truncate">${escHtml(r.title)}</div>
-              <div class="text-[10px] text-slate-400 tabular-nums">${escHtml(r.when.replace('T', ' '))}</div>
+              <div class="font-bold ${r.fired ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-100'} truncate">${escHtml(r.title)}</div>
+              <div class="text-[10px] text-slate-400 tabular-nums">${escHtml(formatRemTimeLabel(r))}${r.fired ? ' · Done' : ''}</div>
             </div>
             <button type="button" data-idx="${i}" class="rem-del text-rose-500 font-bold px-1.5">×</button>
           </li>`
@@ -915,35 +1173,45 @@
       });
     }
     if (remAddBtn) {
-      remAddBtn.addEventListener('click', () => {
+      const addRem = () => {
         const title = (remTitle?.value || '').trim();
         const when = remTime?.value || '';
-        if (!title || !when) return;
+        if (!title || !when) {
+          global.utils.showToast('Missing Info', 'Enter a reminder message and time.', 'info');
+          return;
+        }
+        const triggerAt = computeNextTriggerMs(when);
         const arr = loadJson(REM_KEY, []);
-        arr.push({ title, when, fired: false });
+        arr.unshift({ title, when, triggerAt, fired: false });
         saveJson(REM_KEY, arr);
         remTitle.value = '';
         renderReminders();
-        global.utils.showToast('Reminder Set', `Saved "${title}" locally.`);
-      });
+        global.utils.showToast('Reminder Set', `"${title}" scheduled for ${new Date(triggerAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}.`);
+      };
+      remAddBtn.addEventListener('click', addRem);
+      if (remTitle) remTitle.addEventListener('keydown', (e) => e.key === 'Enter' && addRem());
     }
     renderReminders();
 
-    // Check due reminders gently every 20 seconds while app is open
+    // Check due reminders gently every 15 seconds while app is open
     setInterval(() => {
       const arr = loadJson(REM_KEY, []);
       const nowMs = Date.now();
       let changed = false;
       arr.forEach((r) => {
-        if (!r.fired && new Date(r.when).getTime() <= nowMs) {
+        const dueMs = r.triggerAt || new Date(r.when).getTime();
+        if (!r.fired && !isNaN(dueMs) && dueMs <= nowMs) {
           r.fired = true;
           changed = true;
           beepTone();
-          global.utils.showToast('Reminder Due', r.title, 'info');
+          global.utils.showToast('Reminder Due!', r.title, 'info');
         }
       });
-      if (changed) saveJson(REM_KEY, arr);
-    }, 20000);
+      if (changed) {
+        saveJson(REM_KEY, arr);
+        renderReminders();
+      }
+    }, 15000);
   }
 
   /* ========================================================================

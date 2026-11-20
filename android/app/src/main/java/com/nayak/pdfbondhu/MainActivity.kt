@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     private var hasLoadedOnce = false
     private var lastBackPressedMs = 0L
     private var lastOtaCheckMs = 0L
+    private var otaUpdatePendingApply = false
 
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -151,6 +152,18 @@ class MainActivity : AppCompatActivity() {
             loadAppUrl()
         }
 
+        // If user installed a newer APK build, clear any stale OTA cache so new bundled assets load immediately
+        val otaPrefs = getSharedPreferences("pdf_bondhu_ota", Context.MODE_PRIVATE)
+        if (otaPrefs.getInt("bundled_version_code", -1) != BuildConfig.VERSION_CODE) {
+            runCatching {
+                otaDir.listFiles()?.forEach { it.delete() }
+            }
+            otaPrefs.edit()
+                .remove("ota_hash")
+                .putInt("bundled_version_code", BuildConfig.VERSION_CODE)
+                .apply()
+        }
+
         configureWebView()
         setupBackNavigation()
         loadAppUrl()
@@ -224,6 +237,12 @@ class MainActivity : AppCompatActivity() {
                         splashOverlay.alpha = 1f
                     }
                     .start()
+                if (otaUpdatePendingApply) {
+                    webView.evaluateJavascript(
+                        "window.onPdfBondhuUpdateReady && window.onPdfBondhuUpdateReady();",
+                        null
+                    )
+                }
             }
 
             override fun onReceivedError(
@@ -377,7 +396,20 @@ class MainActivity : AppCompatActivity() {
 
                 if (remoteHash == savedHash) {
                     if (manualTrigger) {
-                        notifyWebUpdateStatus("uptodate", "PDF Bondhu is already on the latest version!")
+                        if (otaUpdatePendingApply) {
+                            otaUpdatePendingApply = false
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Applying latest PDF Bondhu update...",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                webView.clearCache(true)
+                                webView.reload()
+                            }
+                        } else {
+                            notifyWebUpdateStatus("uptodate", "PDF Bondhu is already on the latest version!")
+                        }
                     }
                     return@runCatching
                 }
@@ -399,6 +431,7 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread {
                     if (manualTrigger) {
+                        otaUpdatePendingApply = false
                         Toast.makeText(
                             this@MainActivity,
                             "Update installed! Refreshing PDF Bondhu...",
@@ -407,6 +440,12 @@ class MainActivity : AppCompatActivity() {
                         webView.clearCache(true)
                         webView.reload()
                     } else {
+                        otaUpdatePendingApply = true
+                        Toast.makeText(
+                            this@MainActivity,
+                            "New PDF Bondhu update ready! Tap Refresh.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         webView.evaluateJavascript(
                             "window.onPdfBondhuUpdateReady && window.onPdfBondhuUpdateReady();",
                             null
@@ -844,6 +883,7 @@ class MainActivity : AppCompatActivity() {
 
         @JavascriptInterface
         fun reloadApp() {
+            otaUpdatePendingApply = false
             runOnUiThread {
                 webView.clearCache(true)
                 webView.reload()

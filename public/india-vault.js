@@ -81,7 +81,7 @@
       sec.classList.remove('flex');
     });
     target.classList.remove('hidden');
-    target.classList.add('flex');
+    target.classList.add('flex', 'flex-col');
     activeToolId = sectionId;
 
     // Show/hide top tool back bar when inside an individual tool screen
@@ -479,6 +479,15 @@
      ======================================================================== */
   let currentAllToolsCat = 'all';
 
+  const ALL_TOOLS_GROUPS = [
+    { key: 'pdf', label: 'PDF Studio', accent: 'from-rose-500 to-indigo-600' },
+    { key: 'image', label: 'Image Studio', accent: 'from-sky-500 to-emerald-500' },
+    { key: 'office', label: 'Office Studio', accent: 'from-emerald-500 to-teal-600' },
+    { key: 'daily', label: 'Daily Utilities', accent: 'from-amber-500 to-orange-500' },
+    { key: 'india', label: 'India Essentials', accent: 'from-orange-500 to-emerald-600' },
+    { key: 'vault', label: 'Personal Document Vault', accent: 'from-teal-500 to-indigo-600' }
+  ];
+
   function renderAllToolsGrid(filterCat = currentAllToolsCat) {
     currentAllToolsCat = filterCat;
     const grid = document.getElementById('allToolsHubGrid');
@@ -488,8 +497,8 @@
     document.querySelectorAll('.alltools-cat-btn').forEach((btn) => {
       const act = btn.getAttribute('data-cat') === filterCat;
       btn.className = act
-        ? 'alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#293B80] text-white whitespace-nowrap min-h-[38px]'
-        : 'alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800 hover:border-[#7666D8] whitespace-nowrap min-h-[38px]';
+        ? 'alltools-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm whitespace-nowrap min-h-[38px] transition'
+        : 'alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#151B2B] border border-indigo-100 dark:border-slate-700 hover:border-indigo-400 whitespace-nowrap min-h-[38px] transition';
     });
 
     const filtered = TOOL_CATALOG.filter((t) => {
@@ -498,9 +507,37 @@
       return catOk && qOk;
     });
 
-    grid.innerHTML = filtered.length
-      ? filtered.map((t) => renderToolMiniCard(t, true)).join('')
-      : '<div class="col-span-full py-10 text-center text-sm text-slate-500">No tools match your search.</div>';
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="py-12 rounded-2xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 text-center text-sm font-semibold text-slate-500">No tools match your search.</div>';
+      return;
+    }
+
+    if (filterCat === 'all' && !searchVal) {
+      grid.innerHTML = ALL_TOOLS_GROUPS.map((grp) => {
+        const items = filtered.filter((t) => t.cat === grp.key);
+        if (!items.length) return '';
+        return `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="flex items-center gap-2 text-sm sm:text-base font-extrabold text-[#151B2B] dark:text-white">
+                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b ${grp.accent}"></span>
+                <span>${grp.label}</span>
+              </h3>
+              <span class="text-[11px] font-bold text-slate-400">${items.length} ${items.length === 1 ? 'tool' : 'tools'}</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              ${items.map((t) => renderToolMiniCard(t, true)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      grid.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          ${filtered.map((t) => renderToolMiniCard(t, true)).join('')}
+        </div>
+      `;
+    }
     bindToolCards(grid);
   }
 
@@ -1173,7 +1210,7 @@
   /* ========================================================================
      8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
      ======================================================================== */
-  const CURRENT_BUILD = '20261120-3';
+  const CURRENT_BUILD = '20261120-4';
   const CURRENT_VERSION = '2.1.0';
 
   function initLiveAutoUpdater() {
