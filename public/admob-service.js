@@ -1,79 +1,79 @@
-import { 
-  AdMob, 
-  BannerAdSize, 
-  BannerAdPosition 
-} from '@capacitor-community/admob';
+/**
+ * PDF Bondhu 2.0 - Future-Ready Modular Monetization & Premium Architecture
+ *
+ * Launch Policy:
+ * - 100% FREE at launch. All features unlocked. Zero paywalls, zero subscription prompts.
+ * - Non-intrusive AdMob bridge ready for future activation once Play Store release matures.
+ * - Never renders ads during PDF/Image/Excel processing or inside editor canvases.
+ * - Works gracefully offline or when no ad SDK is present.
+ */
+(function (global) {
+  const STORAGE_KEY = 'pdfBondhuConsentConfig_v2';
 
-// গুগলের অফিশিয়াল টেস্ট অ্যাড ইউনিট আইডি
-const TEST_BANNER_ID = 'ca-app-pub-3940256099942544/6300978111';
-const TEST_INTERSTITIAL_ID = 'ca-app-pub-3940256099942544/1033173712';
-
-// ১. AdMob ইনিশিয়ালাইজেশন
-export async function initializeAdMob() {
-  try {
-    await AdMob.initialize({
-      testingDevices: ['EMULATOR'], // ডেভেলপমেন্ট ডিভাইস
-      initializeForTesting: true,
-    });
-    console.log('AdMob successfully initialized');
-  } catch (error) {
-    console.warn('AdMob init error (ignored in browser):', error);
-  }
-}
-
-// ২. ব্যানার অ্যাড দেখানো (স্ক্রিনের একদম নিচে)
-export async function showBottomBanner() {
-  try {
-    const options = {
-      adId: TEST_BANNER_ID,
-      adSize: BannerAdSize.ADAPTIVE_BANNER,
-      position: BannerAdPosition.BOTTOM_CENTER,
-      margin: 0,
-      isTesting: true, // লাইভ করার সময় false করবেন
-    };
-    await AdMob.showBanner(options);
-  } catch (error) {
-    console.warn('Banner ad error (ignored in browser):', error);
-  }
-}
-
-// ৩. ব্যানার অ্যাড সাময়িক লুকিয়ে রাখা (যখন ইউজার এডিটর বা সিগনেচার ড্র করবেন)
-export async function hideBanner() {
-  try {
-    await AdMob.hideBanner();
-  } catch (error) {
-    console.warn('Hide banner error (ignored in browser):', error);
-  }
-}
-
-// ৪. ইন্টারস্টিশিয়াল অ্যাড লোড ও প্রদর্শন (ফাইল সফলভাবে তৈরি বা ডাউনলোড হওয়ার পর)
-let isInterstitialPrepared = false;
-
-export async function prepareInterstitial() {
-  try {
-    await AdMob.prepareInterstitial({
-      adId: TEST_INTERSTITIAL_ID,
-      isTesting: true,
-    });
-    isInterstitialPrepared = true;
-  } catch (error) {
-    console.warn('Interstitial preparation failed (ignored in browser):', error);
-    isInterstitialPrepared = false;
-  }
-}
-
-export async function showInterstitialAfterAction() {
-  try {
-    if (isInterstitialPrepared) {
-      await AdMob.showInterstitial();
-      isInterstitialPrepared = false;
-      // পরবর্তী ব্যবহারের জন্য ব্যাকগ্রাউন্ডে আবার প্রস্তুত করে রাখুন
-      prepareInterstitial();
-    } else {
-      // লোড করা না থাকলে ব্যাকগ্রাউন্ডে লোড করতে দিন
-      prepareInterstitial();
+  const defaultConfig = {
+    appVersion: '2.0.0',
+    launchFreeMode: true,
+    adsEnabled: false,
+    personalizedAdsConsent: false,
+    consentRecordedAt: null,
+    // Modular flags for future optional Premium tier (all free & unlocked at launch)
+    featureModules: {
+      advancedOcr: { enabled: true, tier: 'free_at_launch' },
+      batchProcessing: { enabled: true, tier: 'free_at_launch' },
+      encryptedVault: { enabled: true, tier: 'free_at_launch' },
+      cloudSyncAdapter: { enabled: false, tier: 'future_optional' },
+      adFreeMode: { enabled: true, tier: 'free_at_launch' }
     }
-  } catch (error) {
-    console.warn('Show interstitial error (ignored in browser):', error);
+  };
+
+  function loadConfig() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return Object.assign({}, defaultConfig, saved, { launchFreeMode: true });
+    } catch {
+      return Object.assign({}, defaultConfig);
+    }
   }
-}
+
+  function saveConfig(patch) {
+    const next = Object.assign(loadConfig(), patch || {});
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+    return next;
+  }
+
+  const PDFBondhuMonetization = {
+    getConfig: loadConfig,
+    setConsent(allowPersonalized) {
+      return saveConfig({
+        personalizedAdsConsent: Boolean(allowPersonalized),
+        consentRecordedAt: new Date().toISOString()
+      });
+    },
+    isProcessingSafeZone: false,
+    enterProcessingSafeZone() {
+      this.isProcessingSafeZone = true;
+      this.hideBannerSafe();
+    },
+    exitProcessingSafeZone() {
+      this.isProcessingSafeZone = false;
+    },
+    hideBannerSafe() {
+      try {
+        if (global.AndroidBridge && typeof global.AndroidBridge.hideBannerAd === 'function') {
+          global.AndroidBridge.hideBannerAd();
+        }
+      } catch {}
+    },
+    requestSafePlacement(slotName) {
+      const cfg = loadConfig();
+      if (cfg.launchFreeMode || !cfg.adsEnabled || this.isProcessingSafeZone) {
+        return { shown: false, reason: 'free_launch_or_processing_safe_zone', slot: slotName };
+      }
+      return { shown: false, reason: 'sdk_not_active', slot: slotName };
+    }
+  };
+
+  global.PDFBondhuMonetization = PDFBondhuMonetization;
+})(window);

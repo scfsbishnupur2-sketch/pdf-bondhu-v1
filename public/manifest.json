@@ -2,13 +2,13 @@
   "id": "./",
   "name": "PDF Bondhu",
   "short_name": "PDF Bondhu",
-  "description": "100% offline, privacy-first utility app for PDFs, Images, and Excel.",
+  "description": "One App. Everyday Solutions. 100% Free & Offline PDF Studio, Image Studio, Office Tools, Daily Utilities & Personal Document Center.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0f172a",
-  "theme_color": "#4338ca",
+  "background_color": "#151B2B",
+  "theme_color": "#293B80",
   "icons": [
     {
       "src": "./pwa-192x192.png",

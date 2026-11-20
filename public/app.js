@@ -166,6 +166,7 @@ const utils = {
     })();
   }
 };
+window.utils = utils;
 
 /* ==========================================================================
    Live Today's Date & Time Clock (Header Desktop + Mobile)
@@ -178,19 +179,20 @@ function initLiveClock() {
 
   const updateClock = () => {
     const now = new Date();
-    const dateShort = now.toLocaleDateString('en-IN', {
+    const loc = (window.PDFBondhuI18n && window.PDFBondhuI18n.getLocale) ? window.PDFBondhuI18n.getLocale() : 'en-IN';
+    const dateShort = now.toLocaleDateString(loc, {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
     });
-    const weekday = now.toLocaleDateString('en-IN', { weekday: 'short' });
-    const timeFull = now.toLocaleTimeString('en-IN', {
+    const weekday = now.toLocaleDateString(loc, { weekday: 'short' });
+    const timeFull = now.toLocaleTimeString(loc, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
       hour12: true
     });
-    const timeCompact = now.toLocaleTimeString('en-IN', {
+    const timeCompact = now.toLocaleTimeString(loc, {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
@@ -205,6 +207,7 @@ function initLiveClock() {
   };
 
   updateClock();
+  document.addEventListener('pdfbondhu:langchange', updateClock);
   setInterval(updateClock, 1000);
 }
 
@@ -4086,11 +4089,12 @@ function initTheme() {
       toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
     }
     if (metaTheme) {
-      metaTheme.setAttribute('content', isDark ? '#0f172a' : '#4338ca');
+      metaTheme.setAttribute('content', isDark ? '#151B2B' : '#293B80');
     }
     if (persist) {
       try {
         localStorage.setItem('pdfBondhuTheme', isDark ? 'dark' : 'light');
+        localStorage.setItem('pdfBondhuThemeMode_v2', isDark ? 'dark' : 'light');
       } catch {}
     }
   }
@@ -4102,6 +4106,13 @@ function initTheme() {
     toggleBtn.addEventListener('click', () => {
       const nextDark = !document.documentElement.classList.contains('dark');
       applyTheme(nextDark, true);
+      const nextMode = nextDark ? 'dark' : 'light';
+      document.querySelectorAll('[data-theme-mode]').forEach((b) => {
+        const act = b.getAttribute('data-theme-mode') === nextMode;
+        b.classList.toggle('bg-[#293B80]', act);
+        b.classList.toggle('text-white', act);
+        b.classList.toggle('border-[#293B80]', act);
+      });
       utils.showToast(
         nextDark ? 'Dark Mode Enabled' : 'Light Mode Enabled',
         'Your theme preference is saved automatically.',

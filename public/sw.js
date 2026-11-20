@@ -1,10 +1,14 @@
-const APP_SHELL_CACHE = 'pdf-bondhu-shell-v7';
-const CDN_CACHE = 'pdf-bondhu-cdn-v3';
+const APP_SHELL_CACHE = 'pdf-bondhu-shell-v8';
+const CDN_CACHE = 'pdf-bondhu-cdn-v4';
 
 const APP_SHELL_ASSETS = [
   './',
   './index.html',
   './app.js',
+  './i18n.js',
+  './pdf-office-pro.js',
+  './daily-utilities.js',
+  './india-vault.js',
   './manifest.json',
   './icon.svg',
   './pwa-192x192.png',
@@ -16,7 +20,10 @@ const CDN_ASSETS = [
   'https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js',
   'https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+  'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -26,7 +33,6 @@ self.addEventListener('install', (event) => {
       caches.open(CDN_CACHE).then((cache) => cache.addAll(CDN_ASSETS).catch(() => {}))
     ])
   );
-  // Activate immediately so published updates roll out to Android WebView & PWAs right away
   self.skipWaiting();
 });
 
@@ -53,9 +59,6 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
-  // Network-First for same-origin app shell (index.html, app.js, manifest.json)
-  // Guarantees every AI Studio Publish auto-updates installed Android APKs on next launch,
-  // while falling back seamlessly to offline cache when disconnected.
   if (isSameOrigin) {
     event.respondWith(
       fetch(request, { cache: 'no-cache' })
@@ -79,7 +82,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-First with background refresh for external CDN libraries (PDF-lib, PDF.js, XLSX, OpenCV, Tesseract)
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;

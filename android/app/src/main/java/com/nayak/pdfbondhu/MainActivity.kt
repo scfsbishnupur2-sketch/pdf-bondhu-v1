@@ -34,6 +34,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -315,7 +317,25 @@ class MainActivity : AppCompatActivity() {
                     return@runCatching
                 }
 
-                val remoteHash = sha256("$remoteHtml\n---\n$remoteJs")
+                val extraModules = listOf(
+                    "i18n.js",
+                    "pdf-office-pro.js",
+                    "daily-utilities.js",
+                    "india-vault.js"
+                )
+                val fetchedExtras = mutableMapOf<String, String>()
+                for (mod in extraModules) {
+                    val content = downloadText("$baseRaw/public/$mod")
+                    if (!content.isNullOrBlank()) {
+                        fetchedExtras[mod] = content
+                    }
+                }
+
+                val hashBuilder = StringBuilder("$remoteHtml\n---\n$remoteJs")
+                for ((k, v) in fetchedExtras) {
+                    hashBuilder.append("\n---$k---\n").append(v)
+                }
+                val remoteHash = sha256(hashBuilder.toString())
                 val prefs = getSharedPreferences("pdf_bondhu_ota", Context.MODE_PRIVATE)
                 val savedHash = prefs.getString("ota_hash", null) ?: computeBundledHash()
 
@@ -325,9 +345,14 @@ class MainActivity : AppCompatActivity() {
                 val jsTmp = File(otaDir, "app.js.tmp")
                 htmlTmp.writeText(remoteHtml, Charsets.UTF_8)
                 jsTmp.writeText(remoteJs, Charsets.UTF_8)
-
                 htmlTmp.renameTo(File(otaDir, "index.html"))
                 jsTmp.renameTo(File(otaDir, "app.js"))
+
+                for ((mod, content) in fetchedExtras) {
+                    val modTmp = File(otaDir, "$mod.tmp")
+                    modTmp.writeText(content, Charsets.UTF_8)
+                    modTmp.renameTo(File(otaDir, mod))
+                }
 
                 prefs.edit().putString("ota_hash", remoteHash).apply()
 
@@ -346,7 +371,15 @@ class MainActivity : AppCompatActivity() {
         return runCatching {
             val bundledHtml = assets.open("www/index.html").bufferedReader(Charsets.UTF_8).use { it.readText() }
             val bundledJs = assets.open("www/app.js").bufferedReader(Charsets.UTF_8).use { it.readText() }
-            sha256("$bundledHtml\n---\n$bundledJs")
+            val sb = StringBuilder("$bundledHtml\n---\n$bundledJs")
+            val extras = listOf("i18n.js", "pdf-office-pro.js", "daily-utilities.js", "india-vault.js")
+            for (mod in extras) {
+                runCatching {
+                    val txt = assets.open("www/$mod").bufferedReader(Charsets.UTF_8).use { it.readText() }
+                    sb.append("\n---$mod---\n").append(txt)
+                }
+            }
+            sha256(sb.toString())
         }.getOrDefault("")
     }
 
@@ -631,9 +664,111 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        @JavascriptInterface
+        fun isBiometricAvailable(): Boolean {
+            val bm = BiometricManager.from(this@MainActivity)
+            val canAuth = bm.canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_WEAK or
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
+            return canAuth == BiometricManager.BIOMETRIC_SUCCESS
+        }
+
+        @JavascriptInterface
+        fun authenticateBiometric(title: String, subtitle: String) {
+            runOnUiThread {
+                try {
+                    val executor = ContextCompat.getMainExecutor(this@MainActivity)
+                    val prompt = BiometricPrompt(
+                        this@MainActivity,
+                        executor,
+                        object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                webView.evaluateJavascript(
+                                    "window.onAndroidBiometricResult && window.onAndroidBiometricResult(true, '');",
+                                    null
+                                )
+                            }
+
+                            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                val quoted = JSONObject.quote(errString.toString())
+                                webView.evaluateJavascript(
+                                    "window.onAndroidBiometricResult && window.onAndroidBiometricResult(false, $quoted);",
+                                    null
+                                )
+                            }
+
+                            override fun onAuthenticationFailed() {
+                                // Let user retry via system biometric sheet
+                            }
+                        }
+                    )
+                    val info = BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(title.ifBlank { "Unlock Document Center" })
+                        .setSubtitle(subtitle.ifBlank { "Verify your identity to access private files" })
+                        .setAllowedAuthenticators(
+                            BiometricManager.Authenticators.BIOMETRIC_WEAK or
+                            BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                        )
+                        .build()
+                    prompt.authenticate(info)
+                } catch (e: Exception) {
+                    val quoted = JSONObject.quote(e.localizedMessage ?: "Biometric unavailable")
+                    webView.evaluateJavascript(
+                        "window.onAndroidBiometricResult && window.onAndroidBiometricResult(false, $quoted);",
+                        null
+                    )
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun shareBase64File(base64Data: String, fileName: String, mimeType: String) {
+            ioExecutor.execute {
+                try {
+                    val cleanBase64 = base64Data.substringAfter("base64,", base64Data)
+                    val bytes = Base64.decode(cleanBase64, Base64.DEFAULT)
+                    val safeName = fileName.replace(Regex("[^a-zA-Z0-9._\\- ]"), "_")
+                        .ifBlank { "PDF_Bondhu_Share.pdf" }
+                    val safeMime = mimeType.ifBlank { "application/octet-stream" }
+                    val shareDir = File(cacheDir, "captures").apply { mkdirs() }
+                    val outFile = File(shareDir, safeName)
+                    FileOutputStream(outFile).use { it.write(bytes) }
+
+                    val uri = FileProvider.getUriForFile(
+                        this@MainActivity,
+                        "${packageName}.fileprovider",
+                        outFile
+                    )
+
+                    runOnUiThread {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = safeMime
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            putExtra(Intent.EXTRA_SUBJECT, safeName)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        startActivity(Intent.createChooser(shareIntent, "Share via PDF Bondhu"))
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Share failed: ${e.localizedMessage ?: "Unknown error"}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
+        runCatching {
+            val captureDir = File(cacheDir, "captures")
+            if (captureDir.exists()) captureDir.deleteRecursively()
+        }
         ioExecutor.shutdownNow()
         webView.destroy()
         super.onDestroy()

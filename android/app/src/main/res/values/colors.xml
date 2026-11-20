@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brand_slate">#1E293B</color>
-    <color name="brand_slate_dark">#0F172A</color>
-    <color name="brand_sky">#0284C7</color>
-    <color name="surface_bg">#F8FAFC</color>
-    <color name="text_primary">#0F172A</color>
+    <color name="brand_indigo">#293B80</color>
+    <color name="brand_violet">#7666D8</color>
+    <color name="brand_dark_bg">#151B2B</color>
+    <color name="brand_success">#20A779</color>
+    <color name="brand_slate">#293B80</color>
+    <color name="brand_slate_dark">#151B2B</color>
+    <color name="brand_sky">#7666D8</color>
+    <color name="surface_bg">#F7F8FC</color>
+    <color name="text_primary">#151B2B</color>
     <color name="text_muted">#64748B</color>
     <color name="white">#FFFFFF</color>
 </resources>

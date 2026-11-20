@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PDFBondhu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/brand_sky</item>
-        <item name="colorPrimaryVariant">@color/brand_slate</item>
+    <style name="Theme.PDFBondhu" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_indigo</item>
+        <item name="colorSecondary">@color/brand_violet</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="android:statusBarColor">@color/brand_slate</item>
-        <item name="android:navigationBarColor">@color/brand_slate_dark</item>
-        <item name="android:windowBackground">@color/brand_slate_dark</item>
+        <item name="android:statusBarColor">@color/brand_indigo</item>
+        <item name="android:navigationBarColor">@color/brand_dark_bg</item>
+        <item name="android:windowBackground">@color/brand_dark_bg</item>
     </style>
 </resources>
