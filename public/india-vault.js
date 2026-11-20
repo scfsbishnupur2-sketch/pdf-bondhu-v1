@@ -153,6 +153,12 @@
         infoModal.classList.remove('flex');
         return true;
       }
+      const fbModal = document.getElementById('feedbackModal');
+      if (fbModal && !fbModal.classList.contains('hidden')) {
+        fbModal.classList.add('hidden');
+        fbModal.classList.remove('flex');
+        return true;
+      }
       if (activeToolId !== 'homeDashboard') {
         openSection('homeDashboard');
         return true;
@@ -211,30 +217,68 @@
     global.utils._pb2Hooked = true;
   }
 
+  const TOOL_VISUALS = {
+    pdfScanner:       { bg: 'from-cyan-500 to-teal-500',      svg: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="6" width="10" height="12" rx="1.5"/>' },
+    pdfCompress:      { bg: 'from-rose-500 to-pink-500',      svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 11v6"/><path d="m9 14 3 3 3-3"/>' },
+    pdfMerge:         { bg: 'from-blue-600 to-violet-600',    svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/>' },
+    pdfSplit:         { bg: 'from-orange-500 to-amber-500',   svg: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>' },
+    pdfEdit:          { bg: 'from-indigo-600 to-purple-600',  svg: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>' },
+    pdfOrganize:      { bg: 'from-emerald-500 to-green-500',  svg: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>' },
+    pdfWatermark:     { bg: 'from-violet-600 to-fuchsia-600', svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>' },
+    pdfSign:          { bg: 'from-sky-500 to-indigo-600',     svg: '<path d="M20 19H4"/><path d="M4 15c2-4 5-6 7-3s3 1 5-4 4-4 4-4"/>' },
+    pdfSigVerify:     { bg: 'from-emerald-600 to-teal-500',   svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>' },
+    pdfSecurityTool:  { bg: 'from-purple-600 to-indigo-700',  svg: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' },
+    pdfToImgTool:     { bg: 'from-pink-500 to-rose-500',      svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>' },
+    pdfCompareTool:   { bg: 'from-blue-500 to-cyan-500',      svg: '<rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/>' },
+    pdfRepair:        { bg: 'from-amber-500 to-orange-600',   svg: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' },
+    textToPdf:        { bg: 'from-indigo-500 to-blue-600',    svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>' },
+    pdfMetadataTool:  { bg: 'from-fuchsia-500 to-purple-600', svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' },
+    passportMaker:    { bg: 'from-sky-500 to-blue-600',       svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a5 5 0 0 1 10 0v2"/>' },
+    imageCompress:    { bg: 'from-green-500 to-emerald-500',  svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>' },
+    imgToPdf:         { bg: 'from-red-500 to-rose-500',       svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/>' },
+    imgResize:        { bg: 'from-teal-500 to-cyan-600',      svg: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>' },
+    idCardMaker:      { bg: 'from-blue-600 to-indigo-600',    svg: '<rect width="20" height="14" x="2" y="5" rx="2"/><circle cx="8" cy="12" r="2"/><line x1="13" y1="10" x2="18" y2="10"/><line x1="13" y1="14" x2="17" y2="14"/>' },
+    imgCropTool:      { bg: 'from-amber-500 to-orange-500',   svg: '<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>' },
+    imgConvert:       { bg: 'from-orange-500 to-rose-500',    svg: '<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/>' },
+    ocrScanner:       { bg: 'from-indigo-500 to-violet-600',  svg: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 12h8"/><path d="M8 9h5"/><path d="M8 15h6"/>' },
+    excelMerge:       { bg: 'from-emerald-600 to-green-600',  svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/>' },
+    excelCleaner:     { bg: 'from-lime-500 to-emerald-600',   svg: '<path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/>' },
+    pdfToExcel:       { bg: 'from-green-600 to-emerald-700',  svg: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/>' },
+    csvViewerTool:    { bg: 'from-teal-600 to-emerald-500',   svg: '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>' },
+    zipStudioTool:    { bg: 'from-violet-600 to-indigo-600',  svg: '<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/>' },
+    dailyPanelCalc:   { bg: 'from-amber-500 to-orange-500',   svg: '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><path d="M8 11h.01"/><path d="M12 11h.01"/><path d="M16 11h.01"/><path d="M8 15h.01"/><path d="M12 15h.01"/><path d="M16 15h.01"/>' },
+    dailyPanelConv:   { bg: 'from-cyan-500 to-blue-600',      svg: '<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>' },
+    dailyPanelProd:   { bg: 'from-pink-500 to-violet-600',    svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+    dailyPanelSmart:  { bg: 'from-emerald-500 to-cyan-500',   svg: '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>' },
+    indiaEssentials:  { bg: 'from-orange-500 via-amber-500 to-emerald-600', svg: '<path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/>' },
+    documentCenter:   { bg: 'from-teal-500 to-emerald-600',   svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>' }
+  };
+
+  function getToolVisual(tool) {
+    return TOOL_VISUALS[tool.sub || tool.id] || TOOL_VISUALS[tool.id] || {
+      bg: 'from-blue-600 to-violet-600',
+      svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'
+    };
+  }
+
   function renderToolMiniCard(tool, showStar = true) {
     const key = tool.sub ? `${tool.id}:${tool.sub}` : tool.id;
     const isFav = getFavourites().includes(key);
-    const catColors = {
-      pdf: 'bg-[#293B80]/10 text-[#293B80] dark:bg-[#7666D8]/20 dark:text-[#b4a9ff]',
-      image: 'bg-[#7666D8]/12 text-[#5f4fc4] dark:bg-[#7666D8]/25 dark:text-[#c7beff]',
-      office: 'bg-[#20A779]/12 text-[#16855f] dark:bg-[#20A779]/20 dark:text-[#5eead4]',
-      daily: 'bg-amber-500/12 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
-      india: 'bg-indigo-500/12 text-[#293B80] dark:bg-indigo-500/20 dark:text-indigo-300',
-      vault: 'bg-[#20A779]/12 text-[#20A779]'
-    };
-    const badgeCls = catColors[tool.cat] || catColors.pdf;
+    const vis = getToolVisual(tool);
     return `
-      <div class="group relative bg-white dark:bg-[#1C2438] border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 hover:border-[#7666D8] dark:hover:border-[#7666D8] transition-all flex flex-col gap-2.5 shadow-[0_1px_2px_rgba(21,27,43,0.04)]">
-        <div class="flex items-start justify-between gap-2">
-          <button type="button" data-open-tool="${tool.id}" data-open-sub="${tool.sub || ''}" class="text-left flex-1 min-w-0 focus:outline-none">
-            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl ${badgeCls} font-extrabold text-xs mb-2">${tool.cat.slice(0, 3).toUpperCase()}</span>
-            <h4 class="text-sm font-bold text-[#151B2B] dark:text-white group-hover:text-[#293B80] dark:group-hover:text-[#a69bff] transition-colors truncate">${escHtml(tool.name)}</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">${escHtml(tool.desc)}</p>
-          </button>
-          ${showStar ? `<button type="button" data-fav-key="${key}" aria-label="Toggle Favourite" class="pb-fav-btn p-1.5 rounded-lg text-slate-300 hover:text-amber-500 transition min-h-[34px] min-w-[34px] flex items-center justify-center ${isFav ? 'text-amber-500' : ''}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </button>` : ''}
-        </div>
+      <div class="group relative bg-white dark:bg-[#1A2138] border border-indigo-100/90 dark:border-slate-800 rounded-2xl p-3.5 hover:border-indigo-400 dark:hover:border-violet-500 hover:-translate-y-0.5 transition-all flex items-center gap-3 shadow-[0_4px_16px_rgba(49,70,158,0.06)]">
+        <button type="button" data-open-tool="${tool.id}" data-open-sub="${tool.sub || ''}" class="text-left flex items-center gap-3 flex-1 min-w-0 focus:outline-none">
+          <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br ${vis.bg} text-white shadow-md shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${vis.svg}</svg>
+          </span>
+          <div class="min-w-0 flex-1">
+            <h4 class="text-sm font-bold text-[#151B2B] dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors truncate">${escHtml(tool.name)}</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">${escHtml(tool.desc)}</p>
+          </div>
+        </button>
+        ${showStar ? `<button type="button" data-fav-key="${key}" aria-label="Toggle Favourite" class="pb-fav-btn p-1.5 rounded-lg text-slate-300 hover:text-amber-500 transition min-h-[34px] min-w-[34px] flex items-center justify-center shrink-0 ${isFav ? 'text-amber-500' : ''}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>` : `<span class="text-slate-300 dark:text-slate-600 font-bold text-sm pr-1">›</span>`}
       </div>
     `;
   }
@@ -260,12 +304,16 @@
     if (favWrap) {
       const favTools = getFavourites().map(findToolByKey).filter(Boolean).slice(0, 6);
       favWrap.innerHTML = favTools
-        .map(
-          (t) => `
-          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="px-3.5 py-2 rounded-xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800 hover:border-[#7666D8] text-xs font-bold text-[#151B2B] dark:text-slate-100 whitespace-nowrap shrink-0 transition min-h-[40px] flex items-center gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-            <span class="text-amber-500">★</span> ${escHtml(t.name)}
-          </button>`
-        )
+        .map((t) => {
+          const vis = getToolVisual(t);
+          return `
+          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 hover:border-indigo-400 text-xs font-bold text-[#151B2B] dark:text-slate-100 whitespace-nowrap shrink-0 transition min-h-[42px] flex items-center gap-2 shadow-[0_3px_12px_rgba(49,70,158,0.06)]">
+            <span class="w-7 h-7 rounded-lg bg-gradient-to-br ${vis.bg} text-white flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">${vis.svg}</svg>
+            </span>
+            ${escHtml(t.name)}
+          </button>`;
+        })
         .join('');
       bindToolCards(favWrap);
     }
@@ -277,12 +325,16 @@
       const recTools = loadJson(RECENT_TOOLS_KEY, []).map(findToolByKey).filter(Boolean).slice(0, 6);
       recSec.classList.toggle('hidden', recTools.length === 0);
       recWrap.innerHTML = recTools
-        .map(
-          (t) => `
-          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="px-3.5 py-2 rounded-xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800 hover:border-[#293B80] text-xs font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap shrink-0 transition min-h-[40px]">
+        .map((t) => {
+          const vis = getToolVisual(t);
+          return `
+          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap shrink-0 transition min-h-[40px] flex items-center gap-2 shadow-[0_3px_12px_rgba(49,70,158,0.05)]">
+            <span class="w-6 h-6 rounded-md bg-gradient-to-br ${vis.bg} text-white flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">${vis.svg}</svg>
+            </span>
             ${escHtml(t.name)}
-          </button>`
-        )
+          </button>`;
+        })
         .join('');
       bindToolCards(recWrap);
     }
@@ -1111,7 +1163,248 @@
     const rateBtn = document.getElementById('settingsRateAppBtn');
     if (rateBtn) {
       rateBtn.addEventListener('click', () => {
-        global.utils.showToast('Thank You!', 'Thank you for supporting PDF Bondhu 2.0! Play Store rating link activates once published.', 'info');
+        const openFb = document.getElementById('settingsFeedbackBtn');
+        if (openFb) openFb.click();
+        else global.utils.showToast('Thank You!', 'Thank you for supporting PDF Bondhu 2.0!', 'info');
+      });
+    }
+  }
+
+  /* ========================================================================
+     8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
+     ======================================================================== */
+  const CURRENT_BUILD = '20261120-3';
+  const CURRENT_VERSION = '2.1.0';
+
+  function initLiveAutoUpdater() {
+    const banner = document.getElementById('liveUpdateBanner');
+    const applyBtn = document.getElementById('liveUpdateApplyBtn');
+    const dismissBtn = document.getElementById('liveUpdateDismissBtn');
+    const headerRefreshBtn = document.getElementById('headerRefreshUpdateBtn');
+    const settingsCheckBtn = document.getElementById('settingsCheckUpdateBtn');
+    const versionText = document.getElementById('settingsAppVersionText');
+
+    if (versionText) {
+      versionText.textContent = `Version ${CURRENT_VERSION} · Build ${CURRENT_BUILD} · Auto-Updates Enabled`;
+    }
+
+    function showUpdateBanner(note) {
+      if (!banner) return;
+      const msgEl = document.getElementById('liveUpdateBannerText');
+      if (msgEl && note) msgEl.textContent = note;
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+    }
+
+    async function applyFreshReload() {
+      // 1. Inside Android APK: clear WebView cache and reload updated ota_www
+      if (global.AndroidBridge && typeof global.AndroidBridge.reloadApp === 'function') {
+        global.AndroidBridge.reloadApp();
+        return;
+      }
+      // 2. Inside Web / Installed PWA: clear stale SW shell cache then reload
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            await reg.update().catch(() => {});
+            const sw = reg.waiting || reg.active;
+            if (sw) {
+              sw.postMessage({ type: 'CLEAR_SHELL_CACHE' });
+              sw.postMessage({ type: 'SKIP_WAITING' });
+            }
+          }
+        }
+        if (window.caches) {
+          const names = await caches.keys();
+          await Promise.all(names.filter((n) => n.startsWith('pdf-bondhu-shell')).map((n) => caches.delete(n)));
+        }
+      } catch {}
+      const cleanUrl = window.location.href.split('#')[0].split('?')[0];
+      window.location.replace(`${cleanUrl}?v=${Date.now()}`);
+    }
+
+    async function checkLiveUpdate(manual = false) {
+      if (!navigator.onLine) {
+        if (manual) global.utils.showToast('Offline Mode', 'Connect to internet once to check for new updates.', 'info');
+        return;
+      }
+
+      // If running inside Android APK with native OTA bridge
+      if (manual && global.AndroidBridge && typeof global.AndroidBridge.checkForUpdateNow === 'function') {
+        global.utils.showToast('Checking Updates...', 'Syncing latest PDF Bondhu version from server...', 'info');
+        global.AndroidBridge.checkForUpdateNow();
+        return;
+      }
+
+      if (manual) {
+        global.utils.showToast('Checking Updates...', 'Looking for the latest PDF Bondhu release...', 'info');
+      }
+
+      try {
+        const res = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('offline');
+        const info = await res.json();
+        if (info && info.build && info.build !== CURRENT_BUILD) {
+          if (manual) {
+            global.utils.showToast('Update Found!', `Updating to v${info.version || 'Latest'}...`);
+            setTimeout(() => applyFreshReload(), 600);
+          } else {
+            showUpdateBanner(`New update v${info.version || 'Latest'} ready! Tap Refresh to load instantly.`);
+          }
+        } else if (manual) {
+          // Even if version.json matches, let manual refresh update SW & confirm latest
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then((r) => r && r.update().catch(() => {}));
+          }
+          global.utils.showToast('You Are Up to Date!', `PDF Bondhu v${CURRENT_VERSION} is the latest version.`);
+        }
+      } catch {
+        if (manual) {
+          applyFreshReload();
+        }
+      }
+    }
+
+    // Native Android OTA callbacks
+    global.onPdfBondhuUpdateReady = () => {
+      showUpdateBanner('New PDF Bondhu update downloaded! Tap Refresh — no new APK needed.');
+    };
+    global.onPdfBondhuUpdateStatus = (status, message) => {
+      global.utils.showToast(
+        status === 'uptodate' ? 'Up to Date' : 'App Update',
+        message || 'Update check complete.',
+        status === 'error' ? 'error' : 'info'
+      );
+    };
+
+    if (applyBtn) applyBtn.addEventListener('click', applyFreshReload);
+    if (dismissBtn && banner) {
+      dismissBtn.addEventListener('click', () => {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+      });
+    }
+    if (headerRefreshBtn) headerRefreshBtn.addEventListener('click', () => checkLiveUpdate(true));
+    if (settingsCheckBtn) settingsCheckBtn.addEventListener('click', () => checkLiveUpdate(true));
+
+    // Silent auto-check on startup & whenever friend returns to the app
+    setTimeout(() => checkLiveUpdate(false), 3500);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkLiveUpdate(false);
+      }
+    });
+  }
+
+  /* ========================================================================
+     9. Friends Feedback Composer (WhatsApp + Direct Email + Copy)
+     ======================================================================== */
+  function initFeedbackComposer() {
+    const modal = document.getElementById('feedbackModal');
+    const closeBtn = document.getElementById('feedbackCloseBtn');
+    const openBtns = [
+      document.getElementById('homeFeedbackBtn'),
+      document.getElementById('settingsFeedbackBtn')
+    ].filter(Boolean);
+
+    const starBtns = document.querySelectorAll('.fb-star-btn');
+    const typeBtns = document.querySelectorAll('.fb-type-btn');
+    const nameInput = document.getElementById('fbSenderName');
+    const msgInput = document.getElementById('fbMessageInput');
+    const waBtn = document.getElementById('fbSendWhatsappBtn');
+    const mailBtn = document.getElementById('fbSendEmailBtn');
+    const copyBtn = document.getElementById('fbCopyTextBtn');
+
+    let rating = 5;
+    let fbType = 'UI / Feature Idea';
+
+    function paintStars() {
+      starBtns.forEach((btn) => {
+        const v = Number(btn.getAttribute('data-star'));
+        btn.classList.toggle('text-amber-400', v <= rating);
+        btn.classList.toggle('text-slate-300', v > rating);
+        btn.classList.toggle('dark:text-slate-600', v > rating);
+      });
+    }
+    paintStars();
+
+    starBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        rating = Number(btn.getAttribute('data-star')) || 5;
+        paintStars();
+      });
+    });
+
+    typeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        fbType = btn.getAttribute('data-fb-type') || 'Feedback';
+        typeBtns.forEach((b) => {
+          const act = b === btn;
+          b.className = act
+            ? 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm'
+            : 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+        });
+      });
+    });
+
+    function openModal() {
+      if (!modal) return;
+      const prof = loadJson(PROFILE_KEY, {});
+      if (nameInput && !nameInput.value && prof.name) nameInput.value = prof.name;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    openBtns.forEach((b) => b.addEventListener('click', openModal));
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    function buildFeedbackPayload() {
+      const sender = (nameInput?.value || '').trim() || 'A PDF Bondhu Friend';
+      const msg = (msgInput?.value || '').trim();
+      if (!msg) {
+        global.utils.showToast('Write Your Feedback', 'Please type a short message or suggestion first.', 'error');
+        return null;
+      }
+      const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const env = global.AndroidBridge ? 'Android APK' : 'Web / PWA';
+      return `PDF Bondhu v${CURRENT_VERSION} Feedback\nFrom: ${sender}\nRating: ${stars} (${rating}/5)\nTopic: ${fbType}\nPlatform: ${env}\n\nMessage:\n${msg}`;
+    }
+
+    if (waBtn) {
+      waBtn.addEventListener('click', () => {
+        const text = buildFeedbackPayload();
+        if (!text) return;
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.location.href = url;
+        closeModal();
+      });
+    }
+
+    if (mailBtn) {
+      mailBtn.addEventListener('click', () => {
+        const text = buildFeedbackPayload();
+        if (!text) return;
+        const subject = encodeURIComponent(`[PDF Bondhu Feedback] ${fbType} (${rating}/5)`);
+        const body = encodeURIComponent(text);
+        window.location.href = `mailto:suman.pba@gmail.com?subject=${subject}&body=${body}`;
+        closeModal();
+      });
+    }
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const text = buildFeedbackPayload();
+        if (!text) return;
+        navigator.clipboard?.writeText(text).then(() => {
+          global.utils.showToast('Feedback Copied!', 'Paste it in WhatsApp or chat to send to Suman.');
+          closeModal();
+        });
       });
     }
   }
@@ -1126,6 +1419,8 @@
     initDocumentCenter();
     initIndiaEssentials();
     initProfileAndSettings();
+    initLiveAutoUpdater();
+    initFeedbackComposer();
 
     // Wire All Tools category buttons & search
     document.querySelectorAll('.alltools-cat-btn').forEach((btn) => {

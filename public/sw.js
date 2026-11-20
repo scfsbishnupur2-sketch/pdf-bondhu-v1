@@ -1,5 +1,5 @@
-const APP_SHELL_CACHE = 'pdf-bondhu-shell-v8';
-const CDN_CACHE = 'pdf-bondhu-cdn-v4';
+const APP_SHELL_CACHE = 'pdf-bondhu-shell-v10';
+const CDN_CACHE = 'pdf-bondhu-cdn-v5';
 
 const APP_SHELL_ASSETS = [
   './',
@@ -9,6 +9,7 @@ const APP_SHELL_ASSETS = [
   './pdf-office-pro.js',
   './daily-utilities.js',
   './india-vault.js',
+  './admob-service.js',
   './manifest.json',
   './icon.svg',
   './pwa-192x192.png',
@@ -52,12 +53,37 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Support instant client-triggered cache refresh for OTA updates
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (event.data.type === 'CLEAR_SHELL_CACHE') {
+    event.waitUntil(
+      caches.delete(APP_SHELL_CACHE).then(() => {
+        if (event.ports && event.ports[0]) {
+          event.ports[0].postMessage({ cleared: true });
+        }
+      })
+    );
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
+
+  // Always fetch version.json fresh from network (never serve stale cache)
+  if (isSameOrigin && url.pathname.endsWith('version.json')) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' }).catch(() => new Response('{}', { status: 503, headers: { 'Content-Type': 'application/json' } }))
+    );
+    return;
+  }
 
   if (isSameOrigin) {
     event.respondWith(

@@ -1,12 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="pb2Bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#293B80"/>
-      <stop offset="100%" stop-color="#7666D8"/>
+    <linearGradient id="pbTileBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1D4ED8"/>
+      <stop offset="52%" stop-color="#4338CA"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="pbDocGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+    <linearGradient id="pbOrbitGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="55%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#A855F7"/>
     </linearGradient>
   </defs>
-  <rect width="128" height="128" rx="30" fill="url(#pb2Bg)"/>
-  <path d="M38 24h36l22 22v50a10 10 0 0 1-10 10H38a10 10 0 0 1-10-10V34a10 10 0 0 1 10-10z" fill="#FFFFFF"/>
-  <path d="M74 24v16a6 6 0 0 0 6 6h16L74 24z" fill="#DCE2F7"/>
-  <path d="M48 69l11 11 23-24" fill="none" stroke="#20A779" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Rounded App Icon Tile -->
+  <rect width="128" height="128" rx="30" fill="url(#pbTileBg)"/>
+  <!-- Subtle luminous glow -->
+  <circle cx="96" cy="28" r="34" fill="#38BDF8" opacity="0.22"/>
+  <circle cx="26" cy="104" r="30" fill="#C084FC" opacity="0.22"/>
+  <!-- Glossy White Page Card -->
+  <path d="M35 20h40l23 23v55a10 10 0 0 1-10 10H35a10 10 0 0 1-10-10V30a10 10 0 0 1 10-10z" fill="#FFFFFF"/>
+  <!-- Folded Corner -->
+  <path d="M75 20v16a7 7 0 0 0 7 7h16L75 20z" fill="#BFDBFE"/>
+  <!-- Bold Red-Indigo PDF Badge -->
+  <rect x="33" y="50" width="58" height="28" rx="8" fill="#EF4444"/>
+  <text x="62" y="70" text-anchor="middle" font-family="Plus Jakarta Sans, Arial, sans-serif" font-weight="900" font-size="18" letter-spacing="0.5" fill="#FFFFFF">PDF</text>
+  <!-- Orbiting Cyan-Violet Swoosh Ring -->
+  <path d="M16 79 C32 103, 95 103, 114 66" fill="none" stroke="url(#pbOrbitGrad)" stroke-width="8.5" stroke-linecap="round"/>
+  <!-- Sparkle Accents -->
+  <circle cx="104" cy="30" r="4" fill="#FACC15"/>
+  <circle cx="24" cy="40" r="2.8" fill="#38BDF8"/>
 </svg>

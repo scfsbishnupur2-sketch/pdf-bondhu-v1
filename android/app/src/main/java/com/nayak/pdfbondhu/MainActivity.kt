@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var pendingWebPermissionRequest: PermissionRequest? = null
     private var hasLoadedOnce = false
     private var lastBackPressedMs = 0L
+    private var lastOtaCheckMs = 0L
 
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -153,7 +154,15 @@ class MainActivity : AppCompatActivity() {
         configureWebView()
         setupBackNavigation()
         loadAppUrl()
-        checkForOtaUpdateAsync()
+        checkForOtaUpdateAsync(manualTrigger = false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val now = System.currentTimeMillis()
+        if (hasLoadedOnce && now - lastOtaCheckMs > 120_000L) {
+            checkForOtaUpdateAsync(manualTrigger = false)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -303,17 +312,40 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(BuildConfig.APP_URL)
     }
 
-    private fun checkForOtaUpdateAsync() {
-        val repo = BuildConfig.GITHUB_REPO
-        if (repo.isBlank() || !isNetworkAvailable()) return
+    private fun checkForOtaUpdateAsync(manualTrigger: Boolean = false) {
+        if (!isNetworkAvailable()) {
+            if (manualTrigger) {
+                notifyWebUpdateStatus("offline", "No internet connection. Working offline.")
+            }
+            return
+        }
+        lastOtaCheckMs = System.currentTimeMillis()
 
         ioExecutor.execute {
             runCatching {
-                val baseRaw = "https://raw.githubusercontent.com/$repo/main"
-                val remoteHtml = downloadText("$baseRaw/index.html") ?: return@runCatching
-                val remoteJs = downloadText("$baseRaw/public/app.js") ?: return@runCatching
+                val repo = BuildConfig.GITHUB_REPO
+                val stamp = System.currentTimeMillis()
+                val primaryBase = "https://pdf-bondhu-v1.vercel.app"
+                val fallbackBase = if (repo.isNotBlank()) "https://raw.githubusercontent.com/$repo/main" else ""
 
-                if (!remoteHtml.contains("PDF Bondhu") || remoteJs.length < 5000) {
+                fun fetchSmart(vercelPath: String, githubPath: String): String? {
+                    val primary = downloadText("$primaryBase/$vercelPath?t=$stamp")
+                    if (!primary.isNullOrBlank()) return primary
+                    if (fallbackBase.isNotBlank()) {
+                        return downloadText("$fallbackBase/$githubPath?t=$stamp")
+                    }
+                    return null
+                }
+
+                val remoteHtml = fetchSmart("index.html", "index.html")
+                val remoteJs = fetchSmart("app.js", "public/app.js")
+
+                if (remoteHtml.isNullOrBlank() || remoteJs.isNullOrBlank() ||
+                    !remoteHtml.contains("PDF Bondhu") || remoteJs.length < 5000
+                ) {
+                    if (manualTrigger) {
+                        notifyWebUpdateStatus("error", "Could not reach update server. Try again in a moment.")
+                    }
                     return@runCatching
                 }
 
@@ -321,11 +353,15 @@ class MainActivity : AppCompatActivity() {
                     "i18n.js",
                     "pdf-office-pro.js",
                     "daily-utilities.js",
-                    "india-vault.js"
+                    "india-vault.js",
+                    "admob-service.js",
+                    "icon.svg",
+                    "manifest.json",
+                    "version.json"
                 )
                 val fetchedExtras = mutableMapOf<String, String>()
                 for (mod in extraModules) {
-                    val content = downloadText("$baseRaw/public/$mod")
+                    val content = fetchSmart(mod, "public/$mod")
                     if (!content.isNullOrBlank()) {
                         fetchedExtras[mod] = content
                     }
@@ -339,7 +375,12 @@ class MainActivity : AppCompatActivity() {
                 val prefs = getSharedPreferences("pdf_bondhu_ota", Context.MODE_PRIVATE)
                 val savedHash = prefs.getString("ota_hash", null) ?: computeBundledHash()
 
-                if (remoteHash == savedHash) return@runCatching
+                if (remoteHash == savedHash) {
+                    if (manualTrigger) {
+                        notifyWebUpdateStatus("uptodate", "PDF Bondhu is already on the latest version!")
+                    }
+                    return@runCatching
+                }
 
                 val htmlTmp = File(otaDir, "index.html.tmp")
                 val jsTmp = File(otaDir, "app.js.tmp")
@@ -357,13 +398,37 @@ class MainActivity : AppCompatActivity() {
                 prefs.edit().putString("ota_hash", remoteHash).apply()
 
                 runOnUiThread {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "PDF Bondhu updated! Reopen app for latest version.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    if (manualTrigger) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Update installed! Refreshing PDF Bondhu...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        webView.clearCache(true)
+                        webView.reload()
+                    } else {
+                        webView.evaluateJavascript(
+                            "window.onPdfBondhuUpdateReady && window.onPdfBondhuUpdateReady();",
+                            null
+                        )
+                    }
+                }
+            }.onFailure {
+                if (manualTrigger) {
+                    notifyWebUpdateStatus("error", "Update check failed. Please try again.")
                 }
             }
+        }
+    }
+
+    private fun notifyWebUpdateStatus(status: String, message: String) {
+        val s = JSONObject.quote(status)
+        val m = JSONObject.quote(message)
+        runOnUiThread {
+            webView.evaluateJavascript(
+                "window.onPdfBondhuUpdateStatus && window.onPdfBondhuUpdateStatus($s, $m);",
+                null
+            )
         }
     }
 
@@ -372,7 +437,16 @@ class MainActivity : AppCompatActivity() {
             val bundledHtml = assets.open("www/index.html").bufferedReader(Charsets.UTF_8).use { it.readText() }
             val bundledJs = assets.open("www/app.js").bufferedReader(Charsets.UTF_8).use { it.readText() }
             val sb = StringBuilder("$bundledHtml\n---\n$bundledJs")
-            val extras = listOf("i18n.js", "pdf-office-pro.js", "daily-utilities.js", "india-vault.js")
+            val extras = listOf(
+                "i18n.js",
+                "pdf-office-pro.js",
+                "daily-utilities.js",
+                "india-vault.js",
+                "admob-service.js",
+                "icon.svg",
+                "manifest.json",
+                "version.json"
+            )
             for (mod in extras) {
                 runCatching {
                     val txt = assets.open("www/$mod").bufferedReader(Charsets.UTF_8).use { it.readText() }
@@ -760,6 +834,19 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
+            }
+        }
+
+        @JavascriptInterface
+        fun checkForUpdateNow() {
+            checkForOtaUpdateAsync(manualTrigger = true)
+        }
+
+        @JavascriptInterface
+        fun reloadApp() {
+            runOnUiThread {
+                webView.clearCache(true)
+                webView.reload()
             }
         }
     }
