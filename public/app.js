@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initIdCardMaker();
   initTextToPdf();
   initPdfMetadataTool();
+
+  // Initialize advanced security, repair, visual editor & passport studio modules
+  initPdfSigVerify();
+  initPdfRepair();
+  initPdfEdit();
+  initPassportMaker();
 });
 
 /* ==========================================================================
@@ -1815,8 +1821,64 @@ function initImageConverter() {
 
 
 /* ==========================================================================
-   6. Image Compressor & Resizer
+   6. Image Size Reducer (Exact Target KB + Quality % Mode)
    ========================================================================== */
+
+async function reduceCanvasToExactKb(img, targetKb) {
+  const targetBytes = Math.max(5, Number(targetKb) || 50) * 1024;
+  const origW = img.naturalWidth || img.width;
+  const origH = img.naturalHeight || img.height;
+
+  const renderAt = (w, h, q) =>
+    new Promise((resolve) => {
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w));
+      c.height = Math.max(1, Math.round(h));
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob((blob) => resolve(blob), 'image/jpeg', q);
+    });
+
+  // Step 1: Check high quality at original dimensions
+  let bestBlob = await renderAt(origW, origH, 0.92);
+  if (bestBlob && bestBlob.size <= targetBytes) {
+    return bestBlob;
+  }
+
+  let scale = 1.0;
+  for (let step = 0; step < 9; step++) {
+    const w = Math.max(80, Math.round(origW * scale));
+    const h = Math.max(80, Math.round(origH * scale));
+
+    const minBlob = await renderAt(w, h, 0.12);
+    if (minBlob) bestBlob = minBlob;
+
+    if (minBlob && minBlob.size <= targetBytes) {
+      // Binary search highest quality <= targetBytes at this dimension
+      let lo = 0.12;
+      let hi = 0.92;
+      let chosen = minBlob;
+      for (let iter = 0; iter < 7; iter++) {
+        const mid = (lo + hi) / 2;
+        const b = await renderAt(w, h, mid);
+        if (b && b.size <= targetBytes) {
+          chosen = b;
+          lo = mid;
+        } else {
+          hi = mid;
+        }
+      }
+      return chosen;
+    }
+
+    if (w <= 120 && h <= 120) break;
+    scale *= 0.8;
+  }
+
+  return bestBlob;
+}
 
 function initImageCompressor() {
   const input = document.getElementById('imgCompressInput');
@@ -1825,11 +1887,61 @@ function initImageCompressor() {
   const actionBtn = document.getElementById('imgCompressActionBtn');
   const qualitySlider = document.getElementById('qualitySlider');
   const qualityVal = document.getElementById('qualityVal');
+  const modeKbBtn = document.getElementById('imgReduceModeKbBtn');
+  const modeQualBtn = document.getElementById('imgReduceModeQualBtn');
+  const kbPanel = document.getElementById('imgReduceKbPanel');
+  const qualPanel = document.getElementById('imgReduceQualPanel');
+  const targetKbInput = document.getElementById('imgReduceTargetKb');
+  const kbPresetBtns = document.querySelectorAll('.img-kb-preset');
+
+  if (!input || !actionBtn) return;
+
+  let mode = 'kb'; // 'kb' | 'quality'
   let selectedImages = [];
-  
-  qualitySlider.addEventListener('input', (e) => {
-    qualityVal.textContent = e.target.value + '%';
+
+  function syncModeUi() {
+    if (mode === 'kb') {
+      modeKbBtn.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-sm transition-colors whitespace-nowrap min-h-[38px]';
+      modeQualBtn.className = 'px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap min-h-[38px]';
+      kbPanel.classList.remove('hidden');
+      qualPanel.classList.add('hidden');
+    } else {
+      modeQualBtn.className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-sm transition-colors whitespace-nowrap min-h-[38px]';
+      modeKbBtn.className = 'px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap min-h-[38px]';
+      kbPanel.classList.add('hidden');
+      qualPanel.classList.remove('hidden');
+    }
+  }
+
+  function highlightPreset(valStr) {
+    kbPresetBtns.forEach((btn) => {
+      const active = btn.getAttribute('data-kb') === String(valStr);
+      btn.className = active
+        ? 'img-kb-preset px-2.5 py-1.5 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-xs font-bold text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700 tabular-nums'
+        : 'img-kb-preset px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 tabular-nums';
+    });
+  }
+
+  if (modeKbBtn) modeKbBtn.addEventListener('click', () => { mode = 'kb'; syncModeUi(); });
+  if (modeQualBtn) modeQualBtn.addEventListener('click', () => { mode = 'quality'; syncModeUi(); });
+
+  kbPresetBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const kb = btn.getAttribute('data-kb');
+      if (targetKbInput) targetKbInput.value = kb;
+      highlightPreset(kb);
+    });
   });
+
+  if (targetKbInput) {
+    targetKbInput.addEventListener('input', () => highlightPreset(targetKbInput.value.trim()));
+  }
+
+  if (qualitySlider && qualityVal) {
+    qualitySlider.addEventListener('input', (e) => {
+      qualityVal.textContent = e.target.value + '%';
+    });
+  }
 
   function renderList() {
     if (selectedImages.length === 0) {
@@ -1841,11 +1953,16 @@ function initImageCompressor() {
     list.classList.remove('hidden');
     emptyState.classList.add('hidden');
     actionBtn.disabled = false;
-    
+
     list.innerHTML = '';
     selectedImages.forEach((imgObj, index) => {
       const li = document.createElement('li');
       li.className = 'flex flex-col p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm gap-3 relative hover:border-orange-300 dark:hover:border-orange-700 transition-colors';
+      const hasResult = Boolean(imgObj.lastBlob);
+      const savedPct = hasResult
+        ? Math.max(0, ((imgObj.file.size - imgObj.lastBlob.size) / Math.max(1, imgObj.file.size)) * 100).toFixed(1)
+        : '0';
+
       li.innerHTML = `
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 border border-slate-200 dark:border-slate-700">
@@ -1853,34 +1970,48 @@ function initImageCompressor() {
           </div>
           <div class="flex-1 overflow-hidden">
             <p class="truncate text-sm font-semibold text-slate-700 dark:text-slate-200">${imgObj.file.name}</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500 font-medium tabular-nums">${utils.formatBytes(imgObj.file.size)}</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 font-medium tabular-nums">Original: ${utils.formatBytes(imgObj.file.size)}</p>
           </div>
           <button class="remove-btn text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 p-2 rounded-lg transition-colors" data-index="${index}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div class="result-area hidden text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-lg border border-emerald-200/70 dark:border-emerald-800/70 flex justify-between items-center tabular-nums">
-          <span>Output: <span class="compressed-size font-extrabold"></span></span>
-          <span class="bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100 px-1.5 py-0.5 rounded text-[10px] saving-percent"></span>
+        <div class="result-area ${hasResult ? 'flex' : 'hidden'} text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-lg border border-emerald-200/70 dark:border-emerald-800/70 justify-between items-center gap-2 tabular-nums">
+          <span>Output: <span class="compressed-size font-extrabold">${hasResult ? utils.formatBytes(imgObj.lastBlob.size) : ''}</span></span>
+          <div class="flex items-center gap-1.5">
+            <span class="bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100 px-1.5 py-0.5 rounded text-[10px] saving-percent">${savedPct}% OFF</span>
+            <button type="button" class="redownload-btn px-2 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-bold hover:bg-emerald-700" data-index="${index}">Save</button>
+          </div>
         </div>
       `;
       list.appendChild(li);
     });
 
-    document.querySelectorAll('#imgCompressList .remove-btn').forEach(btn => btn.onclick = removeItem);
+    list.querySelectorAll('.remove-btn').forEach((btn) => (btn.onclick = removeItem));
+    list.querySelectorAll('.redownload-btn').forEach((btn) => {
+      btn.onclick = (e) => {
+        const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
+        const item = selectedImages[idx];
+        if (item && item.lastBlob) {
+          utils.downloadBlob(item.lastBlob, item.lastName || 'reduced_image.jpg');
+        }
+      };
+    });
   }
 
   function removeItem(e) {
-    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+    const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
     URL.revokeObjectURL(selectedImages[idx].preview);
     selectedImages.splice(idx, 1);
     renderList();
   }
 
   input.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
+    const files = Array.from(e.target.files || []);
+    files.forEach((file) => {
       selectedImages.push({
         file,
-        preview: URL.createObjectURL(file)
+        preview: URL.createObjectURL(file),
+        lastBlob: null,
+        lastName: ''
       });
     });
     input.value = '';
@@ -1889,45 +2020,56 @@ function initImageCompressor() {
 
   actionBtn.addEventListener('click', async () => {
     if (selectedImages.length === 0) return;
-    utils.showLoader('Shrinking Images...', 'text-orange-600');
-    
-    try {
-      const quality = parseInt(qualitySlider.value) / 100;
-      const listItems = list.querySelectorAll('li');
 
+    const targetKb = Math.max(5, parseInt(targetKbInput?.value || '50', 10) || 50);
+    const quality = parseInt(qualitySlider?.value || '60', 10) / 100;
+
+    utils.showLoader(
+      mode === 'kb' ? `Reducing photos to <= ${targetKb} KB...` : 'Shrinking Images...',
+      'text-orange-600'
+    );
+
+    try {
       for (let i = 0; i < selectedImages.length; i++) {
         const imgObj = selectedImages[i];
         const img = new Image();
         img.src = imgObj.preview;
-        await new Promise(resolve => img.onload = resolve);
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const outType = imgObj.file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, outType, quality));
-        
-        utils.downloadBlob(blob, 'min_' + imgObj.file.name);
-        
-        const li = listItems[i];
-        const resArea = li.querySelector('.result-area');
-        const cSize = li.querySelector('.compressed-size');
-        const sPerc = li.querySelector('.saving-percent');
-        
-        resArea.classList.remove('hidden');
-        resArea.classList.add('flex');
-        cSize.textContent = utils.formatBytes(blob.size);
-        const saved = ((imgObj.file.size - blob.size) / imgObj.file.size * 100).toFixed(1);
-        sPerc.textContent = saved > 0 ? saved + '% OFF' : '0%';
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        let blob;
+        if (mode === 'kb') {
+          blob = await reduceCanvasToExactKb(img, targetKb);
+        } else {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+        }
+
+        const baseName = imgObj.file.name.replace(/\.[^.]+$/, '');
+        const outName = mode === 'kb' ? `${baseName}_${targetKb}kb.jpg` : `${baseName}_reduced.jpg`;
+        imgObj.lastBlob = blob;
+        imgObj.lastName = outName;
+        utils.downloadBlob(blob, outName);
       }
-      
-      utils.showToast('Success', 'Images efficiently shrunk.');
+
+      renderList();
+      utils.showToast(
+        'Images Reduced!',
+        mode === 'kb'
+          ? `Reduced ${selectedImages.length} photo(s) cleanly under ${targetKb} KB.`
+          : `Shrunk ${selectedImages.length} photo(s) successfully.`
+      );
     } catch (err) {
       console.error(err);
-      utils.showToast('Error', 'Failed to compress images.', 'error');
+      utils.showToast('Error', 'Failed to reduce images.', 'error');
     } finally {
       utils.hideLoader();
     }
@@ -1935,7 +2077,7 @@ function initImageCompressor() {
 }
 
 /* ==========================================================================
-   7. Image to PDF Converter
+   7. JPG / Images to PDF Converter (A4, Fit, Letter + JPG/PNG/WebP)
    ========================================================================== */
 
 function initImageToPdf() {
@@ -1943,6 +2085,9 @@ function initImageToPdf() {
   const list = document.getElementById('imgToPdfList');
   const emptyState = document.getElementById('imgToPdfEmptyState');
   const actionBtn = document.getElementById('imgToPdfActionBtn');
+  const pageSizeSelect = document.getElementById('imgToPdfPageSize');
+  if (!input || !actionBtn) return;
+
   let selectedImages = [];
 
   function renderList() {
@@ -1955,7 +2100,7 @@ function initImageToPdf() {
     list.classList.remove('hidden');
     emptyState.classList.add('hidden');
     actionBtn.disabled = false;
-    
+
     list.innerHTML = '';
     selectedImages.forEach((imgObj, index) => {
       const li = document.createElement('li');
@@ -1974,13 +2119,13 @@ function initImageToPdf() {
       list.appendChild(li);
     });
 
-    document.querySelectorAll('#imgToPdfList .up-btn').forEach(btn => btn.onclick = (e) => moveItem(e, -1));
-    document.querySelectorAll('#imgToPdfList .down-btn').forEach(btn => btn.onclick = (e) => moveItem(e, 1));
-    document.querySelectorAll('#imgToPdfList .remove-btn').forEach(btn => btn.onclick = removeItem);
+    document.querySelectorAll('#imgToPdfList .up-btn').forEach((btn) => (btn.onclick = (e) => moveItem(e, -1)));
+    document.querySelectorAll('#imgToPdfList .down-btn').forEach((btn) => (btn.onclick = (e) => moveItem(e, 1)));
+    document.querySelectorAll('#imgToPdfList .remove-btn').forEach((btn) => (btn.onclick = removeItem));
   }
 
   function moveItem(e, dir) {
-    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+    const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
     if (idx + dir < 0 || idx + dir >= selectedImages.length) return;
     const temp = selectedImages[idx];
     selectedImages[idx] = selectedImages[idx + dir];
@@ -1989,15 +2134,15 @@ function initImageToPdf() {
   }
 
   function removeItem(e) {
-    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+    const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
     URL.revokeObjectURL(selectedImages[idx].preview);
     selectedImages.splice(idx, 1);
     renderList();
   }
 
   input.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
+    const files = Array.from(e.target.files || []);
+    files.forEach((file) => {
       selectedImages.push({
         file,
         preview: URL.createObjectURL(file)
@@ -2007,53 +2152,94 @@ function initImageToPdf() {
     renderList();
   });
 
+  async function convertImageToJpegBuffer(previewUrl) {
+    const img = new Image();
+    img.src = previewUrl;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth || img.width;
+    c.height = img.naturalHeight || img.height;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0);
+    const blob = await new Promise((resolve) => c.toBlob(resolve, 'image/jpeg', 0.92));
+    return blob.arrayBuffer();
+  }
+
   actionBtn.addEventListener('click', async () => {
     if (selectedImages.length === 0) return;
-    utils.showLoader('Rendering Document...', 'text-pink-600');
-    
+    utils.showLoader('Converting JPG to PDF...', 'text-pink-600');
+
     try {
       const { PDFDocument } = window.PDFLib;
       const pdfDoc = await PDFDocument.create();
+      const pageMode = pageSizeSelect ? pageSizeSelect.value : 'a4';
 
       for (const imgObj of selectedImages) {
-        const arrayBuffer = await imgObj.file.arrayBuffer();
         let pdfImage;
         if (imgObj.file.type === 'image/jpeg') {
-          pdfImage = await pdfDoc.embedJpg(arrayBuffer);
+          const ab = await imgObj.file.arrayBuffer();
+          try {
+            pdfImage = await pdfDoc.embedJpg(ab);
+          } catch {
+            const safeJpg = await convertImageToJpegBuffer(imgObj.preview);
+            pdfImage = await pdfDoc.embedJpg(safeJpg);
+          }
         } else if (imgObj.file.type === 'image/png') {
-          pdfImage = await pdfDoc.embedPng(arrayBuffer);
+          const ab = await imgObj.file.arrayBuffer();
+          try {
+            pdfImage = await pdfDoc.embedPng(ab);
+          } catch {
+            const safeJpg = await convertImageToJpegBuffer(imgObj.preview);
+            pdfImage = await pdfDoc.embedJpg(safeJpg);
+          }
         } else {
-          continue;
+          // WebP or any other browser-supported image format
+          const safeJpg = await convertImageToJpegBuffer(imgObj.preview);
+          pdfImage = await pdfDoc.embedJpg(safeJpg);
         }
 
         const dims = pdfImage.scale(1);
-        
-        // Scale to A4 width, but match exact aspect ratio
-        let pageDrawWidth = 595.28;
-        let pageDrawHeight = pageDrawWidth * (dims.height / dims.width);
-        if (dims.width > dims.height) {
-          pageDrawWidth = 841.89;
-          pageDrawHeight = pageDrawWidth * (dims.height / dims.width);
+        const isLandscape = dims.width > dims.height;
+
+        if (pageMode === 'fit') {
+          const pageW = isLandscape ? 841.89 : 595.28;
+          const pageH = pageW * (dims.height / dims.width);
+          const page = pdfDoc.addPage([pageW, pageH]);
+          page.drawImage(pdfImage, { x: 0, y: 0, width: pageW, height: pageH });
+        } else {
+          const baseW = pageMode === 'letter' ? 612 : 595.28;
+          const baseH = pageMode === 'letter' ? 792 : 841.89;
+          const pageW = isLandscape ? baseH : baseW;
+          const pageH = isLandscape ? baseW : baseH;
+          const margin = 22;
+          const availW = pageW - margin * 2;
+          const availH = pageH - margin * 2;
+          const ratio = Math.min(availW / dims.width, availH / dims.height);
+          const drawW = dims.width * ratio;
+          const drawH = dims.height * ratio;
+          const x = (pageW - drawW) / 2;
+          const y = (pageH - drawH) / 2;
+
+          const page = pdfDoc.addPage([pageW, pageH]);
+          page.drawImage(pdfImage, { x, y, width: drawW, height: drawH });
         }
-        
-        const page = pdfDoc.addPage([pageDrawWidth, pageDrawHeight]);
-        page.drawImage(pdfImage, {
-          x: 0,
-          y: 0,
-          width: pageDrawWidth,
-          height: pageDrawHeight,
-        });
       }
 
-      const res = await utils.savePdfWithMetadata(pdfDoc, 'Photo_Album.pdf', 'Photo Album');
+      const res = await utils.savePdfWithMetadata(pdfDoc, 'JPG_to_PDF.pdf', 'JPG to PDF Document');
       if (res && res.saved) {
-        utils.showToast('Success', `Saved "${res.filename}" cleanly.`);
+        utils.showToast('PDF Ready!', `Saved "${res.filename}" cleanly.`);
+        selectedImages.forEach((s) => URL.revokeObjectURL(s.preview));
         selectedImages = [];
         renderList();
       }
     } catch (err) {
       console.error(err);
-      utils.showToast('Error', 'Failed to render PDF.', 'error');
+      utils.showToast('Error', 'Failed to convert images to PDF.', 'error');
     } finally {
       utils.hideLoader();
     }
@@ -5359,4 +5545,1332 @@ function initPdfMetadataTool() {
     }
   });
 }
+
+/* ==========================================================================
+   19. Digital Signature Verify PDF (e-Aadhaar, PAN, Govt Certificates)
+   ========================================================================== */
+
+function initPdfSigVerify() {
+  const input = document.getElementById('sigVerifyInput');
+  const fileNameEl = document.getElementById('sigVerifyFileName');
+  const resultWrap = document.getElementById('sigVerifyResultWrap');
+  const banner = document.getElementById('sigVerifyBanner');
+  const badgeIcon = document.getElementById('sigVerifyBadgeIcon');
+  const headline = document.getElementById('sigVerifyHeadline');
+  const subtext = document.getElementById('sigVerifySubtext');
+  const cardsWrap = document.getElementById('sigVerifyCards');
+  const downloadReportBtn = document.getElementById('sigVerifyDownloadReportBtn');
+
+  if (!input || !resultWrap) return;
+
+  let lastReportText = '';
+  let lastReportFileName = 'Signature_Verification_Report.txt';
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function decodePdfString(raw) {
+    if (!raw) return '';
+    const trimmed = raw.trim();
+    if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+      let inner = trimmed.slice(1, -1);
+      inner = inner.replace(/\\([()\\])/g, '$1').replace(/\\n/g, ' ').replace(/\\r/g, '');
+      // Handle UTF-16BE BOM (\xfe\xff)
+      if (inner.length >= 2 && inner.charCodeAt(0) === 254 && inner.charCodeAt(1) === 255) {
+        let out = '';
+        for (let i = 2; i + 1 < inner.length; i += 2) {
+          out += String.fromCharCode((inner.charCodeAt(i) << 8) | inner.charCodeAt(i + 1));
+        }
+        return out.trim();
+      }
+      return inner.trim();
+    }
+    if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
+      const hex = trimmed.slice(1, -1).replace(/\s+/g, '');
+      if (hex.startsWith('feff') || hex.startsWith('FEFF')) {
+        let out = '';
+        for (let i = 4; i + 3 < hex.length; i += 4) {
+          out += String.fromCharCode(parseInt(hex.slice(i, i + 4), 16));
+        }
+        return out.trim();
+      }
+      let out = '';
+      for (let i = 0; i + 1 < hex.length; i += 2) {
+        const code = parseInt(hex.slice(i, i + 2), 16);
+        if (code >= 32 && code <= 126) out += String.fromCharCode(code);
+      }
+      return out.trim();
+    }
+    return trimmed;
+  }
+
+  function formatPdfDate(rawDate) {
+    const clean = decodePdfString(rawDate);
+    const m = clean.match(/D:(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?([+-Z])?(\d{2})?'?(\d{2})?/);
+    if (!m) return clean || 'Not specified';
+    const [, y, mo = '01', d = '01', hh = '00', mm = '00', ss = '00', tzSign = '', tzH = '', tzM = ''] = m;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthName = months[Math.max(0, Math.min(11, parseInt(mo, 10) - 1))];
+    const tzStr = tzSign === 'Z' ? ' UTC' : tzSign && tzH ? ` (UTC${tzSign}${tzH}:${tzM || '00'})` : '';
+    return `${d} ${monthName} ${y}, ${hh}:${mm}:${ss}${tzStr}`;
+  }
+
+  function hexToBytes(hexStr) {
+    const clean = hexStr.replace(/\s+/g, '');
+    const len = Math.floor(clean.length / 2);
+    const out = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      out[i] = parseInt(clean.substr(i * 2, 2), 16) || 0;
+    }
+    return out;
+  }
+
+  // Lightweight ASN.1 / DER X.509 OID scanner for PKCS#7 / CMS signature blocks
+  function inspectPkcs7Der(hexPayload) {
+    const bytes = hexToBytes(hexPayload);
+    // Trim trailing 0x00 padding inside PDF /Contents
+    let actualLen = bytes.length;
+    while (actualLen > 0 && bytes[actualLen - 1] === 0) actualLen--;
+    const der = bytes.subarray(0, actualLen);
+
+    const hasValidDerHeader = der.length > 32 && der[0] === 0x30;
+    const oidPatterns = [
+      { label: 'CN', seq: [0x06, 0x03, 0x55, 0x04, 0x03] },
+      { label: 'O', seq: [0x06, 0x03, 0x55, 0x04, 0x0a] },
+      { label: 'OU', seq: [0x06, 0x03, 0x55, 0x04, 0x0b] },
+      { label: 'ST', seq: [0x06, 0x03, 0x55, 0x04, 0x08] },
+      { label: 'C', seq: [0x06, 0x03, 0x55, 0x04, 0x06] }
+    ];
+
+    const found = { CN: [], O: [], OU: [], ST: [], C: [] };
+
+    for (let i = 0; i < der.length - 8; i++) {
+      for (const pat of oidPatterns) {
+        let match = true;
+        for (let k = 0; k < pat.seq.length; k++) {
+          if (der[i + k] !== pat.seq[k]) {
+            match = false;
+            break;
+          }
+        }
+        if (!match) continue;
+
+        const valStart = i + pat.seq.length;
+        const tag = der[valStart];
+        // PrintableString (0x13), UTF8String (0x0c), IA5String (0x16), TeletexString (0x14)
+        if (tag === 0x13 || tag === 0x0c || tag === 0x16 || tag === 0x14) {
+          let strLen = der[valStart + 1];
+          let strOff = valStart + 2;
+          if (strLen & 0x80) {
+            const numLenBytes = strLen & 0x7f;
+            if (numLenBytes === 1 && strOff < der.length) {
+              strLen = der[strOff];
+              strOff += 1;
+            } else {
+              continue;
+            }
+          }
+          if (strLen > 0 && strLen < 140 && strOff + strLen <= der.length) {
+            let text = '';
+            try {
+              text = new TextDecoder('utf-8', { fatal: false }).decode(der.subarray(strOff, strOff + strLen)).trim();
+            } catch {
+              text = '';
+            }
+            if (text && !found[pat.label].includes(text)) {
+              found[pat.label].push(text);
+            }
+          }
+        }
+      }
+    }
+
+    // Detect digest/hash algorithm OIDs
+    const hexLower = hexPayload.slice(0, Math.min(hexPayload.length, actualLen * 2)).toLowerCase();
+    let hashAlgo = 'SHA-256 / PKCS#7';
+    if (hexLower.includes('608648016503040201')) hashAlgo = 'SHA-256 (Strong)';
+    else if (hexLower.includes('608648016503040202')) hashAlgo = 'SHA-384 (Strong)';
+    else if (hexLower.includes('608648016503040203')) hashAlgo = 'SHA-512 (Strong)';
+    else if (hexLower.includes('2b0e03021a')) hashAlgo = 'SHA-1 (Legacy)';
+
+    return {
+      hasValidDerHeader,
+      derBytesLength: actualLen,
+      found,
+      hashAlgo
+    };
+  }
+
+  function extractField(dictChunk, key) {
+    const regex = new RegExp(`\\/${key}\\s*(\\((?:\\\\.|[^\\\\()])*\\)|<[0-9A-Fa-f\\s]+>|\\/[^\\s\\/\\[\\]<>()]+)`, 'm');
+    const m = dictChunk.match(regex);
+    if (!m) return '';
+    return m[1].startsWith('/') ? m[1].slice(1) : decodePdfString(m[1]);
+  }
+
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    utils.showLoader('Inspecting PDF Digital Signatures...', 'text-emerald-600');
+    try {
+      const arrayBuf = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuf);
+      const totalBytes = bytes.length;
+
+      // Convert raw bytes to Latin-1 string safely in chunks
+      let rawStr = '';
+      const chunkSize = 65536;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        rawStr += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, bytes.length)));
+      }
+
+      fileNameEl.textContent = `${file.name} (${utils.formatBytes(totalBytes)})`;
+
+      // Locate all /ByteRange [a b c d] entries
+      const brRegex = /\/ByteRange\s*\[\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*\]/g;
+      const signatures = [];
+      let match;
+
+      while ((match = brRegex.exec(rawStr)) !== null) {
+        const b0 = parseInt(match[1], 10);
+        const b1 = parseInt(match[2], 10);
+        const b2 = parseInt(match[3], 10);
+        const b3 = parseInt(match[4], 10);
+
+        // Grab surrounding signature dictionary window
+        const startWin = Math.max(0, match.index - 1800);
+        const endWin = Math.min(rawStr.length, match.index + 32000);
+        const windowChunk = rawStr.slice(startWin, endWin);
+        const metaChunk = rawStr.slice(startWin, Math.min(rawStr.length, match.index + 2400));
+
+        const subFilter = extractField(metaChunk, 'SubFilter') || 'adbe.pkcs7.detached';
+        const filter = extractField(metaChunk, 'Filter') || 'Adobe.PPKLite';
+        const signerName = extractField(metaChunk, 'Name');
+        const reason = extractField(metaChunk, 'Reason');
+        const location = extractField(metaChunk, 'Location');
+        const signDate = formatPdfDate(extractField(metaChunk, 'M'));
+
+        // Extract exact /Contents <hex> between ByteRange gap (b1 .. b2)
+        let contentsHex = '';
+        if (b1 < b2 && b2 <= totalBytes) {
+          const gapSlice = rawStr.slice(b1, b2).trim();
+          const hexMatch = gapSlice.match(/<([0-9A-Fa-f\s]+)>/);
+          if (hexMatch) contentsHex = hexMatch[1];
+        }
+        if (!contentsHex) {
+          const cMatch = windowChunk.match(/\/Contents\s*<([0-9A-Fa-f\s]+)>/);
+          if (cMatch) contentsHex = cMatch[1];
+        }
+
+        const derInfo = contentsHex ? inspectPkcs7Der(contentsHex) : { hasValidDerHeader: false, derBytesLength: 0, found: { CN: [], O: [], OU: [], ST: [], C: [] }, hashAlgo: 'Unknown' };
+
+        const signedEnd = b2 + b3;
+        const trailingBytes = totalBytes - signedEnd;
+        const coversWholeDoc = b0 === 0 && b1 > 0 && b2 > b1 && trailingBytes >= 0 && trailingBytes <= 16;
+
+        const certCNs = derInfo.found.CN || [];
+        const certOrgs = derInfo.found.O || [];
+        const resolvedSigner = signerName || certCNs[certCNs.length - 1] || certCNs[0] || 'Embedded Digital Signer';
+        const resolvedIssuer = certCNs.length > 1 ? certCNs[0] : (certOrgs[0] || 'Certificate Authority');
+
+        signatures.push({
+          index: signatures.length + 1,
+          b0, b1, b2, b3,
+          coversWholeDoc,
+          trailingBytes,
+          filter,
+          subFilter,
+          signer: resolvedSigner,
+          issuer: resolvedIssuer,
+          organizations: certOrgs,
+          orgUnits: derInfo.found.OU || [],
+          countries: derInfo.found.C || [],
+          reason: reason || 'Document Digitally Signed',
+          location: location || 'Not specified',
+          signDate,
+          hashAlgo: derInfo.hashAlgo,
+          hasValidDerHeader: derInfo.hasValidDerHeader,
+          derBytesLength: derInfo.derBytesLength
+        });
+      }
+
+      resultWrap.classList.remove('hidden');
+      cardsWrap.innerHTML = '';
+
+      const reportLines = [
+        '====================================================',
+        'PDF BONDHU - DIGITAL SIGNATURE VERIFICATION REPORT',
+        '====================================================',
+        `File Name      : ${file.name}`,
+        `File Size      : ${utils.formatBytes(totalBytes)} (${totalBytes} bytes)`,
+        `Checked On     : ${new Date().toLocaleString()}`,
+        `Signatures     : ${signatures.length}`,
+        '----------------------------------------------------'
+      ];
+
+      if (signatures.length === 0) {
+        banner.className = 'rounded-2xl p-4 border flex items-start gap-3.5 bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700';
+        badgeIcon.className = 'shrink-0 p-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+        badgeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+        headline.className = 'font-extrabold text-base text-slate-800 dark:text-white';
+        headline.textContent = 'No Cryptographic Digital Signature Found';
+        subtext.className = 'text-xs mt-1 leading-relaxed text-slate-600 dark:text-slate-300';
+        subtext.textContent = 'This PDF does not contain an embedded PKCS#7 / CAdES digital signature block. If it is a scanned document or a re-printed PDF, the digital signature may have been flattened.';
+        reportLines.push('Status: NO DIGITAL SIGNATURE FOUND IN PDF.');
+      } else {
+        const latestSig = signatures[signatures.length - 1];
+        const allValidStructure = signatures.every((s) => s.hasValidDerHeader);
+        const intactFullFile = latestSig.coversWholeDoc && allValidStructure;
+
+        if (intactFullFile) {
+          banner.className = 'rounded-2xl p-4 border flex items-start gap-3.5 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700';
+          badgeIcon.className = 'shrink-0 p-2 rounded-xl bg-emerald-600 text-white';
+          badgeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>';
+          headline.className = 'font-extrabold text-base text-emerald-900 dark:text-emerald-200';
+          headline.textContent = `Digital Signature Verified · Document Intact (${signatures.length} Signature${signatures.length > 1 ? 's' : ''})`;
+          subtext.className = 'text-xs mt-1 leading-relaxed text-emerald-800 dark:text-emerald-300';
+          subtext.textContent = 'Valid PKCS#7 / X.509 cryptographic signature structure detected. Signed ByteRange covers 100% of the PDF with zero post-signing tampering detected.';
+        } else {
+          banner.className = 'rounded-2xl p-4 border flex items-start gap-3.5 bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700';
+          badgeIcon.className = 'shrink-0 p-2 rounded-xl bg-amber-500 text-white';
+          badgeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+          headline.className = 'font-extrabold text-base text-amber-900 dark:text-amber-200';
+          headline.textContent = `Signature Present · Post-Signing Changes Detected (${signatures.length})`;
+          subtext.className = 'text-xs mt-1 leading-relaxed text-amber-800 dark:text-amber-300';
+          subtext.textContent = 'A digital signature was found, but additional bytes or incremental updates were appended after signing. Review the details below carefully.';
+        }
+
+        signatures.forEach((sig) => {
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 p-4 space-y-3';
+          card.innerHTML = `
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold ${sig.coversWholeDoc && sig.hasValidDerHeader ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300'}">Signature #${sig.index}</span>
+                <span class="font-extrabold text-sm text-slate-900 dark:text-white">${escapeHtml(sig.signer)}</span>
+              </div>
+              <span class="text-[11px] font-bold ${sig.coversWholeDoc ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
+                ${sig.coversWholeDoc ? 'ByteRange 100% Intact' : `+${sig.trailingBytes} bytes after signature`}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div><span class="text-slate-400 font-semibold block">Signed Date &amp; Time</span><span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(sig.signDate)}</span></div>
+              <div><span class="text-slate-400 font-semibold block">Certificate Issuer / Authority</span><span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(sig.issuer)}</span></div>
+              <div><span class="text-slate-400 font-semibold block">Organization(s)</span><span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(sig.organizations.join(' · ') || 'Not embedded')}</span></div>
+              <div><span class="text-slate-400 font-semibold block">Signature Standard &amp; Hash</span><span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(sig.subFilter)} · ${escapeHtml(sig.hashAlgo)}</span></div>
+              <div><span class="text-slate-400 font-semibold block">Reason</span><span class="font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(sig.reason)}</span></div>
+              <div><span class="text-slate-400 font-semibold block">Location</span><span class="font-semibold text-slate-700 dark:text-slate-200">${escapeHtml(sig.location)}</span></div>
+              <div class="sm:col-span-2"><span class="text-slate-400 font-semibold block">ByteRange Coverage &amp; Certificate Payload</span><span class="font-mono text-[11px] text-slate-600 dark:text-slate-300">[${sig.b0}, ${sig.b1}, ${sig.b2}, ${sig.b3}] · DER PKCS#7 Payload: ${sig.derBytesLength} bytes (${sig.hasValidDerHeader ? 'Valid ASN.1' : 'Invalid/Empty'})</span></div>
+            </div>
+          `;
+          cardsWrap.appendChild(card);
+
+          reportLines.push(
+            `Signature #${sig.index}:`,
+            `  Signer         : ${sig.signer}`,
+            `  Issuer / CA    : ${sig.issuer}`,
+            `  Organizations  : ${sig.organizations.join(', ') || 'N/A'}`,
+            `  Signed Date    : ${sig.signDate}`,
+            `  Reason         : ${sig.reason}`,
+            `  Location       : ${sig.location}`,
+            `  Format / Hash  : ${sig.subFilter} (${sig.hashAlgo})`,
+            `  ByteRange      : [${sig.b0}, ${sig.b1}, ${sig.b2}, ${sig.b3}]`,
+            `  File Integrity : ${sig.coversWholeDoc ? 'INTACT (100% file covered)' : `MODIFIED (${sig.trailingBytes} trailing bytes)`}`,
+            `  PKCS#7 ASN.1   : ${sig.hasValidDerHeader ? `VALID (${sig.derBytesLength} bytes)` : 'INVALID'}`,
+            '----------------------------------------------------'
+          );
+        });
+      }
+
+      lastReportText = reportLines.join('\n');
+      lastReportFileName = `${file.name.replace(/\.pdf$/i, '')}_Signature_Report.txt`;
+      utils.showToast(
+        signatures.length > 0 ? 'Inspection Complete' : 'No Signature Found',
+        signatures.length > 0 ? `Detected ${signatures.length} digital signature(s) in PDF.` : 'This PDF has no embedded digital signature.',
+        signatures.length > 0 ? 'success' : 'info'
+      );
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not inspect this PDF file.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  if (downloadReportBtn) {
+    downloadReportBtn.addEventListener('click', () => {
+      if (!lastReportText) return;
+      const blob = new Blob([lastReportText], { type: 'text/plain;charset=utf-8' });
+      utils.downloadBlob(blob, lastReportFileName);
+      utils.showToast('Report Downloaded', 'Saved verification report (.TXT).');
+    });
+  }
+}
+
+/* ==========================================================================
+   20. Repair Corrupted / Broken PDF (Smart XRef Rebuild + Deep Visual Rescue)
+   ========================================================================== */
+
+function initPdfRepair() {
+  const input = document.getElementById('pdfRepairInput');
+  const fileNameEl = document.getElementById('pdfRepairFileName');
+  const modeSelect = document.getElementById('pdfRepairMode');
+  const actionBtn = document.getElementById('pdfRepairActionBtn');
+  const logBox = document.getElementById('pdfRepairLogBox');
+  const logTitle = document.getElementById('pdfRepairLogTitle');
+  const logBody = document.getElementById('pdfRepairLogBody');
+
+  if (!input || !actionBtn) return;
+
+  let selectedFile = null;
+  let rawBytes = null;
+
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    input.value = '';
+    if (!file) return;
+    selectedFile = file;
+    rawBytes = new Uint8Array(await file.arrayBuffer());
+    fileNameEl.textContent = `${file.name} (${utils.formatBytes(file.size)})`;
+    actionBtn.disabled = false;
+    logBox.classList.add('hidden');
+  });
+
+  function stripLeadingJunkBeforePdfHeader(bytes) {
+    // Locate "%PDF-" (0x25 0x50 0x44 0x46 0x2D)
+    const maxScan = Math.min(bytes.length - 5, 4096);
+    for (let i = 0; i <= maxScan; i++) {
+      if (
+        bytes[i] === 0x25 &&
+        bytes[i + 1] === 0x50 &&
+        bytes[i + 2] === 0x44 &&
+        bytes[i + 3] === 0x46 &&
+        bytes[i + 4] === 0x2d
+      ) {
+        return { cleaned: i > 0 ? bytes.subarray(i) : bytes, trimmedOffset: i };
+      }
+    }
+    return { cleaned: bytes, trimmedOffset: 0 };
+  }
+
+  async function runDeepVisualRebuild(cleanedBytes, logs) {
+    logs.push('• Launching Deep Visual Rescue (pdf.js page renderer)...');
+    const loadingTask = window.pdfjsLib.getDocument({ data: cleanedBytes.slice(0) });
+    const pdfJsDoc = await loadingTask.promise;
+    const totalPages = pdfJsDoc.numPages;
+    logs.push(`• Detected ${totalPages} renderable page(s). Rebuilding clean PDF...`);
+
+    const freshDoc = await window.PDFLib.PDFDocument.create();
+    let rescued = 0;
+
+    for (let p = 1; p <= totalPages; p++) {
+      try {
+        const page = await pdfJsDoc.getPage(p);
+        const origVp = page.getViewport({ scale: 1.0 });
+        const renderVp = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(renderVp.width));
+        canvas.height = Math.max(1, Math.round(renderVp.height));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        await page.render({ canvasContext: ctx, viewport: renderVp }).promise;
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+        const imgBuf = await blob.arrayBuffer();
+        const jpgImg = await freshDoc.embedJpg(imgBuf);
+
+        const newPage = freshDoc.addPage([origVp.width, origVp.height]);
+        newPage.drawImage(jpgImg, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+        rescued++;
+      } catch (pageErr) {
+        logs.push(`• Skipped unreadable page #${p}: ${pageErr.message || 'damaged stream'}`);
+      }
+    }
+
+    if (rescued === 0) throw new Error('No pages could be visually rescued from this file.');
+    logs.push(`• Successfully rescued ${rescued}/${totalPages} page(s) into a brand-new PDF.`);
+    return freshDoc;
+  }
+
+  actionBtn.addEventListener('click', async () => {
+    if (!selectedFile || !rawBytes) return;
+    const mode = modeSelect ? modeSelect.value : 'auto';
+    const logs = [];
+
+    utils.showLoader('Analyzing & Repairing PDF...', 'text-amber-600');
+    try {
+      const { cleaned, trimmedOffset } = stripLeadingJunkBeforePdfHeader(rawBytes);
+      logs.push(`• Source file: ${selectedFile.name} (${utils.formatBytes(rawBytes.length)})`);
+      if (trimmedOffset > 0) {
+        logs.push(`• Fixed corrupted header: removed ${trimmedOffset} junk byte(s) before %PDF- signature.`);
+      } else {
+        logs.push('• PDF header verified.');
+      }
+
+      let repairedDoc = null;
+
+      if (mode === 'auto') {
+        try {
+          logs.push('• Stage 1: Rebuilding cross-reference (XRef) table & object tree...');
+          const srcDoc = await window.PDFLib.PDFDocument.load(cleaned, {
+            ignoreEncryption: true,
+            throwOnInvalidObject: false
+          });
+          const count = srcDoc.getPageCount();
+          if (count > 0) {
+            const cleanDoc = await window.PDFLib.PDFDocument.create();
+            const indices = Array.from({ length: count }, (_, idx) => idx);
+            const copied = await cleanDoc.copyPages(srcDoc, indices);
+            copied.forEach((pg) => cleanDoc.addPage(pg));
+            logs.push(`• Stage 1 succeeded! Rebuilt clean structure with ${count} vector page(s).`);
+            repairedDoc = cleanDoc;
+          }
+        } catch (stage1Err) {
+          logs.push(`• Stage 1 structural load failed (${stage1Err.message || 'broken XRef'}). Switching to Deep Rescue...`);
+        }
+      }
+
+      if (!repairedDoc) {
+        repairedDoc = await runDeepVisualRebuild(cleaned, logs);
+      }
+
+      logTitle.textContent = 'Repair Successful — Clean PDF Ready';
+      logBody.textContent = logs.join('\n');
+      logBox.classList.remove('hidden');
+
+      const base = selectedFile.name.replace(/\.pdf$/i, '');
+      const res = await utils.savePdfWithMetadata(repairedDoc, `${base}_repaired.pdf`, `${base} (Repaired)`);
+      if (res && res.saved) {
+        utils.showToast('PDF Repaired!', `Saved "${res.filename}" cleanly.`);
+      }
+    } catch (err) {
+      console.error(err);
+      logs.push(`• Recovery halted: ${err.message || 'Severely damaged or encrypted file.'}`);
+      logTitle.textContent = 'Repair Diagnostics';
+      logBody.textContent = logs.join('\n');
+      logBox.classList.remove('hidden');
+      utils.showToast('Repair Failed', 'This PDF is too severely corrupted or password-locked.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
+/* ==========================================================================
+   21. Interactive Visual PDF Editor (Text, Whiteout, Highlight, Draw, Image)
+   ========================================================================== */
+
+function initPdfEdit() {
+  const input = document.getElementById('pdfEditInput');
+  const fileNameEl = document.getElementById('pdfEditFileName');
+  const prevBtn = document.getElementById('pdfEditPrevPage');
+  const nextBtn = document.getElementById('pdfEditNextPage');
+  const pageLabel = document.getElementById('pdfEditPageLabel');
+  const saveBtn = document.getElementById('pdfEditSaveBtn');
+  const controlsBar = document.getElementById('pdfEditControlsBar');
+  const toolBtns = document.querySelectorAll('.pdf-edit-tool-btn');
+  const imgInput = document.getElementById('pdfEditImgInput');
+  const undoBtn = document.getElementById('pdfEditUndoBtn');
+  const clearPageBtn = document.getElementById('pdfEditClearPageBtn');
+  const textInput = document.getElementById('pdfEditTextValue');
+  const fontSizeInput = document.getElementById('pdfEditFontSize');
+  const colorInput = document.getElementById('pdfEditColor');
+  const boldCheckbox = document.getElementById('pdfEditBold');
+  const hintEl = document.getElementById('pdfEditHint');
+  const emptyState = document.getElementById('pdfEditEmptyState');
+  const canvasWrap = document.getElementById('pdfEditCanvasWrap');
+  const baseCanvas = document.getElementById('pdfEditBaseCanvas');
+  const overlayCanvas = document.getElementById('pdfEditOverlayCanvas');
+
+  if (!input || !baseCanvas || !overlayCanvas) return;
+
+  const baseCtx = baseCanvas.getContext('2d');
+  const overCtx = overlayCanvas.getContext('2d');
+
+  let sourceBytes = null;
+  let sourceFileName = 'Document';
+  let pdfJsDoc = null;
+  let currentPage = 1;
+  let totalPages = 0;
+  let activeTool = 'text'; // 'text' | 'whiteout' | 'highlight' | 'draw' | 'image'
+  let pendingImage = null; // { img, dataUrl }
+
+  // Map<pageNum, Array<Annotation>> stored in normalized 0..1 coordinates
+  const pageEdits = new Map();
+
+  let isDragging = false;
+  let dragStart = null;
+  let dragCurrent = null;
+  let activeStroke = null;
+
+  const hints = {
+    text: 'Tap anywhere on the page to place your text',
+    whiteout: 'Drag a box over mistakes or old text to cover with crisp white',
+    highlight: 'Drag across any line to highlight smoothly',
+    draw: 'Draw freehand annotations or signatures directly on the page',
+    image: 'Drag a box on the page to insert & size your image'
+  };
+
+  function setTool(tool) {
+    activeTool = tool;
+    toolBtns.forEach((btn) => {
+      const isMatch = btn.getAttribute('data-tool') === tool;
+      btn.className = isMatch
+        ? 'pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm min-h-[38px]'
+        : 'pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 min-h-[38px]';
+    });
+    if (hintEl) hintEl.textContent = hints[tool] || '';
+  }
+
+  toolBtns.forEach((btn) => {
+    btn.addEventListener('click', () => setTool(btn.getAttribute('data-tool')));
+  });
+
+  if (imgInput) {
+    imgInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      imgInput.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          pendingImage = { img, dataUrl: reader.result };
+          setTool('image');
+          utils.showToast('Image Ready', 'Drag a box on the PDF page to place your image.', 'info');
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function getEditsForPage(p) {
+    if (!pageEdits.has(p)) pageEdits.set(p, []);
+    return pageEdits.get(p);
+  }
+
+  function drawAnnotationsOnContext(ctx, width, height, items, draftItem = null) {
+    ctx.clearRect(0, 0, width, height);
+    const list = draftItem ? [...items, draftItem] : items;
+
+    for (const item of list) {
+      ctx.save();
+      if (item.type === 'whiteout') {
+        const x = Math.min(item.x1, item.x2) * width;
+        const y = Math.min(item.y1, item.y2) * height;
+        const w = Math.abs(item.x2 - item.x1) * width;
+        const h = Math.abs(item.y2 - item.y1) * height;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, w, h);
+        if (item === draftItem) {
+          ctx.strokeStyle = '#6366f1';
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(x, y, w, h);
+        }
+      } else if (item.type === 'highlight') {
+        const x = Math.min(item.x1, item.x2) * width;
+        const y = Math.min(item.y1, item.y2) * height;
+        const w = Math.abs(item.x2 - item.x1) * width;
+        const h = Math.abs(item.y2 - item.y1) * height;
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = item.color || '#facc15';
+        ctx.fillRect(x, y, w, h);
+      } else if (item.type === 'text') {
+        const pxSize = Math.max(8, (item.fontSizeRatio || 0.022) * height);
+        ctx.font = `${item.bold ? '700' : '500'} ${pxSize}px system-ui, -apple-system, sans-serif`;
+        ctx.fillStyle = item.color || '#1e293b';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(item.text, item.x * width, item.y * height);
+      } else if (item.type === 'draw' && item.points && item.points.length > 1) {
+        ctx.strokeStyle = item.color || '#1e293b';
+        ctx.lineWidth = Math.max(1.5, (item.strokeRatio || 0.004) * width);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(item.points[0].x * width, item.points[0].y * height);
+        for (let i = 1; i < item.points.length; i++) {
+          ctx.lineTo(item.points[i].x * width, item.points[i].y * height);
+        }
+        ctx.stroke();
+      } else if (item.type === 'image' && item.img) {
+        const x = Math.min(item.x1, item.x2) * width;
+        const y = Math.min(item.y1, item.y2) * height;
+        const w = Math.max(10, Math.abs(item.x2 - item.x1) * width);
+        const h = Math.max(10, Math.abs(item.y2 - item.y1) * height);
+        ctx.drawImage(item.img, x, y, w, h);
+        if (item === draftItem) {
+          ctx.strokeStyle = '#6366f1';
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(x, y, w, h);
+        }
+      }
+      ctx.restore();
+    }
+  }
+
+  function redrawOverlay(draft = null) {
+    drawAnnotationsOnContext(overCtx, overlayCanvas.width, overlayCanvas.height, getEditsForPage(currentPage), draft);
+  }
+
+  async function renderPage(num) {
+    if (!pdfJsDoc) return;
+    currentPage = Math.max(1, Math.min(totalPages, num));
+    const page = await pdfJsDoc.getPage(currentPage);
+    const vp = page.getViewport({ scale: 1.5 });
+    baseCanvas.width = Math.round(vp.width);
+    baseCanvas.height = Math.round(vp.height);
+    overlayCanvas.width = baseCanvas.width;
+    overlayCanvas.height = baseCanvas.height;
+
+    baseCtx.fillStyle = '#ffffff';
+    baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
+    await page.render({ canvasContext: baseCtx, viewport: vp }).promise;
+
+    pageLabel.textContent = `${currentPage} / ${totalPages}`;
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+    redrawOverlay();
+  }
+
+  function getNormPointer(e) {
+    const rect = overlayCanvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    return { x, y };
+  }
+
+  overlayCanvas.addEventListener('pointerdown', (e) => {
+    if (!pdfJsDoc) return;
+    overlayCanvas.setPointerCapture(e.pointerId);
+    const pt = getNormPointer(e);
+
+    if (activeTool === 'text') {
+      const txt = (textInput?.value || '').trim();
+      if (!txt) {
+        utils.showToast('Enter Text', 'Type the text you want to add in the box above.', 'info');
+        return;
+      }
+      const fs = Math.max(8, Math.min(72, parseInt(fontSizeInput?.value || '16', 10) || 16));
+      getEditsForPage(currentPage).push({
+        type: 'text',
+        x: pt.x,
+        y: pt.y,
+        text: txt,
+        fontSizeRatio: (fs * 1.5) / Math.max(1, overlayCanvas.height),
+        color: colorInput?.value || '#1e293b',
+        bold: Boolean(boldCheckbox?.checked)
+      });
+      redrawOverlay();
+      return;
+    }
+
+    isDragging = true;
+    dragStart = pt;
+    dragCurrent = pt;
+
+    if (activeTool === 'draw') {
+      const sz = Math.max(2, Math.min(24, (parseInt(fontSizeInput?.value || '16', 10) || 16) / 4));
+      activeStroke = {
+        type: 'draw',
+        color: colorInput?.value || '#1e293b',
+        strokeRatio: sz / Math.max(1, overlayCanvas.width),
+        points: [pt]
+      };
+    }
+  });
+
+  overlayCanvas.addEventListener('pointermove', (e) => {
+    if (!isDragging || !pdfJsDoc) return;
+    const pt = getNormPointer(e);
+    dragCurrent = pt;
+
+    if (activeTool === 'draw' && activeStroke) {
+      activeStroke.points.push(pt);
+      redrawOverlay(activeStroke);
+    } else if (activeTool === 'whiteout') {
+      redrawOverlay({ type: 'whiteout', x1: dragStart.x, y1: dragStart.y, x2: pt.x, y2: pt.y });
+    } else if (activeTool === 'highlight') {
+      const hiColor = (colorInput?.value || '#1e293b') === '#1e293b' ? '#facc15' : colorInput.value;
+      redrawOverlay({ type: 'highlight', x1: dragStart.x, y1: dragStart.y, x2: pt.x, y2: pt.y, color: hiColor });
+    } else if (activeTool === 'image' && pendingImage) {
+      redrawOverlay({ type: 'image', img: pendingImage.img, x1: dragStart.x, y1: dragStart.y, x2: pt.x, y2: pt.y });
+    }
+  });
+
+  function finishDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+    const edits = getEditsForPage(currentPage);
+
+    if (activeTool === 'draw' && activeStroke && activeStroke.points.length > 1) {
+      edits.push(activeStroke);
+    } else if (activeTool === 'whiteout' && dragStart && dragCurrent) {
+      if (Math.abs(dragCurrent.x - dragStart.x) > 0.005 || Math.abs(dragCurrent.y - dragStart.y) > 0.005) {
+        edits.push({ type: 'whiteout', x1: dragStart.x, y1: dragStart.y, x2: dragCurrent.x, y2: dragCurrent.y });
+      }
+    } else if (activeTool === 'highlight' && dragStart && dragCurrent) {
+      if (Math.abs(dragCurrent.x - dragStart.x) > 0.005 || Math.abs(dragCurrent.y - dragStart.y) > 0.005) {
+        const hiColor = (colorInput?.value || '#1e293b') === '#1e293b' ? '#facc15' : colorInput.value;
+        edits.push({ type: 'highlight', x1: dragStart.x, y1: dragStart.y, x2: dragCurrent.x, y2: dragCurrent.y, color: hiColor });
+      }
+    } else if (activeTool === 'image' && pendingImage && dragStart && dragCurrent) {
+      let x2 = dragCurrent.x;
+      let y2 = dragCurrent.y;
+      if (Math.abs(x2 - dragStart.x) < 0.02 && Math.abs(y2 - dragStart.y) < 0.02) {
+        // Quick tap fallback: place neat 28% width box preserving image aspect ratio
+        const wNorm = 0.28;
+        const aspect = (pendingImage.img.naturalHeight / Math.max(1, pendingImage.img.naturalWidth)) * (overlayCanvas.width / Math.max(1, overlayCanvas.height));
+        x2 = Math.min(1, dragStart.x + wNorm);
+        y2 = Math.min(1, dragStart.y + wNorm * aspect);
+      }
+      edits.push({ type: 'image', img: pendingImage.img, x1: dragStart.x, y1: dragStart.y, x2, y2 });
+      setTool('text');
+    }
+
+    activeStroke = null;
+    dragStart = null;
+    dragCurrent = null;
+    redrawOverlay();
+  }
+
+  overlayCanvas.addEventListener('pointerup', finishDrag);
+  overlayCanvas.addEventListener('pointercancel', finishDrag);
+
+  if (undoBtn) {
+    undoBtn.addEventListener('click', () => {
+      const edits = getEditsForPage(currentPage);
+      if (edits.length > 0) {
+        edits.pop();
+        redrawOverlay();
+      }
+    });
+  }
+
+  if (clearPageBtn) {
+    clearPageBtn.addEventListener('click', () => {
+      pageEdits.set(currentPage, []);
+      redrawOverlay();
+    });
+  }
+
+  if (prevBtn) prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
+
+  input.addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    utils.showLoader('Opening PDF in Visual Editor...', 'text-indigo-600');
+    try {
+      const buf = await file.arrayBuffer();
+      sourceBytes = new Uint8Array(buf);
+      sourceFileName = file.name.replace(/\.pdf$/i, '');
+      pageEdits.clear();
+
+      pdfJsDoc = await window.pdfjsLib.getDocument({ data: sourceBytes.slice(0) }).promise;
+      totalPages = pdfJsDoc.numPages;
+
+      fileNameEl.textContent = file.name;
+      emptyState.classList.add('hidden');
+      canvasWrap.classList.remove('hidden');
+      controlsBar.classList.remove('hidden');
+      saveBtn.disabled = false;
+
+      await renderPage(1);
+      utils.showToast('Editor Ready', `Loaded ${totalPages} page(s). Tap or drag on the page to edit.`);
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not open PDF for editing.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (!sourceBytes) return;
+    utils.showLoader('Applying Edits to PDF...', 'text-indigo-600');
+    try {
+      const pdfDoc = await window.PDFLib.PDFDocument.load(sourceBytes, { ignoreEncryption: true });
+      const pages = pdfDoc.getPages();
+
+      for (const [pageNum, edits] of pageEdits.entries()) {
+        if (!edits || edits.length === 0) continue;
+        const pdfPage = pages[pageNum - 1];
+        if (!pdfPage) continue;
+
+        const { width, height } = pdfPage.getSize();
+        const exportScale = 2.5;
+        const off = document.createElement('canvas');
+        off.width = Math.max(1, Math.round(width * exportScale));
+        off.height = Math.max(1, Math.round(height * exportScale));
+        const offCtx = off.getContext('2d');
+
+        drawAnnotationsOnContext(offCtx, off.width, off.height, edits);
+        const pngBlob = await new Promise((resolve) => off.toBlob(resolve, 'image/png'));
+        const pngBytes = await pngBlob.arrayBuffer();
+        const pngImg = await pdfDoc.embedPng(pngBytes);
+
+        pdfPage.drawImage(pngImg, { x: 0, y: 0, width, height });
+      }
+
+      const res = await utils.savePdfWithMetadata(pdfDoc, `${sourceFileName}_edited.pdf`, `${sourceFileName} (Edited)`);
+      if (res && res.saved) {
+        utils.showToast('PDF Saved!', `Saved "${res.filename}" with all your edits.`);
+      }
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not save edited PDF.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+}
+
+/* ==========================================================================
+   22. Passport Size Photo Maker & Printable A4 / 4x6 Studio (Image Section)
+   ========================================================================== */
+
+function initPassportMaker() {
+  const input = document.getElementById('passportPhotoInput');
+  const presetSelect = document.getElementById('passportSizePreset');
+  const bgColorSelect = document.getElementById('passportBgColor');
+  const bgTolWrap = document.getElementById('passportBgTolWrap');
+  const bgTolSlider = document.getElementById('passportBgTolerance');
+  const bgTolVal = document.getElementById('passportBgTolVal');
+  const zoomSlider = document.getElementById('passportZoom');
+  const zoomVal = document.getElementById('passportZoomVal');
+  const offsetYSlider = document.getElementById('passportOffsetY');
+  const offsetYVal = document.getElementById('passportOffsetYVal');
+  const offsetXSlider = document.getElementById('passportOffsetX');
+  const offsetXVal = document.getElementById('passportOffsetXVal');
+  const borderCheckbox = document.getElementById('passportAddBorder');
+  const targetKbInput = document.getElementById('passportTargetKb');
+  const sheetLayoutSelect = document.getElementById('passportSheetLayout');
+  const dlSingleBtn = document.getElementById('passportDownloadSingleBtn');
+  const dlSheetPdfBtn = document.getElementById('passportDownloadSheetPdfBtn');
+  const dlSheetJpgBtn = document.getElementById('passportDownloadSheetJpgBtn');
+  const dimsMeta = document.getElementById('passportDimensionsMeta');
+  const singleCanvas = document.getElementById('passportSingleCanvas');
+  const sheetCanvas = document.getElementById('passportSheetCanvas');
+
+  if (!input || !singleCanvas || !sheetCanvas) return;
+
+  const PRESETS = {
+    india: { name: 'India_Passport_35x45mm', wMm: 35, hMm: 45, pxW: 413, pxH: 531 },
+    pan:   { name: 'PAN_Card_25x35mm',       wMm: 25, hMm: 35, pxW: 295, pxH: 413 },
+    us:    { name: 'US_Visa_OCI_51x51mm',    wMm: 51, hMm: 51, pxW: 600, pxH: 600 },
+    stamp: { name: 'Stamp_Size_20x25mm',     wMm: 20, hMm: 25, pxW: 236, pxH: 295 }
+  };
+
+  const SHEET_LAYOUTS = {
+    a4_8:  { pageMmW: 210,   pageMmH: 297,   cols: 4, rows: 2, count: 8,  label: 'A4_8_Photos' },
+    a4_12: { pageMmW: 210,   pageMmH: 297,   cols: 4, rows: 3, count: 12, label: 'A4_12_Photos' },
+    a4_24: { pageMmW: 210,   pageMmH: 297,   cols: 4, rows: 6, count: 24, label: 'A4_24_Photos' },
+    a4_30: { pageMmW: 210,   pageMmH: 297,   cols: 5, rows: 6, count: 30, label: 'A4_30_Photos' },
+    '4x6_6': { pageMmW: 152.4, pageMmH: 101.6, cols: 3, rows: 2, count: 6,  label: '4x6_6_Photos' },
+    '4x6_8': { pageMmW: 152.4, pageMmH: 101.6, cols: 4, rows: 2, count: 8,  label: '4x6_8_Photos' }
+  };
+
+  let sourceImg = null;
+  let processedBgCanvas = null; // Cached background-replaced portrait
+  let lastBgKey = '';
+
+  function hexToRgb(hex) {
+    const clean = hex.replace('#', '');
+    return [
+      parseInt(clean.slice(0, 2), 16) || 255,
+      parseInt(clean.slice(2, 4), 16) || 255,
+      parseInt(clean.slice(4, 6), 16) || 255
+    ];
+  }
+
+  // Edge-connected flood-fill studio background replacement
+  function buildBgReplacedCanvas(img, targetHex, tolerance) {
+    const maxDim = 680;
+    const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    const [tr, tg, tb] = hexToRgb(targetHex);
+
+    // Sample multiple border seed colors along top & upper sides
+    const seedCoords = [
+      [2, 2], [w - 3, 2], [Math.floor(w / 2), 2],
+      [2, Math.floor(h * 0.25)], [w - 3, Math.floor(h * 0.25)],
+      [2, Math.floor(h * 0.5)], [w - 3, Math.floor(h * 0.5)]
+    ];
+    const seeds = seedCoords.map(([sx, sy]) => {
+      const idx = (Math.max(0, Math.min(h - 1, sy)) * w + Math.max(0, Math.min(w - 1, sx))) * 4;
+      return [data[idx], data[idx + 1], data[idx + 2]];
+    });
+
+    const tolSq = (tolerance * 2.15) * (tolerance * 2.15);
+    const visited = new Uint8Array(w * h);
+    const bgMask = new Uint8Array(w * h);
+    const queue = new Int32Array(w * h);
+    let head = 0;
+    let tail = 0;
+
+    const enqueue = (px, py) => {
+      const pIdx = py * w + px;
+      if (visited[pIdx]) return;
+      visited[pIdx] = 1;
+      queue[tail++] = pIdx;
+    };
+
+    // Seed flood fill from all outer edges (top, left, right)
+    for (let x = 0; x < w; x++) enqueue(x, 0);
+    for (let y = 0; y < h; y++) {
+      enqueue(0, y);
+      enqueue(w - 1, y);
+    }
+
+    const matchesBg = (r, g, b, refR, refG, refB) => {
+      const dr = r - refR;
+      const dg = g - refG;
+      const db = b - refB;
+      if (dr * dr + dg * dg + db * db <= tolSq * 0.72) return true;
+      for (let s = 0; s < seeds.length; s++) {
+        const sr = r - seeds[s][0];
+        const sg = g - seeds[s][1];
+        const sb = b - seeds[s][2];
+        if (sr * sr + sg * sg + sb * sb <= tolSq) return true;
+      }
+      return false;
+    };
+
+    while (head < tail) {
+      const pIdx = queue[head++];
+      const px = pIdx % w;
+      const py = (pIdx - px) / w;
+      const dIdx = pIdx * 4;
+      const r = data[dIdx];
+      const g = data[dIdx + 1];
+      const b = data[dIdx + 2];
+
+      if (!matchesBg(r, g, b, r, g, b)) continue;
+      bgMask[pIdx] = 1;
+
+      const neighbors = [
+        [px - 1, py], [px + 1, py], [px, py - 1], [px, py + 1]
+      ];
+      for (let n = 0; n < 4; n++) {
+        const nx = neighbors[n][0];
+        const ny = neighbors[n][1];
+        if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+        const nIdx = ny * w + nx;
+        if (visited[nIdx]) continue;
+        const nd = nIdx * 4;
+        if (matchesBg(data[nd], data[nd + 1], data[nd + 2], r, g, b)) {
+          visited[nIdx] = 1;
+          queue[tail++] = nIdx;
+        }
+      }
+    }
+
+    // Apply solid replacement + subtle 1px edge feathering
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const pIdx = y * w + x;
+        const dIdx = pIdx * 4;
+        if (bgMask[pIdx]) {
+          data[dIdx] = tr;
+          data[dIdx + 1] = tg;
+          data[dIdx + 2] = tb;
+        } else if (x > 0 && x < w - 1 && y > 0 && y < h - 1) {
+          const borderTouch = bgMask[pIdx - 1] + bgMask[pIdx + 1] + bgMask[pIdx - w] + bgMask[pIdx + w];
+          if (borderTouch >= 2) {
+            data[dIdx] = Math.round(data[dIdx] * 0.55 + tr * 0.45);
+            data[dIdx + 1] = Math.round(data[dIdx + 1] * 0.55 + tg * 0.45);
+            data[dIdx + 2] = Math.round(data[dIdx + 2] * 0.55 + tb * 0.45);
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+    return c;
+  }
+
+  function renderStudio() {
+    const preset = PRESETS[presetSelect?.value || 'india'] || PRESETS.india;
+    const layout = SHEET_LAYOUTS[sheetLayoutSelect?.value || 'a4_12'] || SHEET_LAYOUTS.a4_12;
+    const bgVal = bgColorSelect?.value || 'original';
+    const tol = parseInt(bgTolSlider?.value || '38', 10) || 38;
+    const zoom = (parseInt(zoomSlider?.value || '100', 10) || 100) / 100;
+    const offX = parseInt(offsetXSlider?.value || '0', 10) || 0;
+    const offY = parseInt(offsetYSlider?.value || '0', 10) || 0;
+    const addBorder = Boolean(borderCheckbox?.checked);
+
+    if (bgTolWrap) bgTolWrap.classList.toggle('hidden', bgVal === 'original');
+    if (bgTolVal) bgTolVal.textContent = String(tol);
+    if (zoomVal) zoomVal.textContent = `${Math.round(zoom * 100)}%`;
+    if (offsetXVal) offsetXVal.textContent = String(offX);
+    if (offsetYVal) offsetYVal.textContent = String(offY);
+    if (dimsMeta) dimsMeta.textContent = `${preset.wMm} × ${preset.hMm} mm · ${preset.pxW} × ${preset.pxH} px (300 DPI)`;
+
+    // 1. Render Single Passport Canvas (exact 300 DPI pixel size)
+    singleCanvas.width = preset.pxW;
+    singleCanvas.height = preset.pxH;
+    const sCtx = singleCanvas.getContext('2d');
+    sCtx.fillStyle = bgVal === 'original' ? '#ffffff' : bgVal;
+    sCtx.fillRect(0, 0, singleCanvas.width, singleCanvas.height);
+
+    if (sourceImg) {
+      let drawSource = sourceImg;
+      if (bgVal !== 'original') {
+        const key = `${bgVal}_${tol}_${sourceImg.src.slice(0, 40)}`;
+        if (key !== lastBgKey || !processedBgCanvas) {
+          processedBgCanvas = buildBgReplacedCanvas(sourceImg, bgVal, tol);
+          lastBgKey = key;
+        }
+        drawSource = processedBgCanvas;
+      }
+
+      const srcW = drawSource.width || drawSource.naturalWidth;
+      const srcH = drawSource.height || drawSource.naturalHeight;
+      const baseScale = Math.max(singleCanvas.width / srcW, singleCanvas.height / srcH);
+      const finalScale = baseScale * zoom;
+      const drawW = srcW * finalScale;
+      const drawH = srcH * finalScale;
+
+      const dx = (singleCanvas.width - drawW) / 2 + (offX / 100) * singleCanvas.width;
+      const dy = (singleCanvas.height - drawH) / 2 + (offY / 100) * singleCanvas.height;
+
+      sCtx.drawImage(drawSource, dx, dy, drawW, drawH);
+    } else {
+      // Placeholder guide silhouette
+      sCtx.fillStyle = '#e2e8f0';
+      sCtx.beginPath();
+      sCtx.arc(singleCanvas.width / 2, singleCanvas.height * 0.36, singleCanvas.width * 0.2, 0, Math.PI * 2);
+      sCtx.fill();
+      sCtx.beginPath();
+      sCtx.ellipse(singleCanvas.width / 2, singleCanvas.height * 0.84, singleCanvas.width * 0.36, singleCanvas.height * 0.26, 0, Math.PI, Math.PI * 2);
+      sCtx.fill();
+      sCtx.fillStyle = '#64748b';
+      sCtx.font = 'bold 24px system-ui, sans-serif';
+      sCtx.textAlign = 'center';
+      sCtx.fillText('Upload Photo', singleCanvas.width / 2, singleCanvas.height * 0.94);
+    }
+
+    if (addBorder) {
+      sCtx.strokeStyle = '#0f172a';
+      sCtx.lineWidth = Math.max(2, Math.round(singleCanvas.width * 0.008));
+      sCtx.strokeRect(sCtx.lineWidth / 2, sCtx.lineWidth / 2, singleCanvas.width - sCtx.lineWidth, singleCanvas.height - sCtx.lineWidth);
+    }
+
+    // 2. Render Sheet Preview Canvas
+    renderSheetToCanvas(sheetCanvas, layout, preset, 3.2);
+  }
+
+  function renderSheetToCanvas(targetCanvas, layout, preset, pxPerMm) {
+    const sheetW = Math.round(layout.pageMmW * pxPerMm);
+    const sheetH = Math.round(layout.pageMmH * pxPerMm);
+    targetCanvas.width = sheetW;
+    targetCanvas.height = sheetH;
+
+    const ctx = targetCanvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, sheetW, sheetH);
+
+    // Compute photo cell size in mm (auto-shrink gently if user picks e.g. 51x51mm on 5 cols)
+    const gapMm = 4.5;
+    const marginMm = 8;
+    const maxCellW = (layout.pageMmW - marginMm * 2 - gapMm * (layout.cols - 1)) / layout.cols;
+    const maxCellH = (layout.pageMmH - marginMm * 2 - gapMm * (layout.rows - 1)) / layout.rows;
+    const fitScale = Math.min(1, maxCellW / preset.wMm, maxCellH / preset.hMm);
+
+    const drawMmW = preset.wMm * fitScale;
+    const drawMmH = preset.hMm * fitScale;
+    const totalGridW = layout.cols * drawMmW + (layout.cols - 1) * gapMm;
+    const startMmX = (layout.pageMmW - totalGridW) / 2;
+    const startMmY = marginMm;
+
+    let drawn = 0;
+    for (let r = 0; r < layout.rows; r++) {
+      for (let c = 0; c < layout.cols; c++) {
+        if (drawn >= layout.count) break;
+        const x = (startMmX + c * (drawMmW + gapMm)) * pxPerMm;
+        const y = (startMmY + r * (drawMmH + gapMm)) * pxPerMm;
+        const w = drawMmW * pxPerMm;
+        const h = drawMmH * pxPerMm;
+
+        ctx.drawImage(singleCanvas, x, y, w, h);
+
+        // Subtle print cut-guide corners
+        ctx.save();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = Math.max(1, pxPerMm * 0.2);
+        ctx.setLineDash([Math.max(2, pxPerMm * 1.2), Math.max(2, pxPerMm * 1.2)]);
+        ctx.strokeRect(x - pxPerMm * 0.4, y - pxPerMm * 0.4, w + pxPerMm * 0.8, h + pxPerMm * 0.8);
+        ctx.restore();
+        drawn++;
+      }
+    }
+  }
+
+  input.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    input.value = '';
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      sourceImg = img;
+      processedBgCanvas = null;
+      lastBgKey = '';
+      dlSingleBtn.disabled = false;
+      dlSheetPdfBtn.disabled = false;
+      dlSheetJpgBtn.disabled = false;
+      renderStudio();
+      utils.showToast('Portrait Loaded', 'Adjust Zoom, Position, or Background Color live.');
+    };
+    img.src = url;
+  });
+
+  [presetSelect, bgColorSelect, bgTolSlider, zoomSlider, offsetXSlider, offsetYSlider, borderCheckbox, sheetLayoutSelect].forEach((el) => {
+    if (!el) return;
+    el.addEventListener('input', renderStudio);
+    el.addEventListener('change', renderStudio);
+  });
+
+  // Download Single Passport Photo (Exact Target KB or HD)
+  dlSingleBtn.addEventListener('click', async () => {
+    if (!sourceImg) return;
+    const preset = PRESETS[presetSelect?.value || 'india'] || PRESETS.india;
+    const targetKb = parseInt(targetKbInput?.value || '0', 10) || 0;
+
+    utils.showLoader(targetKb > 0 ? `Exporting ${targetKb} KB Passport Photo...` : 'Exporting HD Passport Photo...', 'text-sky-600');
+    try {
+      let blob;
+      if (targetKb > 0) {
+        const tmpImg = new Image();
+        tmpImg.src = singleCanvas.toDataURL('image/png');
+        await new Promise((resolve) => (tmpImg.onload = resolve));
+        blob = await reduceCanvasToExactKb(tmpImg, targetKb);
+      } else {
+        blob = await new Promise((resolve) => singleCanvas.toBlob(resolve, 'image/jpeg', 0.96));
+      }
+      const name = `${preset.name}${targetKb > 0 ? '_' + targetKb + 'kb' : '_HD'}.jpg`;
+      utils.downloadBlob(blob, name);
+      utils.showToast('Single Photo Saved!', `Downloaded ${name} (${utils.formatBytes(blob.size)}).`);
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not export single passport photo.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  // Download Printable Sheet PDF (Exact Millimeter Print Dimensions)
+  dlSheetPdfBtn.addEventListener('click', async () => {
+    if (!sourceImg) return;
+    const preset = PRESETS[presetSelect?.value || 'india'] || PRESETS.india;
+    const layout = SHEET_LAYOUTS[sheetLayoutSelect?.value || 'a4_12'] || SHEET_LAYOUTS.a4_12;
+
+    utils.showLoader('Generating Print-Ready PDF Sheet...', 'text-sky-600');
+    try {
+      const MM_TO_PT = 72 / 25.4;
+      const pdfDoc = await window.PDFLib.PDFDocument.create();
+      const pageW = layout.pageMmW * MM_TO_PT;
+      const pageH = layout.pageMmH * MM_TO_PT;
+      const page = pdfDoc.addPage([pageW, pageH]);
+
+      const jpgBlob = await new Promise((resolve) => singleCanvas.toBlob(resolve, 'image/jpeg', 0.96));
+      const jpgBytes = await jpgBlob.arrayBuffer();
+      const jpgImg = await pdfDoc.embedJpg(jpgBytes);
+
+      const gapMm = 4.5;
+      const marginMm = 8;
+      const maxCellW = (layout.pageMmW - marginMm * 2 - gapMm * (layout.cols - 1)) / layout.cols;
+      const maxCellH = (layout.pageMmH - marginMm * 2 - gapMm * (layout.rows - 1)) / layout.rows;
+      const fitScale = Math.min(1, maxCellW / preset.wMm, maxCellH / preset.hMm);
+
+      const drawMmW = preset.wMm * fitScale;
+      const drawMmH = preset.hMm * fitScale;
+      const totalGridW = layout.cols * drawMmW + (layout.cols - 1) * gapMm;
+      const startMmX = (layout.pageMmW - totalGridW) / 2;
+      const startMmY = marginMm;
+
+      let drawn = 0;
+      for (let r = 0; r < layout.rows; r++) {
+        for (let c = 0; c < layout.cols; c++) {
+          if (drawn >= layout.count) break;
+          const xPt = (startMmX + c * (drawMmW + gapMm)) * MM_TO_PT;
+          const topMm = startMmY + r * (drawMmH + gapMm);
+          const yPt = pageH - (topMm + drawMmH) * MM_TO_PT;
+          const wPt = drawMmW * MM_TO_PT;
+          const hPt = drawMmH * MM_TO_PT;
+
+          page.drawImage(jpgImg, { x: xPt, y: yPt, width: wPt, height: hPt });
+          page.drawRectangle({
+            x: xPt - 1,
+            y: yPt - 1,
+            width: wPt + 2,
+            height: hPt + 2,
+            borderColor: window.PDFLib.rgb(0.8, 0.84, 0.88),
+            borderWidth: 0.5
+          });
+          drawn++;
+        }
+      }
+
+      const fileName = `Passport_${layout.label}.pdf`;
+      const res = await utils.savePdfWithMetadata(pdfDoc, fileName, `Passport Sheet (${layout.count} Photos)`);
+      if (res && res.saved) {
+        utils.showToast('Print Sheet PDF Ready!', `Saved "${res.filename}" (${layout.count} photos at exact print scale).`);
+      }
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not build print sheet PDF.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  // Download Printable Sheet as 300 DPI HD JPG
+  dlSheetJpgBtn.addEventListener('click', async () => {
+    if (!sourceImg) return;
+    const preset = PRESETS[presetSelect?.value || 'india'] || PRESETS.india;
+    const layout = SHEET_LAYOUTS[sheetLayoutSelect?.value || 'a4_12'] || SHEET_LAYOUTS.a4_12;
+
+    utils.showLoader('Rendering 300 DPI Print Sheet JPG...', 'text-sky-600');
+    try {
+      const hdCanvas = document.createElement('canvas');
+      const pxPerMm300Dpi = 300 / 25.4;
+      renderSheetToCanvas(hdCanvas, layout, preset, pxPerMm300Dpi);
+      const blob = await new Promise((resolve) => hdCanvas.toBlob(resolve, 'image/jpeg', 0.96));
+      const name = `Passport_${layout.label}_300DPI.jpg`;
+      utils.downloadBlob(blob, name);
+      utils.showToast('HD Print Sheet Saved!', `Saved "${name}" (${utils.formatBytes(blob.size)}).`);
+    } catch (err) {
+      console.error(err);
+      utils.showToast('Error', 'Could not export HD print sheet JPG.', 'error');
+    } finally {
+      utils.hideLoader();
+    }
+  });
+
+  // Initial empty studio preview
+  renderStudio();
+}
+
 

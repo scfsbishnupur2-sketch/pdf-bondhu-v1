@@ -392,13 +392,53 @@
               </button>
             </li>
 
-            <!-- Image Compress -->
+            <!-- Verify Digital Signature PDF (NEW) -->
             <li>
-              <button data-tab="imageCompress" data-color="imgc" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-800/80 transition-all min-w-[78px]">
+              <button data-tab="pdfSigVerify" data-color="resize" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-slate-800/80 transition-all min-w-[82px]">
+                <div class="bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Verify Sign</span>
+              </button>
+            </li>
+
+            <!-- Edit PDF (NEW) -->
+            <li>
+              <button data-tab="pdfEdit" data-color="home" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-800/80 transition-all min-w-[74px]">
+                <div class="bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 p-2 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Edit PDF</span>
+              </button>
+            </li>
+
+            <!-- Repair PDF (NEW) -->
+            <li>
+              <button data-tab="pdfRepair" data-color="cleane" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-amber-50 dark:hover:bg-slate-800/80 transition-all min-w-[78px]">
+                <div class="bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 p-2 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Repair PDF</span>
+              </button>
+            </li>
+
+            <!-- Passport Photo Maker (NEW) -->
+            <li>
+              <button data-tab="passportMaker" data-color="pdfc" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-sky-50 dark:hover:bg-slate-800/80 transition-all min-w-[84px]">
+                <div class="bg-sky-50 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 p-2 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="20" x="3" y="2" rx="2"/><circle cx="12" cy="9" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg>
+                </div>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Passport Photo</span>
+              </button>
+            </li>
+
+            <!-- Image Size Reducer (Exact KB) -->
+            <li>
+              <button data-tab="imageCompress" data-color="imgc" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-800/80 transition-all min-w-[82px]">
                 <div class="bg-orange-50 dark:bg-orange-500/15 text-orange-500 p-2 rounded-lg transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                 </div>
-                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Compress Img</span>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Reduce Img KB</span>
               </button>
             </li>
 
@@ -412,13 +452,13 @@
               </button>
             </li>
 
-            <!-- Image to PDF -->
+            <!-- JPG to PDF -->
             <li>
               <button data-tab="imgToPdf" data-color="i2p" class="tab-btn group w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1.5 lg:gap-3.5 p-2 lg:px-3.5 lg:py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-pink-50 dark:hover:bg-slate-800/80 transition-all min-w-[74px]">
                 <div class="bg-pink-50 dark:bg-pink-500/15 text-pink-500 p-2 rounded-lg transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m10 13 4 4"/><path d="m14 13-4 4"/></svg>
                 </div>
-                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">Img to PDF</span>
+                <span class="text-[10px] lg:text-sm font-semibold text-center lg:text-left whitespace-nowrap">JPG to PDF</span>
               </button>
             </li>
 
@@ -480,14 +520,14 @@
           <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-950 dark:via-violet-950 dark:to-fuchsia-950 p-6 sm:p-8 text-white shadow-xl mb-6 border border-white/10 dark:border-indigo-800/50">
             <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div class="text-left max-w-xl">
-                <div class="text-xs font-semibold text-indigo-100/90 tracking-wide mb-2">PDF Bondhu · 18 Offline Tools · Pro AI Document Scanner</div>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight" style="text-wrap: balance;">Your Complete Offline PDF &amp; Scan Studio</h2>
-                <p class="text-indigo-100/90 mt-2.5 text-sm sm:text-base leading-relaxed">AI Auto-Crop scanning, E-Sign, ID Card A4 maker, PDF metadata editing, compression, passport photo resizer &amp; Excel tools — 100% private.</p>
+                <div class="text-xs font-semibold text-indigo-100/90 tracking-wide mb-2">PDF Bondhu · 22 Offline Tools · Pro AI Document &amp; Image Studio</div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight" style="text-wrap: balance;">Your Complete Offline PDF &amp; Image Studio</h2>
+                <p class="text-indigo-100/90 mt-2.5 text-sm sm:text-base leading-relaxed">AI Auto-Crop scanning, Edit PDF, Repair PDF, Verify Digital Signature, Passport Photo Maker, Exact KB Image Reducer &amp; JPG to PDF — 100% private.</p>
 
                 <!-- Quick Search Input inside Hero -->
                 <div class="mt-5 relative max-w-md">
                   <svg class="w-4 h-4 text-indigo-200 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                  <input type="search" id="homeToolSearch" placeholder="Search tools (e.g. scan, sign, id card, metadata, compress)..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/20 focus:bg-white focus:text-slate-900 placeholder:text-indigo-100/80 focus:placeholder:text-slate-400 text-sm font-medium text-white border border-white/25 focus:border-white outline-none transition-all min-h-[44px]" />
+                  <input type="search" id="homeToolSearch" placeholder="Search tools (e.g. passport, reduce kb, edit pdf, repair, verify, jpg)..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/20 focus:bg-white focus:text-slate-900 placeholder:text-indigo-100/80 focus:placeholder:text-slate-400 text-sm font-medium text-white border border-white/25 focus:border-white outline-none transition-all min-h-[44px]" />
                 </div>
               </div>
 
@@ -553,10 +593,10 @@
           <!-- Interactive Category Filter Tabs + Local Counter -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm self-start max-w-full" id="homeCatBar">
-              <button type="button" data-cat="all" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm transition-colors whitespace-nowrap min-h-[38px]">All Tools (18)</button>
+              <button type="button" data-cat="all" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm transition-colors whitespace-nowrap min-h-[38px]">All Tools (22)</button>
               <button type="button" data-cat="scan" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap min-h-[38px]">Scan &amp; OCR</button>
               <button type="button" data-cat="pdf" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap min-h-[38px]">PDF Tools</button>
-              <button type="button" data-cat="image" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap min-h-[38px]">Image &amp; ID</button>
+              <button type="button" data-cat="image" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap min-h-[38px]">Image Section</button>
               <button type="button" data-cat="excel" class="home-cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap min-h-[38px]">Excel</button>
             </div>
             <div id="homeStatsText" class="text-xs font-medium text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">0 files processed locally</div>
@@ -578,6 +618,54 @@
                 <div class="text-[11px] font-extrabold text-teal-600 dark:text-teal-400 mb-0.5">AI Auto-Crop · Studio Quality</div>
                 <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">AI Scan to PDF Studio</h3>
                 <p class="text-sm text-slate-600 dark:text-slate-400">4-corner auto perspective crop, shadow-free Magic Color, cleanup brush &amp; 1-tap instant PDF.</p>
+              </div>
+            </button>
+
+            <!-- NEW: Digital Signature Verify PDF -->
+            <button data-cat="pdf" data-keywords="digital signature verify aadhaar pan certificate validate check sign pdf" onclick="document.querySelector('[data-tab=\'pdfSigVerify\']').click()" class="home-tool-card bg-gradient-to-br from-white to-emerald-50/80 dark:from-slate-900 dark:to-emerald-950/35 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+              <div class="bg-gradient-to-br from-emerald-500 to-green-600 text-white p-3 rounded-xl shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mb-0.5">New · Security Check</div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Verify Digital Signature</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Verify PDF digital signature, signer name, certificate details &amp; tamper check.</p>
+              </div>
+            </button>
+
+            <!-- NEW: Edit PDF -->
+            <button data-cat="pdf" data-keywords="edit pdf text whiteout highlight draw annotate image modify" onclick="document.querySelector('[data-tab=\'pdfEdit\']').click()" class="home-tool-card bg-gradient-to-br from-white to-indigo-50/80 dark:from-slate-900 dark:to-indigo-950/35 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+              <div class="bg-gradient-to-br from-indigo-600 to-blue-600 text-white p-3 rounded-xl shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mb-0.5">New · Visual Editor</div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Edit PDF</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Add text, whiteout mistakes, highlight lines, draw, or add stamps directly on PDF.</p>
+              </div>
+            </button>
+
+            <!-- NEW: Repair PDF -->
+            <button data-cat="pdf" data-keywords="repair pdf fix corrupted broken damaged recover restore" onclick="document.querySelector('[data-tab=\'pdfRepair\']').click()" class="home-tool-card bg-gradient-to-br from-white to-amber-50/80 dark:from-slate-900 dark:to-amber-950/35 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-amber-500/10 hover:border-amber-300 dark:hover:border-amber-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+              <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-3 rounded-xl shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-amber-600 dark:text-amber-400 mb-0.5">New · Recovery Engine</div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Repair Corrupted PDF</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Rebuild damaged PDF structure, fix broken pages &amp; restore unreadable files.</p>
+              </div>
+            </button>
+
+            <!-- NEW: Passport Size Photo Maker (Image Section) -->
+            <button data-cat="image" data-keywords="passport size photo maker sheet a4 4x6 background white blue visa pan print image" onclick="document.querySelector('[data-tab=\'passportMaker\']').click()" class="home-tool-card bg-gradient-to-br from-white to-sky-50/80 dark:from-slate-900 dark:to-sky-950/35 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-sky-500/10 hover:border-sky-300 dark:hover:border-sky-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+              <div class="bg-gradient-to-br from-sky-500 to-cyan-600 text-white p-3 rounded-xl shadow-md shadow-sky-500/25 group-hover:scale-105 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="20" x="3" y="2" rx="2"/><circle cx="12" cy="9" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg>
+              </div>
+              <div>
+                <div class="text-[11px] font-bold text-sky-600 dark:text-sky-400 mb-0.5">New · Image Studio</div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Passport Size Photo Maker</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Make 35×45mm passport photos, change background, set exact KB &amp; print A4/4×6 sheets.</p>
               </div>
             </button>
 
@@ -711,14 +799,15 @@
               </div>
             </button>
 
-            <!-- Tool Shortcut: Image Compress -->
-            <button data-cat="image" data-keywords="compress image photo shrink jpeg png webp" onclick="document.querySelector('[data-tab=\'imageCompress\']').click()" class="home-tool-card bg-gradient-to-br from-white to-orange-50/70 dark:from-slate-900 dark:to-orange-950/30 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-300 dark:hover:border-orange-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+            <!-- Tool Shortcut: Image Size Reducer (Exact KB) -->
+            <button data-cat="image" data-keywords="reduce image size reducer compress kb target photo shrink jpeg png webp" onclick="document.querySelector('[data-tab=\'imageCompress\']').click()" class="home-tool-card bg-gradient-to-br from-white to-orange-50/70 dark:from-slate-900 dark:to-orange-950/30 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-300 dark:hover:border-orange-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
               <div class="bg-gradient-to-br from-orange-500 to-amber-500 text-white p-3 rounded-xl shadow-md shadow-orange-500/25 group-hover:scale-105 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
               </div>
               <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Compress Images</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Shrink multiple image file sizes without losing visible clarity.</p>
+                <div class="text-[11px] font-bold text-orange-600 dark:text-orange-400 mb-0.5">Exact KB Control</div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Image Size Reducer (KB)</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Reduce any image to your exact desired KB (20KB, 50KB, 100KB or custom KB).</p>
               </div>
             </button>
 
@@ -733,14 +822,14 @@
               </div>
             </button>
 
-            <!-- Tool Shortcut: Image to PDF -->
-            <button data-cat="image" data-keywords="images photos to pdf bundle album" onclick="document.querySelector('[data-tab=\'imgToPdf\']').click()" class="home-tool-card bg-gradient-to-br from-white to-pink-50/70 dark:from-slate-900 dark:to-pink-950/30 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-pink-500/10 hover:border-pink-300 dark:hover:border-pink-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
+            <!-- Tool Shortcut: JPG to PDF -->
+            <button data-cat="image" data-keywords="jpg to pdf jpeg png images photos to pdf bundle album convert" onclick="document.querySelector('[data-tab=\'imgToPdf\']').click()" class="home-tool-card bg-gradient-to-br from-white to-pink-50/70 dark:from-slate-900 dark:to-pink-950/30 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-left hover:shadow-lg hover:shadow-pink-500/10 hover:border-pink-300 dark:hover:border-pink-600 transition-all group flex flex-col items-start gap-4 cursor-pointer">
               <div class="bg-gradient-to-br from-pink-500 to-rose-500 text-white p-3 rounded-xl shadow-md shadow-pink-500/25 group-hover:scale-105 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m10 13 4 4"/><path d="m14 13-4 4"/></svg>
               </div>
               <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">Images to PDF</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Bundle multiple photos into a single paginated PDF document.</p>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">JPG to PDF</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Convert single or multiple JPG, PNG &amp; WebP photos into a clean A4 or Fit PDF.</p>
               </div>
             </button>
             
@@ -1689,32 +1778,62 @@
           </div>
         </section>
 
-        <!-- TAB: Image Compress -->
+        <!-- TAB: Image Size Reducer (Exact Target KB + Quality Mode) -->
         <section id="imageCompress" class="tab-content hidden animate-fade-in h-full flex-col max-w-4xl mx-auto">
           <div class="mb-6">
-            <div class="text-xs font-bold text-orange-600 dark:text-orange-400 mb-1.5">Optimization · Bulk Image Shrink</div>
-            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Bulk Image Compressor</h2>
-            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Shrink image file sizes dramatically for web use or storage.</p>
+            <div class="text-xs font-bold text-orange-600 dark:text-orange-400 mb-1.5">Image Section · Exact KB Reducer &amp; Bulk Shrink</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Image Size Reducer (KB)</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Enter the exact KB size you want (e.g. 20 KB, 50 KB, 100 KB) or pick quality % — reduce single or multiple images locally.</p>
           </div>
           <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex-1 flex flex-col overflow-hidden">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-orange-50/40 dark:bg-orange-950/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
-              
-              <div class="flex items-center gap-4 w-full md:w-auto flex-1 max-w-sm bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-orange-50/40 dark:bg-orange-950/20 space-y-4">
+              <!-- Mode Toggle + Action Buttons -->
+              <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div class="inline-flex p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <button type="button" id="imgReduceModeKbBtn" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-sm transition-colors whitespace-nowrap min-h-[38px]">Exact Target KB</button>
+                  <button type="button" id="imgReduceModeQualBtn" class="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors whitespace-nowrap min-h-[38px]">Quality % Slider</button>
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto">
+                  <label class="cursor-pointer bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex-1 sm:flex-none text-center border border-orange-200 dark:border-orange-800 min-h-[44px] flex items-center justify-center">
+                    Select Photos
+                    <input type="file" id="imgCompressInput" accept="image/jpeg, image/png, image/webp" multiple class="hidden" />
+                  </label>
+                  <button id="imgCompressActionBtn" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-1 sm:flex-none shadow-md shadow-orange-500/25 min-h-[44px]" disabled>
+                    Reduce &amp; Download
+                  </button>
+                </div>
+              </div>
+
+              <!-- Panel A: Exact Target KB Control -->
+              <div id="imgReduceKbPanel" class="bg-white dark:bg-slate-900 border border-orange-200/70 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <label for="imgReduceTargetKb" class="text-xs font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">Target Max Size:</label>
+                    <div class="relative flex items-center w-36">
+                      <input type="number" id="imgReduceTargetKb" value="50" min="5" max="10000" class="w-full pl-3.5 pr-11 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-base font-extrabold text-orange-600 dark:text-orange-400 tabular-nums outline-none focus:border-orange-500 min-h-[42px]" />
+                      <span class="absolute right-3 text-xs font-extrabold text-slate-400 pointer-events-none">KB</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-semibold text-slate-400 mr-1">Quick KB:</span>
+                    <button type="button" data-kb="20" class="img-kb-preset px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 tabular-nums">20 KB</button>
+                    <button type="button" data-kb="50" class="img-kb-preset px-2.5 py-1.5 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-xs font-bold text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700 tabular-nums">50 KB</button>
+                    <button type="button" data-kb="100" class="img-kb-preset px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 tabular-nums">100 KB</button>
+                    <button type="button" data-kb="200" class="img-kb-preset px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 tabular-nums">200 KB</button>
+                    <button type="button" data-kb="500" class="img-kb-preset px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-xs font-bold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 tabular-nums">500 KB</button>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Auto-optimizes quality &amp; resolution cleanly so every reduced photo stays right under your exact KB limit.</p>
+              </div>
+
+              <!-- Panel B: Manual Quality Slider -->
+              <div id="imgReduceQualPanel" class="hidden flex items-center gap-4 w-full max-w-md bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                 <div class="flex flex-col min-w-[70px]">
                   <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">Quality</span>
                   <span class="text-sm font-extrabold text-orange-600 dark:text-orange-400 tabular-nums" id="qualityVal">60%</span>
                 </div>
                 <input type="range" id="qualitySlider" min="10" max="95" value="60" class="w-full accent-orange-500">
-              </div>
-
-              <div class="flex gap-3 w-full md:w-auto">
-                <label class="cursor-pointer bg-white dark:bg-slate-800 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex-1 sm:flex-none text-center border border-orange-200 dark:border-orange-800 min-h-[44px] flex items-center justify-center">
-                  Select Photos
-                  <input type="file" id="imgCompressInput" accept="image/jpeg, image/png, image/webp" multiple class="hidden" />
-                </label>
-                <button id="imgCompressActionBtn" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-1 sm:flex-none shadow-md shadow-orange-500/25 min-h-[44px]" disabled>
-                  Compress All
-                </button>
               </div>
             </div>
             
@@ -1723,29 +1842,36 @@
                 <div class="bg-orange-50 dark:bg-orange-500/10 p-6 rounded-full mb-4 text-orange-500">
                   <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                 </div>
-                <p class="font-semibold text-slate-600 dark:text-slate-300">Upload images to compress.</p>
+                <p class="font-semibold text-slate-600 dark:text-slate-300">Select one or more photos to reduce size to exact KB.</p>
               </div>
               <ul id="imgCompressList" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden"></ul>
             </div>
           </div>
         </section>
 
-        <!-- TAB: Image to PDF -->
+        <!-- TAB: JPG / Images to PDF -->
         <section id="imgToPdf" class="tab-content hidden animate-fade-in h-full flex-col max-w-4xl mx-auto">
           <div class="mb-6">
-            <div class="text-xs font-bold text-pink-600 dark:text-pink-400 mb-1.5">Creation Tool · Album Builder</div>
-            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Photos to PDF</h2>
-            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Bind multiple image files into a single, paginated PDF document.</p>
+            <div class="text-xs font-bold text-pink-600 dark:text-pink-400 mb-1.5">Image Section · JPG / PNG / WebP Converter</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">JPG to PDF</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Convert one or multiple JPG, PNG, or WebP images into a clean paginated PDF document.</p>
           </div>
           <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex-1 flex flex-col overflow-hidden">
             <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-pink-50/40 dark:bg-pink-950/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <label class="cursor-pointer bg-white dark:bg-slate-800 text-pink-700 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2 border border-pink-200 dark:border-pink-800 w-full sm:w-auto justify-center min-h-[44px]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Add Photos
-                <input type="file" id="imgToPdfInput" accept="image/jpeg, image/png" multiple class="hidden" />
-              </label>
+              <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <label class="cursor-pointer bg-white dark:bg-slate-800 text-pink-700 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-slate-700 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2 border border-pink-200 dark:border-pink-800 flex-1 sm:flex-none justify-center min-h-[44px]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Add JPG / Photos
+                  <input type="file" id="imgToPdfInput" accept="image/jpeg, image/png, image/webp" multiple class="hidden" />
+                </label>
+                <select id="imgToPdfPageSize" class="px-3.5 py-2.5 rounded-xl border border-pink-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-xs font-bold min-h-[44px]">
+                  <option value="a4" selected>A4 Standard Page</option>
+                  <option value="fit">Fit to Image Size</option>
+                  <option value="letter">US Letter</option>
+                </select>
+              </div>
               <button id="imgToPdfActionBtn" class="bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-700 hover:to-rose-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-pink-500/25 w-full sm:w-auto min-h-[44px]" disabled>
-                Create Document
+                Convert JPG to PDF
               </button>
             </div>
             <div class="flex-1 p-6 overflow-y-auto bg-slate-50/40 dark:bg-slate-950/40">
@@ -1753,7 +1879,7 @@
                 <div class="bg-pink-50 dark:bg-pink-500/10 p-6 rounded-full mb-4 text-pink-500">
                   <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="10" cy="13" r="2"/><path d="m20 17-1.09-1.09a2 2 0 0 0-2.82 0L10 22"/></svg>
                 </div>
-                <p class="font-semibold text-slate-600 dark:text-slate-300">No photos selected.</p>
+                <p class="font-semibold text-slate-600 dark:text-slate-300">No JPG or photos selected yet.</p>
               </div>
               <ul id="imgToPdfList" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 hidden"></ul>
             </div>
@@ -2094,6 +2220,295 @@
               <button type="button" id="metaToolSaveBtn" class="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-extrabold py-3.5 rounded-xl shadow-lg shadow-violet-500/20 transition min-h-[48px]">
                 Save Updated PDF
               </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: Digital Signature Verify PDF (NEW) -->
+        <section id="pdfSigVerify" class="tab-content hidden animate-fade-in h-full flex-col max-w-4xl mx-auto">
+          <div class="mb-6">
+            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1.5">PDF Security · e-Aadhaar, PAN &amp; Govt Certificate Inspector</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Verify PDF Digital Signature</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Inspect embedded PKCS#7 / CAdES digital signatures, signer identity, signing timestamp, certificate details &amp; file tamper integrity offline.</p>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+            <label class="cursor-pointer w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-emerald-300 dark:border-emerald-700 rounded-2xl p-6 bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/35 transition">
+              <div class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <span class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow">Select Signed PDF to Verify</span>
+              <span id="sigVerifyFileName" class="text-xs text-slate-500 dark:text-slate-400">Works with e-Aadhaar, PAN, Income/Caste Certificates &amp; Bank PDFs</span>
+              <input type="file" id="sigVerifyInput" accept=".pdf,application/pdf" class="hidden" />
+            </label>
+
+            <div id="sigVerifyResultWrap" class="hidden space-y-4">
+              <!-- Status Banner -->
+              <div id="sigVerifyBanner" class="rounded-2xl p-4 border flex items-start gap-3.5">
+                <div id="sigVerifyBadgeIcon" class="shrink-0 p-2 rounded-xl"></div>
+                <div class="min-w-0 flex-1">
+                  <h3 id="sigVerifyHeadline" class="font-extrabold text-base"></h3>
+                  <p id="sigVerifySubtext" class="text-xs mt-1 leading-relaxed"></p>
+                </div>
+              </div>
+
+              <!-- Signature Cards List -->
+              <div id="sigVerifyCards" class="space-y-3"></div>
+
+              <!-- Preview + Export Report -->
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">100% Offline Cryptographic Structure &amp; ByteRange Integrity Inspection.</p>
+                <button type="button" id="sigVerifyDownloadReportBtn" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 text-white text-xs font-bold min-h-[42px] whitespace-nowrap">
+                  Download Verification Report (.TXT)
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: Repair Corrupted PDF (NEW) -->
+        <section id="pdfRepair" class="tab-content hidden animate-fade-in h-full flex-col max-w-4xl mx-auto">
+          <div class="mb-6">
+            <div class="text-xs font-bold text-amber-600 dark:text-amber-400 mb-1.5">PDF Recovery · XRef Rebuild &amp; Deep Page Rescue</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Repair PDF</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Fix damaged, broken, or unreadable PDFs by rebuilding clean cross-reference tables or rescuing visual pages locally.</p>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+            <label class="cursor-pointer w-full flex flex-col items-center justify-center gap-2 border-2 border-dashed border-amber-300 dark:border-amber-700 rounded-2xl p-7 bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/35 transition">
+              <div class="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 p-3.5 rounded-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <span class="bg-amber-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow">Select Corrupted / Damaged PDF</span>
+              <span id="pdfRepairFileName" class="text-xs text-slate-500 dark:text-slate-400">No file selected yet</span>
+              <input type="file" id="pdfRepairInput" accept=".pdf,application/pdf" class="hidden" />
+            </label>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="pdfRepairMode" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Recovery Mode</label>
+                <select id="pdfRepairMode" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold min-h-[44px]">
+                  <option value="auto" selected>Auto Smart Repair (Recommended)</option>
+                  <option value="deep">Deep Visual Rebuild (For Severely Broken PDFs)</option>
+                </select>
+              </div>
+              <div class="flex items-end">
+                <button type="button" id="pdfRepairActionBtn" disabled class="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-extrabold py-3 rounded-xl shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition min-h-[44px]">
+                  Repair &amp; Save Clean PDF
+                </button>
+              </div>
+            </div>
+
+            <div id="pdfRepairLogBox" class="hidden rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4 space-y-1.5 text-xs">
+              <div class="font-bold text-slate-800 dark:text-white" id="pdfRepairLogTitle">Diagnostics</div>
+              <div class="text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed font-mono" id="pdfRepairLogBody"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: Interactive Visual PDF Editor (NEW) -->
+        <section id="pdfEdit" class="tab-content hidden animate-fade-in h-full flex-col max-w-5xl mx-auto">
+          <div class="mb-5">
+            <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1.5">Visual PDF Studio · Text, Whiteout, Highlight, Draw &amp; Image</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit PDF</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Click or drag directly on any PDF page to add text, erase/whiteout mistakes, highlight lines, draw, or insert images.</p>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+            <!-- Editor Top Toolbar -->
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-indigo-50/40 dark:bg-indigo-950/20 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="cursor-pointer bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold min-h-[42px] flex items-center gap-2">
+                  Choose PDF
+                  <input type="file" id="pdfEditInput" accept=".pdf,application/pdf" class="hidden" />
+                </label>
+                <span id="pdfEditFileName" class="text-xs font-semibold text-slate-500 dark:text-slate-400 max-w-[180px] truncate">No PDF loaded</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" id="pdfEditPrevPage" disabled class="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 disabled:opacity-40 min-h-[40px]">◀</button>
+                <span id="pdfEditPageLabel" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums px-1">0 / 0</span>
+                <button type="button" id="pdfEditNextPage" disabled class="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 disabled:opacity-40 min-h-[40px]">▶</button>
+                <button type="button" id="pdfEditSaveBtn" disabled class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md disabled:opacity-40 min-h-[42px]">
+                  Save Edited PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Drawing & Annotation Tool Strip -->
+            <div id="pdfEditControlsBar" class="hidden px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 space-y-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" data-tool="text" class="pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm min-h-[38px]">Add Text</button>
+                <button type="button" data-tool="whiteout" class="pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 min-h-[38px]">Whiteout Box</button>
+                <button type="button" data-tool="highlight" class="pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 min-h-[38px]">Highlight</button>
+                <button type="button" data-tool="draw" class="pdf-edit-tool-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 min-h-[38px]">Freehand Pen</button>
+                <label class="cursor-pointer px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 min-h-[38px] flex items-center">
+                  Insert Image
+                  <input type="file" id="pdfEditImgInput" accept="image/*" class="hidden" />
+                </label>
+
+                <div class="ml-auto flex items-center gap-2">
+                  <button type="button" id="pdfEditUndoBtn" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 min-h-[38px]">Undo</button>
+                  <button type="button" id="pdfEditClearPageBtn" class="px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 min-h-[38px]">Clear Page</button>
+                </div>
+              </div>
+
+              <!-- Contextual Tool Properties -->
+              <div class="flex flex-wrap items-center gap-3 text-xs">
+                <input type="text" id="pdfEditTextValue" value="Edited Text" placeholder="Type text to place on page..." class="flex-1 min-w-[180px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium min-h-[38px]" />
+                <div class="flex items-center gap-1.5">
+                  <span class="font-semibold text-slate-500 dark:text-slate-400">Size:</span>
+                  <input type="number" id="pdfEditFontSize" value="16" min="8" max="72" class="w-16 px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold tabular-nums min-h-[38px]" />
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-semibold text-slate-500 dark:text-slate-400">Color:</span>
+                  <input type="color" id="pdfEditColor" value="#1e293b" class="w-9 h-9 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer bg-transparent" />
+                </div>
+                <label class="flex items-center gap-1.5 font-semibold text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="pdfEditBold" class="rounded accent-indigo-600" />
+                  Bold
+                </label>
+                <span id="pdfEditHint" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">Tap anywhere on the page to place your text</span>
+              </div>
+            </div>
+
+            <!-- Interactive Stage -->
+            <div class="bg-slate-100 dark:bg-slate-950 p-4 flex items-center justify-center min-h-[380px] overflow-auto">
+              <p id="pdfEditEmptyState" class="text-sm text-slate-400 text-center">Upload any PDF above to start editing text, covering mistakes, highlighting, or drawing.</p>
+              <div id="pdfEditCanvasWrap" class="hidden relative inline-block shadow-xl border border-slate-300 dark:border-slate-700 bg-white">
+                <canvas id="pdfEditBaseCanvas" class="block max-w-full h-auto"></canvas>
+                <canvas id="pdfEditOverlayCanvas" class="absolute inset-0 w-full h-full touch-none cursor-crosshair"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: Passport Size Photo Maker & Print Sheet Studio (NEW — Image Section) -->
+        <section id="passportMaker" class="tab-content hidden animate-fade-in h-full flex-col max-w-5xl mx-auto">
+          <div class="mb-6">
+            <div class="text-xs font-bold text-sky-600 dark:text-sky-400 mb-1.5">Image Section · Studio Backdrop, Exact KB &amp; Printable A4 / 4×6 Sheet</div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Passport Size Photo Maker</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mt-1.5">Create official Indian Passport, PAN, Visa or Stamp photos with background color change, exact KB size &amp; printable A4 / 4×6 sheets.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- Left Controls -->
+            <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+              <label class="cursor-pointer w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-md transition min-h-[46px]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                Upload / Capture Portrait Photo
+                <input type="file" id="passportPhotoInput" accept="image/*" class="hidden" />
+              </label>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="passportSizePreset" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Photo Standard</label>
+                  <select id="passportSizePreset" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold min-h-[42px]">
+                    <option value="india" selected>India Passport (35×45mm)</option>
+                    <option value="pan">PAN Card (25×35mm)</option>
+                    <option value="us">US Visa / OCI (51×51mm)</option>
+                    <option value="stamp">Stamp Size (20×25mm)</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="passportBgColor" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Background Color</label>
+                  <select id="passportBgColor" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold min-h-[42px]">
+                    <option value="original" selected>Keep Original</option>
+                    <option value="#ffffff">Studio White</option>
+                    <option value="#dbeafe">Sky Blue (Official)</option>
+                    <option value="#2563eb">Royal Blue</option>
+                    <option value="#f1f5f9">Light Grey</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Background Matte Sensitivity (shown when BG changed) -->
+              <div id="passportBgTolWrap" class="hidden">
+                <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  <span>Background Edge Smoothness</span>
+                  <span id="passportBgTolVal" class="tabular-nums text-sky-600 dark:text-sky-400">38</span>
+                </div>
+                <input type="range" id="passportBgTolerance" min="10" max="95" value="38" class="w-full accent-sky-600" />
+              </div>
+
+              <!-- Face Zoom & Alignment -->
+              <div class="space-y-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <div>
+                  <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                    <span>Zoom Face</span>
+                    <span id="passportZoomVal" class="tabular-nums text-sky-600 dark:text-sky-400">100%</span>
+                  </div>
+                  <input type="range" id="passportZoom" min="80" max="220" value="100" class="w-full accent-sky-600" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Move Up/Down</span><span id="passportOffsetYVal" class="tabular-nums">0</span></div>
+                    <input type="range" id="passportOffsetY" min="-50" max="50" value="0" class="w-full accent-sky-600" />
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1"><span>Move Left/Right</span><span id="passportOffsetXVal" class="tabular-nums">0</span></div>
+                    <input type="range" id="passportOffsetX" min="-50" max="50" value="0" class="w-full accent-sky-600" />
+                  </div>
+                </div>
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer pt-1">
+                  <input type="checkbox" id="passportAddBorder" checked class="rounded accent-sky-600" />
+                  Add crisp thin black border around photo
+                </label>
+              </div>
+
+              <!-- Export Single (Exact KB) + Sheet Options -->
+              <div class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label for="passportTargetKb" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Single Photo KB</label>
+                    <input type="number" id="passportTargetKb" value="50" min="0" max="2000" placeholder="0 = HD" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold tabular-nums min-h-[42px]" />
+                  </div>
+                  <div>
+                    <label for="passportSheetLayout" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Print Sheet Layout</label>
+                    <select id="passportSheetLayout" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold min-h-[42px]">
+                      <option value="a4_8">A4 · 8 Photos</option>
+                      <option value="a4_12" selected>A4 · 12 Photos</option>
+                      <option value="a4_24">A4 · 24 Photos</option>
+                      <option value="a4_30">A4 · 30 Photos</option>
+                      <option value="4x6_6">4×6 inch · 6 Photos</option>
+                      <option value="4x6_8">4×6 inch · 8 Photos</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <button type="button" id="passportDownloadSingleBtn" disabled class="bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-bold text-xs py-3 px-4 rounded-xl disabled:opacity-40 transition min-h-[44px]">
+                    Download Single JPG
+                  </button>
+                  <button type="button" id="passportDownloadSheetPdfBtn" disabled class="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-extrabold text-xs py-3 px-4 rounded-xl shadow-md disabled:opacity-40 transition min-h-[44px]">
+                    Download Print Sheet PDF
+                  </button>
+                </div>
+                <button type="button" id="passportDownloadSheetJpgBtn" disabled class="w-full bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-100 dark:hover:bg-sky-900/50 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 font-bold text-xs py-2.5 px-4 rounded-xl disabled:opacity-40 transition min-h-[42px]">
+                  Download Print Sheet as HD JPG
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Live Studio Preview -->
+            <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Live Studio Preview</span>
+                <span id="passportDimensionsMeta" class="text-xs font-bold text-sky-600 dark:text-sky-400 tabular-nums">35 × 45 mm · 413 × 531 px (300 DPI)</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                <!-- Single Photo Preview -->
+                <div class="bg-slate-100 dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[260px] border border-slate-200/80 dark:border-slate-800">
+                  <span class="text-[11px] font-bold text-slate-400 mb-2">Single Passport Photo</span>
+                  <canvas id="passportSingleCanvas" width="413" height="531" class="max-h-56 w-auto rounded-lg shadow-md bg-white border border-slate-300"></canvas>
+                </div>
+                <!-- Print Sheet Preview -->
+                <div class="bg-slate-100 dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[260px] border border-slate-200/80 dark:border-slate-800">
+                  <span class="text-[11px] font-bold text-slate-400 mb-2">Printable Sheet Preview</span>
+                  <canvas id="passportSheetCanvas" width="600" height="848" class="max-h-56 w-auto rounded-lg shadow-md bg-white border border-slate-300"></canvas>
+                </div>
+              </div>
             </div>
           </div>
         </section>
