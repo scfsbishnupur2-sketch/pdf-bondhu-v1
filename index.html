@@ -396,6 +396,10 @@
                 </p>
 
                 <div class="flex flex-wrap items-center gap-2.5 pt-1">
+                  <button type="button" data-open-tool="pdfReaderTool" class="px-4 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-extrabold shadow-md transition min-h-[38px] flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Read PDF (Ad-Free)
+                  </button>
                   <button type="button" data-open-tool="pdfScanner" class="px-4 py-2 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 text-xs font-extrabold shadow-md transition min-h-[38px]">
                     Scan Document Now
                   </button>
@@ -529,6 +533,22 @@
               <button type="button" data-open-cat="pdf" class="text-xs font-extrabold text-indigo-600 dark:text-indigo-300 hover:underline">All Tools →</button>
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              <button type="button" data-open-tool="pdfReaderTool" class="pb-tool-tile bg-white dark:bg-[#1A2138] border-2 border-emerald-200 dark:border-emerald-800/70 hover:border-emerald-400 rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition hover:-translate-y-0.5 col-span-2 lg:col-span-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  </span>
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="text-xs sm:text-sm font-extrabold text-[#151B2B] dark:text-white leading-snug">Ad-Free PDF Reader</span>
+                      <span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold">ZERO ADS</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400">Open any phone PDF fast · Night &amp; Sepia reading mode · Search · Password unlock</div>
+                  </div>
+                </div>
+                <span class="text-emerald-500 font-bold text-lg shrink-0">›</span>
+              </button>
+
               <button type="button" data-open-tool="pdfCompress" class="pb-tool-tile bg-white dark:bg-[#1A2138] border border-indigo-100/80 dark:border-slate-800 hover:border-rose-400 rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition hover:-translate-y-0.5">
                 <div class="flex items-center gap-3 min-w-0">
                   <span class="w-11 h-11 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
@@ -2661,7 +2681,7 @@
               <button type="button" data-info-doc="privacy" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#7666D8] min-h-[38px]">Privacy Policy</button>
               <button type="button" data-info-doc="terms" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#7666D8] min-h-[38px]">Terms of Use</button>
               <button type="button" data-info-doc="help" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#7666D8] min-h-[38px]">Help &amp; FAQ</button>
-              <button type="button" data-info-doc="about" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#7666D8] min-h-[38px]">About v2.1</button>
+              <button type="button" data-info-doc="about" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:border-[#7666D8] min-h-[38px]">About v2.2</button>
             </div>
           </div>
         </section>
@@ -3442,13 +3462,144 @@
           </div>
         </section>
 
+        <!-- TAB: 100% Ad-Free PDF Reader (Phone Default PDF Viewer) -->
+        <section id="pdfReaderTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-4">
+          <!-- Reader Header Card -->
+          <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Ad-Free PDF Reader</h2>
+                <span class="px-2.5 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-extrabold">100% Ad-Free · Offline</span>
+              </div>
+              <p id="pdfReaderFileName" class="text-xs sm:text-sm font-bold text-indigo-700 dark:text-indigo-300 truncate mt-1">No PDF opened yet</p>
+              <p id="pdfReaderFileMeta" class="text-[11px] text-slate-500 dark:text-slate-400">Open any PDF from your phone, WhatsApp, Downloads, or File Manager with zero ads.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-105 text-white text-xs font-extrabold shadow-md shadow-emerald-500/20 flex items-center gap-2 min-h-[42px] transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                <span>Open PDF</span>
+                <input type="file" id="pdfReaderFileInput" accept=".pdf,application/pdf" class="hidden" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Empty / Drop State -->
+          <div id="pdfReaderEmptyState" class="bg-white dark:bg-[#1C2438] rounded-3xl border-2 border-dashed border-emerald-300 dark:border-emerald-800/70 p-8 sm:p-10 text-center space-y-4 shadow-sm transition">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="max-w-md mx-auto space-y-1.5">
+              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Open Any PDF — Fast &amp; Zero Ads</h3>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Smooth continuous scroll, Night &amp; Sepia eye-comfort modes, full-text search, password-protected e-Aadhaar/Bank PDF support, and 1-tap Vault save.
+              </p>
+            </div>
+            <div>
+              <button type="button" id="pdfReaderPickBtn" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-sm font-extrabold shadow-lg shadow-indigo-500/25 transition min-h-[46px]">
+                Choose PDF from Phone
+              </button>
+            </div>
+            <div class="max-w-lg mx-auto rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/60 p-3.5 text-left text-[11px] sm:text-xs text-emerald-900 dark:text-emerald-200 leading-relaxed">
+              <strong class="font-extrabold">Tip — Make PDF Bondhu your default phone PDF viewer:</strong>
+              Tap any PDF in WhatsApp, Gmail, or File Manager → choose <strong>PDF Bondhu</strong> → tap <strong>Always</strong>. Every PDF opens instantly with zero ads!
+            </div>
+          </div>
+
+          <!-- Inline Password Unlock Box (for e-Aadhaar, PAN, Bank Statement PDFs) -->
+          <div id="pdfReaderPasswordBox" class="hidden bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-300 dark:border-amber-800 p-4 sm:p-5 space-y-3 shadow-sm">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="flex-1 min-w-0 space-y-1">
+                <h3 class="text-sm font-extrabold text-amber-900 dark:text-amber-200">Password-Protected PDF</h3>
+                <p class="text-xs text-amber-800/90 dark:text-amber-300/90">Enter the document password to read it locally on your device (never sent anywhere).</p>
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="password" id="pdfReaderPasswordInput" placeholder="Enter PDF password..." class="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#151B2B] text-sm font-semibold text-slate-900 dark:text-white outline-none min-h-[42px]" />
+              <button type="button" id="pdfReaderPasswordSubmit" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold min-h-[42px] transition">Unlock &amp; Read</button>
+            </div>
+            <p id="pdfReaderPasswordErr" class="hidden text-xs font-bold text-rose-600 dark:text-rose-400"></p>
+          </div>
+
+          <!-- Sticky Reader Toolbar -->
+          <div id="pdfReaderToolbar" class="hidden sticky top-[62px] z-20 bg-white/95 dark:bg-[#1A2138]/95 backdrop-blur-md rounded-2xl border border-indigo-100 dark:border-slate-700 p-3 shadow-md space-y-2.5">
+            <!-- Row 1: Page Navigation, Zoom, Rotate, Mode, Eye-Comfort Theme -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <!-- Page Nav -->
+              <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-[#151B2B] rounded-xl p-1">
+                <button type="button" id="pdfReaderPrevBtn" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 text-xs font-extrabold min-h-[34px] shadow-xs" title="Previous Page">‹</button>
+                <div class="flex items-center gap-1 px-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+                  <input type="number" id="pdfReaderPageInput" min="1" value="1" class="w-12 text-center py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-extrabold tabular-nums outline-none" />
+                  <span class="text-slate-400">/</span>
+                  <span id="pdfReaderPageTotal" class="tabular-nums font-extrabold">0</span>
+                </div>
+                <button type="button" id="pdfReaderNextBtn" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 text-xs font-extrabold min-h-[34px] shadow-xs" title="Next Page">›</button>
+              </div>
+
+              <!-- Zoom & Rotate -->
+              <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-[#151B2B] rounded-xl p-1">
+                <button type="button" id="pdfReaderZoomOut" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-extrabold min-h-[34px]" title="Zoom Out">−</button>
+                <span id="pdfReaderZoomLabel" class="px-1.5 text-xs font-extrabold text-slate-700 dark:text-slate-200 tabular-nums min-w-[44px] text-center">100%</span>
+                <button type="button" id="pdfReaderZoomIn" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-extrabold min-h-[34px]" title="Zoom In">+</button>
+                <button type="button" id="pdfReaderFitBtn" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 text-[11px] font-extrabold min-h-[34px]" title="Fit Width">Fit</button>
+                <button type="button" id="pdfReaderRotateBtn" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-extrabold min-h-[34px]" title="Rotate 90°">↻ 90°</button>
+              </div>
+
+              <!-- Mode & Eye-Comfort Reading Theme -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="pdfReaderModeToggle" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-[11px] font-extrabold min-h-[36px]">Mode: Scroll</button>
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#151B2B] rounded-xl p-1">
+                  <button type="button" data-rtheme="light" class="pdf-reader-theme-btn px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-white text-slate-900 shadow-xs">Light</button>
+                  <button type="button" data-rtheme="sepia" class="pdf-reader-theme-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-amber-800 dark:text-amber-300">Sepia</button>
+                  <button type="button" data-rtheme="night" class="pdf-reader-theme-btn px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300">Night</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: In-Document Search + Utility Actions -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                <input type="search" id="pdfReaderSearchInput" placeholder="Search text inside this PDF..." class="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-900 dark:text-white outline-none min-h-[36px]" />
+                <button type="button" id="pdfReaderSearchBtn" class="px-3 py-1.5 rounded-xl bg-[#293B80] text-white text-[11px] font-extrabold min-h-[36px] shrink-0">Find</button>
+                <button type="button" id="pdfReaderSearchPrevBtn" class="hidden px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-extrabold min-h-[36px]" title="Previous Match">↑</button>
+                <button type="button" id="pdfReaderSearchNextBtn" class="hidden px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-extrabold min-h-[36px]" title="Next Match">↓</button>
+                <span id="pdfReaderSearchStatus" class="text-[11px] font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap"></span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" id="pdfReaderCopyTextBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold min-h-[34px]">Copy Text</button>
+                <button type="button" id="pdfReaderSaveVaultBtn" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-[11px] font-extrabold min-h-[34px]">Save to Vault</button>
+                <button type="button" id="pdfReaderShareBtn" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[11px] font-extrabold min-h-[34px]">Share</button>
+                <button type="button" id="pdfReaderPrintBtn" class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold min-h-[34px]">Print</button>
+              </div>
+            </div>
+
+            <!-- Row 3: Quick One-Tap Tool Jump -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-800 text-[11px]">
+              <span class="font-bold text-slate-400 mr-1">Quick Tools:</span>
+              <button type="button" data-open-tool="pdfCompress" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 font-bold">Compress</button>
+              <button type="button" data-open-tool="pdfEdit" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 font-bold">Edit PDF</button>
+              <button type="button" data-open-tool="pdfSign" class="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-300 font-bold">E-Sign</button>
+              <button type="button" data-open-tool="pdfSplit" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold">Split Pages</button>
+              <button type="button" data-open-tool="pdfSecurityTool" class="px-2.5 py-1 rounded-lg bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-bold">Lock / Unlock</button>
+            </div>
+          </div>
+
+          <!-- Reading Canvas Stage -->
+          <div id="pdfReaderStage" class="hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-200/80 dark:bg-slate-950 p-3 sm:p-5 overflow-auto max-h-[78vh] transition-colors">
+            <div id="pdfReaderPagesContainer" class="flex flex-col items-center gap-4 w-full"></div>
+          </div>
+        </section>
+
         <!-- Minimalist Material 3 Footer -->
         <footer class="mt-10 pt-5 pb-6 border-t border-slate-200/80 dark:border-slate-800/80 text-center space-y-1">
           <p class="text-xs font-semibold text-slate-600 dark:text-slate-300">
-            PDF Bondhu 2.0 · <span class="text-slate-500 dark:text-slate-400">One App. Everyday Solutions.</span>
+            PDF Bondhu 2.2 · <span class="text-slate-500 dark:text-slate-400">One App. Everyday Solutions.</span>
           </p>
           <p class="text-[11px] text-slate-500 dark:text-slate-400">
-            App Developer: <strong class="text-[#293B80] dark:text-[#A5B4FC] font-bold">Suman Nayak</strong> · 100% Free &amp; Privacy-First
+            App Developer: <strong class="text-[#293B80] dark:text-[#A5B4FC] font-bold">Suman Nayak</strong> · 100% Free, Ad-Free &amp; Privacy-First
           </p>
         </footer>
       </main>

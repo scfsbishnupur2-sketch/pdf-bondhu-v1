@@ -11,7 +11,7 @@
   const STORAGE_KEY = 'pdfBondhuConsentConfig_v2';
 
   const defaultConfig = {
-    appVersion: '2.0.0',
+    appVersion: '2.2.0',
     launchFreeMode: true,
     adsEnabled: false,
     personalizedAdsConsent: false,
@@ -29,7 +29,7 @@
   function loadConfig() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      return Object.assign({}, defaultConfig, saved, { launchFreeMode: true });
+      return Object.assign({}, defaultConfig, saved, { launchFreeMode: true, adsEnabled: false });
     } catch {
       return Object.assign({}, defaultConfig);
     }

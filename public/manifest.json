@@ -28,5 +28,13 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "file_handlers": [
+    {
+      "action": "./?open=pdf",
+      "accept": {
+        "application/pdf": [".pdf"]
+      }
+    }
   ]
 }

@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Base64
 import android.view.View
 import android.webkit.JavascriptInterface
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     private val ioExecutor = Executors.newSingleThreadExecutor()
     private val otaDir: File by lazy { File(filesDir, "ota_www").apply { mkdirs() } }
+    private val externalPdfDir: File by lazy { File(cacheDir, "external_pdf").apply { mkdirs() } }
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingChooserParams: WebChromeClient.FileChooserParams? = null
@@ -69,6 +71,8 @@ class MainActivity : AppCompatActivity() {
     private var lastBackPressedMs = 0L
     private var lastOtaCheckMs = 0L
     private var otaUpdatePendingApply = false
+    @Volatile private var pendingExternalPdfUrl: String? = null
+    @Volatile private var pendingExternalPdfName: String? = null
 
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -166,8 +170,94 @@ class MainActivity : AppCompatActivity() {
 
         configureWebView()
         setupBackNavigation()
+        handleIncomingPdfIntent(intent)
         loadAppUrl()
         checkForOtaUpdateAsync(manualTrigger = false)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingPdfIntent(intent)
+    }
+
+    private fun handleIncomingPdfIntent(incoming: Intent?) {
+        if (incoming == null) return
+        val action = incoming.action ?: return
+        val uri: Uri? = when (action) {
+            Intent.ACTION_VIEW -> incoming.data
+            Intent.ACTION_SEND -> {
+                @Suppress("DEPRECATION")
+                val streamUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    incoming.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    incoming.getParcelableExtra(Intent.EXTRA_STREAM)
+                }
+                streamUri ?: incoming.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.uri
+            }
+            else -> null
+        }
+        if (uri == null) return
+
+        val displayName = queryDisplayName(uri) ?: "Document.pdf"
+        ioExecutor.execute {
+            runCatching {
+                externalPdfDir.listFiles()?.forEach { it.delete() }
+                val token = "opened_${System.currentTimeMillis()}.pdf"
+                val destFile = File(externalPdfDir, token)
+                contentResolver.openInputStream(uri)?.use { input ->
+                    FileOutputStream(destFile).use { output ->
+                        input.copyTo(output)
+                        output.flush()
+                    }
+                } ?: return@runCatching
+
+                if (!destFile.exists() || destFile.length() <= 0L) return@runCatching
+
+                pendingExternalPdfUrl = "./__external_pdf__/$token"
+                pendingExternalPdfName = displayName
+
+                runOnUiThread {
+                    if (hasLoadedOnce) {
+                        dispatchPendingExternalPdfToWeb()
+                    }
+                }
+            }.onFailure {
+                runOnUiThread {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Could not read selected PDF file.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun dispatchPendingExternalPdfToWeb() {
+        val url = pendingExternalPdfUrl ?: return
+        val name = pendingExternalPdfName ?: "Document.pdf"
+        val qUrl = JSONObject.quote(url)
+        val qName = JSONObject.quote(name)
+        webView.evaluateJavascript(
+            "window.openExternalPdfFromAndroid && window.openExternalPdfFromAndroid($qUrl, $qName);",
+            null
+        )
+    }
+
+    private fun queryDisplayName(uri: Uri): String? {
+        runCatching {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (idx >= 0) {
+                        val name = cursor.getString(idx)
+                        if (!name.isNullOrBlank()) return name
+                    }
+                }
+            }
+        }
+        return uri.lastPathSegment?.substringAfterLast('/')?.takeIf { it.isNotBlank() }
     }
 
     override fun onResume() {
@@ -243,6 +333,7 @@ class MainActivity : AppCompatActivity() {
                         null
                     )
                 }
+                dispatchPendingExternalPdfToWeb()
             }
 
             override fun onReceivedError(
@@ -523,6 +614,23 @@ class MainActivity : AppCompatActivity() {
         override fun handle(path: String): WebResourceResponse? {
             val cleanPath = path.trimStart('/').ifEmpty { "index.html" }
             if (cleanPath.contains("..")) return null
+
+            // Stream externally opened phone PDF directly from private cache without Base64 memory overhead
+            if (cleanPath.startsWith("__external_pdf__/")) {
+                val fileName = cleanPath.removePrefix("__external_pdf__/")
+                if (fileName.contains("/") || fileName.contains("\\") || fileName.isBlank()) return null
+                val pdfFile = File(externalPdfDir, fileName)
+                if (pdfFile.exists() && pdfFile.isFile) {
+                    val pdfHeaders = mapOf(
+                        "Access-Control-Allow-Origin" to "*",
+                        "Cache-Control" to "no-store"
+                    )
+                    return runCatching {
+                        WebResourceResponse("application/pdf", null, 200, "OK", pdfHeaders, FileInputStream(pdfFile))
+                    }.getOrNull()
+                }
+                return null
+            }
 
             val mimeType = when {
                 cleanPath.endsWith(".html", true) -> "text/html"
@@ -889,12 +997,22 @@ class MainActivity : AppCompatActivity() {
                 webView.reload()
             }
         }
+
+        @JavascriptInterface
+        fun getPendingExternalPdf(): String {
+            val url = pendingExternalPdfUrl ?: return ""
+            val name = pendingExternalPdfName ?: "Document.pdf"
+            pendingExternalPdfUrl = null
+            pendingExternalPdfName = null
+            return JSONObject().put("url", url).put("name", name).toString()
+        }
     }
 
     override fun onDestroy() {
         runCatching {
             val captureDir = File(cacheDir, "captures")
             if (captureDir.exists()) captureDir.deleteRecursively()
+            if (externalPdfDir.exists()) externalPdfDir.deleteRecursively()
         }
         ioExecutor.shutdownNow()
         webView.destroy()

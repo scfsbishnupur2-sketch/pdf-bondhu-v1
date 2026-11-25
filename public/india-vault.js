@@ -5,6 +5,7 @@
 (function (global) {
   const TOOL_CATALOG = [
     // PDF Studio
+    { id: 'pdfReaderTool', cat: 'pdf', name: 'Ad-Free PDF Reader', desc: 'Open & read any phone PDF fast with zero ads, night mode & search', popular: true, keywords: 'read pdf viewer open pdf reader ad free night mode sepia search book' },
     { id: 'pdfScanner', cat: 'pdf', name: 'AI Document Scanner', desc: 'Auto 4-corner crop, Magic Color & instant PDF', popular: true, keywords: 'scan document camera adobe auto crop photo to pdf' },
     { id: 'pdfCompress', cat: 'pdf', name: 'Compress PDF', desc: 'Shrink PDF to exact KB or MB size locally', popular: true, keywords: 'compress pdf reduce pdf size shrink kb mb small' },
     { id: 'pdfMerge', cat: 'pdf', name: 'Merge PDF', desc: 'Combine two or more PDFs into one file', popular: true, keywords: 'merge pdf merge two pdfs combine join pdf' },
@@ -171,7 +172,7 @@
      2. Favourites, Recently Used Tools & Auto-Tracked Recent Documents
      ======================================================================== */
   function getFavourites() {
-    return loadJson(FAV_KEY, ['pdfScanner', 'pdfCompress', 'passportMaker', 'imageCompress']);
+    return loadJson(FAV_KEY, ['pdfReaderTool', 'pdfScanner', 'pdfCompress', 'passportMaker', 'imageCompress']);
   }
 
   function toggleFavourite(toolKey) {
@@ -218,6 +219,7 @@
   }
 
   const TOOL_VISUALS = {
+    pdfReaderTool:    { bg: 'from-emerald-500 to-teal-600',   svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
     pdfScanner:       { bg: 'from-cyan-500 to-teal-500',      svg: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="6" width="10" height="12" rx="1.5"/>' },
     pdfCompress:      { bg: 'from-rose-500 to-pink-500',      svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 11v6"/><path d="m9 14 3 3 3-3"/>' },
     pdfMerge:         { bg: 'from-blue-600 to-violet-600',    svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/>' },
@@ -947,6 +949,37 @@
       });
     }
 
+    // Expose 1-tap Vault save helper for the Ad-Free PDF Reader and other tools
+    global.saveBlobToPdfBondhuVault = async function (blobOrBuffer, filename, mimeType = 'application/pdf', folder = 'Personal') {
+      try {
+        const ab = blobOrBuffer instanceof ArrayBuffer
+          ? blobOrBuffer
+          : (blobOrBuffer && typeof blobOrBuffer.arrayBuffer === 'function' ? await blobOrBuffer.arrayBuffer() : null);
+        if (!ab) return false;
+        let payload = { encrypted: false, iv: null, data: ab };
+        if (activeVaultKey) {
+          payload = await encryptBuffer(ab, activeVaultKey);
+        }
+        await vaultPut({
+          id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          name: filename || 'Document.pdf',
+          size: ab.byteLength,
+          mimeType,
+          folder,
+          favourite: false,
+          createdAt: new Date().toISOString(),
+          ...payload
+        });
+        await refreshVaultView();
+        global.utils?.showToast?.('Saved to Vault', `"${filename}" stored safely in My Files.`);
+        return true;
+      } catch (err) {
+        console.error('Vault save helper error:', err);
+        global.utils?.showToast?.('Vault Save Failed', 'Could not store file in My Files.', 'error');
+        return false;
+      }
+    };
+
     if (folderAddBtn && folderInput) {
       folderAddBtn.addEventListener('click', () => {
         const name = folderInput.value.trim();
@@ -1210,8 +1243,8 @@
   /* ========================================================================
      8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
      ======================================================================== */
-  const CURRENT_BUILD = '20261120-4';
-  const CURRENT_VERSION = '2.1.0';
+  const CURRENT_BUILD = '20261125-1';
+  const CURRENT_VERSION = '2.2.0';
 
   function initLiveAutoUpdater() {
     const banner = document.getElementById('liveUpdateBanner');
