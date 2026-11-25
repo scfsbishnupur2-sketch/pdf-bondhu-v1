@@ -142,6 +142,10 @@
     // Support Android hardware back press smoothly
     const prevBack = global.handleAndroidBackPress;
     global.handleAndroidBackPress = () => {
+      if (typeof global.isPdfReaderFullscreenOpen === 'function' && global.isPdfReaderFullscreenOpen()) {
+        if (typeof global.closePdfReaderFullscreen === 'function') global.closePdfReaderFullscreen();
+        return true;
+      }
       const previewModal = document.getElementById('vaultPreviewModal');
       if (previewModal && !previewModal.classList.contains('hidden')) {
         previewModal.classList.add('hidden');
@@ -1243,8 +1247,8 @@
   /* ========================================================================
      8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
      ======================================================================== */
-  const CURRENT_BUILD = '20261125-1';
-  const CURRENT_VERSION = '2.2.0';
+  const CURRENT_BUILD = '20261125-2';
+  const CURRENT_VERSION = '2.2.1';
 
   function initLiveAutoUpdater() {
     const banner = document.getElementById('liveUpdateBanner');

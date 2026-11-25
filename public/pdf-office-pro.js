@@ -933,19 +933,30 @@
   }
 
   /* ========================================================================
-     7. 100% Ad-Free PDF Reader (Android System "Open With" + PWA + Local)
+     7. 100% Ad-Free True Full-Screen PDF Reader (Adobe-style Viewer)
      ======================================================================== */
   function initPdfReaderTool() {
+    const overlay = document.getElementById('pdfReaderFullscreenOverlay');
+    const topBar = document.getElementById('pdfReaderTopBar');
+    const bottomBar = document.getElementById('pdfReaderBottomBar');
+    const floatingPill = document.getElementById('pdfReaderFloatingPagePill');
+    const closeBtn = document.getElementById('pdfReaderCloseBtn');
+
     const fileInput = document.getElementById('pdfReaderFileInput');
     const pickBtn = document.getElementById('pdfReaderPickBtn');
+    const resumeBtn = document.getElementById('pdfReaderResumeBtn');
+    const openAnotherBtn = document.getElementById('pdfReaderOpenAnotherBtn');
     const emptyState = document.getElementById('pdfReaderEmptyState');
+
     const fileNameEl = document.getElementById('pdfReaderFileName');
     const fileMetaEl = document.getElementById('pdfReaderFileMeta');
+
     const passBox = document.getElementById('pdfReaderPasswordBox');
     const passInput = document.getElementById('pdfReaderPasswordInput');
     const passSubmit = document.getElementById('pdfReaderPasswordSubmit');
+    const passCancel = document.getElementById('pdfReaderPasswordCancel');
     const passErr = document.getElementById('pdfReaderPasswordErr');
-    const toolbar = document.getElementById('pdfReaderToolbar');
+
     const stage = document.getElementById('pdfReaderStage');
     const pagesContainer = document.getElementById('pdfReaderPagesContainer');
 
@@ -961,18 +972,23 @@
     const modeToggleBtn = document.getElementById('pdfReaderModeToggle');
     const themeBtns = document.querySelectorAll('.pdf-reader-theme-btn');
 
+    const searchToggleBtn = document.getElementById('pdfReaderSearchToggleBtn');
+    const searchBar = document.getElementById('pdfReaderSearchBar');
+    const searchCloseBtn = document.getElementById('pdfReaderSearchCloseBtn');
     const searchInput = document.getElementById('pdfReaderSearchInput');
     const searchBtn = document.getElementById('pdfReaderSearchBtn');
     const searchPrevBtn = document.getElementById('pdfReaderSearchPrevBtn');
     const searchNextBtn = document.getElementById('pdfReaderSearchNextBtn');
     const searchStatus = document.getElementById('pdfReaderSearchStatus');
 
+    const moreBtn = document.getElementById('pdfReaderMoreBtn');
+    const moreMenu = document.getElementById('pdfReaderMoreMenu');
     const copyTextBtn = document.getElementById('pdfReaderCopyTextBtn');
     const saveVaultBtn = document.getElementById('pdfReaderSaveVaultBtn');
     const shareBtn = document.getElementById('pdfReaderShareBtn');
     const printBtn = document.getElementById('pdfReaderPrintBtn');
 
-    if (!fileInput || !pagesContainer) return;
+    if (!overlay || !fileInput || !pagesContainer) return;
 
     let pdfDoc = null;
     let rawBytes = null;
@@ -980,28 +996,69 @@
     let currentPage = 1;
     let totalPages = 0;
     let zoomScale = 1.0;
+    let fitScaleBaseline = 1.0;
     let rotationDeg = 0;
     let viewMode = 'scroll'; // 'scroll' | 'single'
     let readingTheme = 'light'; // 'light' | 'sepia' | 'night'
+    let barsHidden = false;
     let renderToken = 0;
     let pageObserver = null;
     let renderedPages = new Set();
-    let searchMatches = []; // array of page numbers
+    let searchMatches = [];
     let searchIdx = -1;
+
+    function openFullscreenOverlay() {
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      setBarsVisible(true);
+    }
+
+    function closeFullscreenOverlay() {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      if (moreMenu) moreMenu.classList.add('hidden');
+      if (searchBar) searchBar.classList.add('hidden');
+      if (resumeBtn && pdfDoc) {
+        resumeBtn.textContent = `Resume: ${currentFileName.length > 22 ? currentFileName.slice(0, 22) + '…' : currentFileName}`;
+        resumeBtn.classList.remove('hidden');
+      }
+    }
+
+    global.closePdfReaderFullscreen = closeFullscreenOverlay;
+    global.isPdfReaderFullscreenOpen = () => !overlay.classList.contains('hidden');
+
+    function setBarsVisible(visible) {
+      barsHidden = !visible;
+      if (topBar) topBar.style.transform = visible ? 'translateY(0)' : 'translateY(-115%)';
+      if (bottomBar) bottomBar.style.transform = visible ? 'translateY(0)' : 'translateY(115%)';
+      if (!visible && moreMenu) moreMenu.classList.add('hidden');
+      if (!visible && searchBar) searchBar.classList.add('hidden');
+      if (floatingPill) {
+        floatingPill.style.top = visible ? '66px' : '12px';
+      }
+      if (stage) {
+        stage.style.paddingTop = visible ? '58px' : '6px';
+        stage.style.paddingBottom = visible ? '72px' : '6px';
+      }
+    }
 
     function getThemeCanvasFilter() {
       if (readingTheme === 'sepia') return 'sepia(0.32) brightness(0.96) contrast(1.02)';
-      if (readingTheme === 'night') return 'invert(0.92) hue-rotate(180deg) contrast(1.05)';
+      if (readingTheme === 'night') return 'invert(0.92) hue-rotate(180deg) contrast(1.06)';
       return 'none';
     }
 
     function applyReadingTheme(theme) {
       readingTheme = theme;
       if (stage) {
-        stage.classList.remove('bg-slate-200/80', 'dark:bg-slate-950', 'bg-amber-100/90', 'bg-neutral-950');
-        if (theme === 'sepia') stage.classList.add('bg-amber-100/90');
-        else if (theme === 'night') stage.classList.add('bg-neutral-950');
-        else stage.classList.add('bg-slate-200/80', 'dark:bg-slate-950');
+        stage.classList.remove('bg-[#1E2433]', 'bg-[#2B2418]', 'bg-[#090B10]');
+        if (theme === 'sepia') stage.classList.add('bg-[#2B2418]');
+        else if (theme === 'night') stage.classList.add('bg-[#090B10]');
+        else stage.classList.add('bg-[#1E2433]');
       }
       const flt = getThemeCanvasFilter();
       pagesContainer.querySelectorAll('canvas.pb-reader-canvas').forEach((cv) => {
@@ -1010,29 +1067,39 @@
       themeBtns.forEach((b) => {
         const active = b.getAttribute('data-rtheme') === theme;
         b.classList.toggle('bg-white', active && theme === 'light');
-        b.classList.toggle('bg-amber-200', active && theme === 'sepia');
-        b.classList.toggle('bg-slate-800', active && theme === 'night');
+        b.classList.toggle('text-slate-900', active && theme === 'light');
+        b.classList.toggle('bg-amber-300', active && theme === 'sepia');
+        b.classList.toggle('text-slate-950', active && theme === 'sepia');
+        b.classList.toggle('bg-indigo-600', active && theme === 'night');
         b.classList.toggle('text-white', active && theme === 'night');
-        b.classList.toggle('shadow-xs', active);
+        if (!active) {
+          b.classList.remove('bg-white', 'text-slate-900', 'bg-amber-300', 'text-slate-950', 'bg-indigo-600');
+        }
       });
     }
 
     function updateNavUi() {
       if (pageInput) pageInput.value = String(currentPage);
       if (pageTotalEl) pageTotalEl.textContent = String(totalPages);
-      if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomScale * 100)}%`;
+      if (floatingPill) floatingPill.textContent = `${currentPage} / ${totalPages || 1}`;
+      const relPct = fitScaleBaseline > 0 ? Math.round((zoomScale / fitScaleBaseline) * 100) : Math.round(zoomScale * 100);
+      if (zoomLabel) zoomLabel.textContent = `${relPct}%`;
       if (prevBtn) prevBtn.disabled = currentPage <= 1;
       if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-      if (modeToggleBtn) modeToggleBtn.textContent = viewMode === 'scroll' ? 'Mode: Scroll' : 'Mode: Single Page';
+      if (modeToggleBtn) modeToggleBtn.textContent = viewMode === 'scroll' ? 'Scroll' : 'Page';
     }
 
     async function computeFitScale() {
       if (!pdfDoc || !stage) return 1.0;
       const page = await pdfDoc.getPage(Math.min(currentPage, totalPages));
       const baseVp = page.getViewport({ scale: 1.0, rotation: rotationDeg });
-      const availableW = Math.max(260, stage.clientWidth - 40);
+      // Edge-to-edge full screen width fit (leaving only 8px breathing room on phones)
+      const stageW = stage.clientWidth || window.innerWidth;
+      const availableW = Math.max(280, stageW - (window.innerWidth < 640 ? 8 : 28));
       const fit = availableW / baseVp.width;
-      return Math.max(0.5, Math.min(2.5, Math.round(fit * 20) / 20));
+      const clamped = Math.max(0.45, Math.min(3.0, Math.round(fit * 100) / 100));
+      fitScaleBaseline = clamped;
+      return clamped;
     }
 
     async function renderSingleCanvas(pageNum, canvas, token) {
@@ -1040,7 +1107,7 @@
       try {
         const page = await pdfDoc.getPage(pageNum);
         if (token !== renderToken) return;
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.25);
         const viewport = page.getViewport({ scale: zoomScale, rotation: rotationDeg });
         canvas.width = Math.max(1, Math.floor(viewport.width * dpr));
         canvas.height = Math.max(1, Math.floor(viewport.height * dpr));
@@ -1062,8 +1129,12 @@
       }
     }
 
-    async function renderPagesLayout() {
+    async function renderPagesLayout(keepScrollRatio = false) {
       if (!pdfDoc) return;
+      const prevRatio = keepScrollRatio && stage && stage.scrollHeight > 0
+        ? stage.scrollTop / stage.scrollHeight
+        : 0;
+
       renderToken += 1;
       const myToken = renderToken;
       renderedPages.clear();
@@ -1082,7 +1153,7 @@
 
       if (viewMode === 'single') {
         const wrap = document.createElement('div');
-        wrap.className = 'bg-white rounded-xl shadow-lg overflow-hidden relative';
+        wrap.className = 'bg-white shadow-2xl overflow-hidden relative my-auto';
         wrap.setAttribute('data-page-num', String(currentPage));
         const cv = document.createElement('canvas');
         cv.className = 'pb-reader-canvas block max-w-none';
@@ -1093,18 +1164,13 @@
         return;
       }
 
-      // Continuous Scroll Mode with lazy IntersectionObserver for fast 100+ page reading
       const frag = document.createDocumentFragment();
       for (let p = 1; p <= totalPages; p++) {
         const wrap = document.createElement('div');
-        wrap.className = 'pb-reader-page-wrap bg-white rounded-xl shadow-md overflow-hidden relative flex flex-col items-center';
+        wrap.className = 'pb-reader-page-wrap bg-white shadow-xl overflow-hidden relative flex flex-col items-center';
         wrap.setAttribute('data-page-num', String(p));
         wrap.style.minWidth = `${estW}px`;
         wrap.style.minHeight = `${estH}px`;
-
-        const badge = document.createElement('div');
-        badge.className = 'absolute top-2 right-2 z-10 px-2 py-0.5 rounded-md bg-slate-900/70 text-white text-[10px] font-bold pointer-events-none';
-        badge.textContent = `${p} / ${totalPages}`;
 
         const cv = document.createElement('canvas');
         cv.className = 'pb-reader-canvas block max-w-none';
@@ -1112,7 +1178,6 @@
         cv.style.height = `${estH}px`;
         cv.style.filter = getThemeCanvasFilter();
 
-        wrap.appendChild(badge);
         wrap.appendChild(cv);
         frag.appendChild(wrap);
       }
@@ -1133,20 +1198,24 @@
               if (pageInput && document.activeElement !== pageInput) {
                 pageInput.value = String(currentPage);
               }
+              if (floatingPill) floatingPill.textContent = `${currentPage} / ${totalPages}`;
               if (prevBtn) prevBtn.disabled = currentPage <= 1;
               if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
             }
           });
         },
-        { root: stage, rootMargin: '300px 0px', threshold: [0.05, 0.35] }
+        { root: stage, rootMargin: '400px 0px', threshold: [0.05, 0.35] }
       );
 
       pagesContainer.querySelectorAll('.pb-reader-page-wrap').forEach((el) => pageObserver.observe(el));
 
-      // Eagerly render current page and immediate neighbor
-      const firstWrap = pagesContainer.querySelector(`.pb-reader-page-wrap[data-page-num="${currentPage}"]`);
-      if (firstWrap) {
-        const cv = firstWrap.querySelector('canvas.pb-reader-canvas');
+      if (keepScrollRatio && stage && prevRatio > 0) {
+        stage.scrollTop = Math.floor(prevRatio * stage.scrollHeight);
+      }
+
+      const targetWrap = pagesContainer.querySelector(`.pb-reader-page-wrap[data-page-num="${currentPage}"]`);
+      if (targetWrap) {
+        const cv = targetWrap.querySelector('canvas.pb-reader-canvas');
         if (cv) renderSingleCanvas(currentPage, cv, myToken);
       }
     }
@@ -1180,7 +1249,8 @@
       if (fileNameEl) fileNameEl.textContent = currentFileName;
       if (passErr) { passErr.textContent = ''; passErr.classList.add('hidden'); }
 
-      global.utils?.showLoader?.('Opening PDF (Ad-Free)...', 'text-emerald-600');
+      openFullscreenOverlay();
+      global.utils?.showLoader?.('Opening PDF Full-Screen...', 'text-emerald-500');
       try {
         if (pdfDoc) {
           try { await pdfDoc.destroy(); } catch {}
@@ -1199,24 +1269,21 @@
         if (searchStatus) searchStatus.textContent = '';
         if (searchPrevBtn) searchPrevBtn.classList.add('hidden');
         if (searchNextBtn) searchNextBtn.classList.add('hidden');
-
         if (passBox) passBox.classList.add('hidden');
-        if (emptyState) emptyState.classList.add('hidden');
-        if (toolbar) toolbar.classList.remove('hidden');
-        if (stage) stage.classList.remove('hidden');
 
-        const sizeStr = global.utils?.formatBytes ? global.utils.formatBytes(rawBytes.byteLength) : `${Math.round(rawBytes.byteLength / 1024)} KB`;
-        if (fileMetaEl) fileMetaEl.textContent = `${totalPages} page${totalPages > 1 ? 's' : ''} · ${sizeStr} · 100% Ad-Free Local View`;
+        const sizeStr = global.utils?.formatBytes
+          ? global.utils.formatBytes(rawBytes.byteLength)
+          : `${Math.round(rawBytes.byteLength / 1024)} KB`;
+        if (fileMetaEl) fileMetaEl.textContent = `${totalPages} page${totalPages > 1 ? 's' : ''} · ${sizeStr} · 100% Ad-Free`;
 
+        // Wait one layout frame so stage.clientWidth equals full viewport width
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
         zoomScale = await computeFitScale();
         await renderPagesLayout();
-        global.utils?.showToast?.('PDF Opened', `${currentFileName} (${totalPages} page${totalPages > 1 ? 's' : ''}) — Zero Ads!`);
+        if (stage) stage.scrollTop = 0;
       } catch (err) {
         console.error('PDF Reader open error:', err);
         if (err && (err.name === 'PasswordException' || String(err.message || '').toLowerCase().includes('password'))) {
-          if (emptyState) emptyState.classList.add('hidden');
-          if (toolbar) toolbar.classList.add('hidden');
-          if (stage) stage.classList.add('hidden');
           if (passBox) passBox.classList.remove('hidden');
           if (password && passErr) {
             passErr.textContent = 'Incorrect password. Please try again.';
@@ -1227,6 +1294,7 @@
             setTimeout(() => passInput.focus(), 60);
           }
         } else {
+          closeFullscreenOverlay();
           global.utils?.showToast?.('Could Not Open PDF', 'File may be corrupted. Try Repair Corrupted PDF tool.', 'error');
         }
       } finally {
@@ -1240,24 +1308,134 @@
       await loadPdfBytes(new Uint8Array(ab), file.name || 'Document.pdf');
     }
 
+    if (closeBtn) closeBtn.addEventListener('click', closeFullscreenOverlay);
     if (pickBtn) pickBtn.addEventListener('click', () => fileInput.click());
+    if (resumeBtn) resumeBtn.addEventListener('click', () => { if (pdfDoc) openFullscreenOverlay(); });
+    if (openAnotherBtn) {
+      openAnotherBtn.addEventListener('click', () => {
+        if (moreMenu) moreMenu.classList.add('hidden');
+        fileInput.click();
+      });
+    }
+
     fileInput.addEventListener('change', async (e) => {
       const f = e.target.files?.[0];
       fileInput.value = '';
       if (f) await handleFileObject(f);
     });
 
-    // Drag & Drop support on empty state and stage
+    // More menu toggle & quick tool handoff
+    if (moreBtn && moreMenu) {
+      moreBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        moreMenu.classList.toggle('hidden');
+      });
+      overlay.addEventListener('click', (e) => {
+        if (!moreMenu.contains(e.target) && e.target !== moreBtn) {
+          moreMenu.classList.add('hidden');
+        }
+      });
+    }
+    overlay.querySelectorAll('[data-reader-jump]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetTool = btn.getAttribute('data-reader-jump');
+        closeFullscreenOverlay();
+        if (targetTool && typeof global.openPdfBondhuTool === 'function') {
+          global.openPdfBondhuTool(targetTool);
+        }
+      });
+    });
+
+    // Tap page to toggle Immersive Distraction-Free Full-Screen & Double-Tap to Zoom
+    let lastTapTime = 0;
+    let tapTimer = null;
+    let touchMoved = false;
+    let pinchStartDist = 0;
+    let pinchStartScale = 1.0;
+    let pinchActive = false;
+
+    function getTouchDist(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.hypot(dx, dy);
+    }
+
+    if (stage) {
+      stage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2 && pdfDoc) {
+          pinchActive = true;
+          pinchStartDist = getTouchDist(e.touches);
+          pinchStartScale = zoomScale;
+          if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+        } else if (e.touches.length === 1) {
+          touchMoved = false;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchmove', (e) => {
+        if (pinchActive && e.touches.length === 2 && pinchStartDist > 0) {
+          const curDist = getTouchDist(e.touches);
+          const ratio = Math.max(0.5, Math.min(2.6, curDist / pinchStartDist));
+          pagesContainer.style.transformOrigin = 'top center';
+          pagesContainer.style.transform = `scale(${ratio.toFixed(3)})`;
+        } else if (e.touches.length === 1) {
+          touchMoved = true;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchend', (e) => {
+        if (pinchActive && e.touches.length < 2) {
+          pinchActive = false;
+          const match = pagesContainer.style.transform.match(/scale\(([^)]+)\)/);
+          const ratio = match ? parseFloat(match[1]) : 1;
+          pagesContainer.style.transform = '';
+          if (Math.abs(ratio - 1) > 0.06 && pdfDoc) {
+            zoomScale = Math.max(0.45, Math.min(3.2, Math.round(pinchStartScale * ratio * 100) / 100));
+            renderPagesLayout(true);
+          }
+        }
+      }, { passive: true });
+
+      stage.addEventListener('click', (e) => {
+        if (!pdfDoc || touchMoved || pinchActive) return;
+        if (moreMenu && !moreMenu.classList.contains('hidden')) return;
+        const now = Date.now();
+        if (now - lastTapTime < 280) {
+          if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+          lastTapTime = 0;
+          // Double-tap toggles between Fit-Width and 1.65x Zoom
+          const targetZoom = Math.abs(zoomScale - fitScaleBaseline) < 0.12
+            ? Math.min(3.0, Math.round(fitScaleBaseline * 1.65 * 100) / 100)
+            : fitScaleBaseline;
+          zoomScale = targetZoom;
+          renderPagesLayout(true);
+        } else {
+          lastTapTime = now;
+          tapTimer = setTimeout(() => {
+            setBarsVisible(barsHidden);
+            tapTimer = null;
+          }, 280);
+        }
+      });
+    }
+
+    // Re-fit smoothly on phone rotation / window resize
+    let resizeDebounce = null;
+    window.addEventListener('resize', () => {
+      if (!pdfDoc || overlay.classList.contains('hidden')) return;
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(async () => {
+        zoomScale = await computeFitScale();
+        renderPagesLayout(true);
+      }, 220);
+    });
+
+    // Drag & Drop support
     [emptyState, stage].forEach((zone) => {
       if (!zone) return;
-      zone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        zone.classList.add('ring-2', 'ring-emerald-400');
-      });
-      zone.addEventListener('dragleave', () => zone.classList.remove('ring-2', 'ring-emerald-400'));
+      zone.addEventListener('dragover', (e) => e.preventDefault());
       zone.addEventListener('drop', async (e) => {
         e.preventDefault();
-        zone.classList.remove('ring-2', 'ring-emerald-400');
         const f = e.dataTransfer?.files?.[0];
         if (f && (f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'))) {
           await handleFileObject(f);
@@ -1265,6 +1443,13 @@
       });
     });
 
+    // Password prompt handlers
+    if (passCancel) {
+      passCancel.addEventListener('click', () => {
+        if (passBox) passBox.classList.add('hidden');
+        if (!pdfDoc) closeFullscreenOverlay();
+      });
+    }
     if (passSubmit && passInput) {
       const submitPass = () => {
         if (!rawBytes) return;
@@ -1276,6 +1461,7 @@
       });
     }
 
+    // Navigation, Zoom, Rotate, Mode, Theme
     if (prevBtn) prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
     if (nextBtn) nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
     if (pageInput) {
@@ -1288,29 +1474,30 @@
     if (zoomOutBtn) {
       zoomOutBtn.addEventListener('click', () => {
         if (!pdfDoc) return;
-        zoomScale = Math.max(0.5, Math.round((zoomScale - 0.15) * 100) / 100);
-        renderPagesLayout();
+        zoomScale = Math.max(0.45, Math.round((zoomScale - 0.18) * 100) / 100);
+        renderPagesLayout(true);
       });
     }
     if (zoomInBtn) {
       zoomInBtn.addEventListener('click', () => {
         if (!pdfDoc) return;
-        zoomScale = Math.min(2.5, Math.round((zoomScale + 0.15) * 100) / 100);
-        renderPagesLayout();
+        zoomScale = Math.min(3.2, Math.round((zoomScale + 0.18) * 100) / 100);
+        renderPagesLayout(true);
       });
     }
     if (fitBtn) {
       fitBtn.addEventListener('click', async () => {
         if (!pdfDoc) return;
         zoomScale = await computeFitScale();
-        renderPagesLayout();
+        renderPagesLayout(true);
       });
     }
     if (rotateBtn) {
-      rotateBtn.addEventListener('click', () => {
+      rotateBtn.addEventListener('click', async () => {
         if (!pdfDoc) return;
         rotationDeg = (rotationDeg + 90) % 360;
-        renderPagesLayout();
+        zoomScale = await computeFitScale();
+        renderPagesLayout(true);
       });
     }
     if (modeToggleBtn) {
@@ -1324,7 +1511,18 @@
       btn.addEventListener('click', () => applyReadingTheme(btn.getAttribute('data-rtheme') || 'light'));
     });
 
-    // In-Document Full Text Search
+    // Search bar toggle & full-text search
+    if (searchToggleBtn && searchBar) {
+      searchToggleBtn.addEventListener('click', () => {
+        const opening = searchBar.classList.contains('hidden');
+        searchBar.classList.toggle('hidden');
+        if (opening && searchInput) setTimeout(() => searchInput.focus(), 50);
+      });
+    }
+    if (searchCloseBtn && searchBar) {
+      searchCloseBtn.addEventListener('click', () => searchBar.classList.add('hidden'));
+    }
+
     async function runPdfSearch() {
       if (!pdfDoc || !searchInput) return;
       const q = searchInput.value.trim().toLowerCase();
@@ -1356,7 +1554,7 @@
       searchIdx = 0;
       if (searchPrevBtn) searchPrevBtn.classList.remove('hidden');
       if (searchNextBtn) searchNextBtn.classList.remove('hidden');
-      if (searchStatus) searchStatus.textContent = `1 / ${searchMatches.length} (p.${searchMatches[0]})`;
+      if (searchStatus) searchStatus.textContent = `1/${searchMatches.length} (p.${searchMatches[0]})`;
       goToPage(searchMatches[0]);
     }
 
@@ -1370,7 +1568,7 @@
       searchPrevBtn.addEventListener('click', () => {
         if (!searchMatches.length) return;
         searchIdx = (searchIdx - 1 + searchMatches.length) % searchMatches.length;
-        if (searchStatus) searchStatus.textContent = `${searchIdx + 1} / ${searchMatches.length} (p.${searchMatches[searchIdx]})`;
+        if (searchStatus) searchStatus.textContent = `${searchIdx + 1}/${searchMatches.length} (p.${searchMatches[searchIdx]})`;
         goToPage(searchMatches[searchIdx]);
       });
     }
@@ -1378,7 +1576,7 @@
       searchNextBtn.addEventListener('click', () => {
         if (!searchMatches.length) return;
         searchIdx = (searchIdx + 1) % searchMatches.length;
-        if (searchStatus) searchStatus.textContent = `${searchIdx + 1} / ${searchMatches.length} (p.${searchMatches[searchIdx]})`;
+        if (searchStatus) searchStatus.textContent = `${searchIdx + 1}/${searchMatches.length} (p.${searchMatches[searchIdx]})`;
         goToPage(searchMatches[searchIdx]);
       });
     }
@@ -1386,6 +1584,7 @@
     // Copy Current Page Text
     if (copyTextBtn) {
       copyTextBtn.addEventListener('click', async () => {
+        if (moreMenu) moreMenu.classList.add('hidden');
         if (!pdfDoc) return;
         try {
           const page = await pdfDoc.getPage(currentPage);
@@ -1406,6 +1605,7 @@
     // Save to Personal Document Center (Vault)
     if (saveVaultBtn) {
       saveVaultBtn.addEventListener('click', async () => {
+        if (moreMenu) moreMenu.classList.add('hidden');
         if (!rawBytes) return;
         if (typeof global.saveBlobToPdfBondhuVault === 'function') {
           await global.saveBlobToPdfBondhuVault(rawBytes.slice().buffer, currentFileName, 'application/pdf', 'Personal');
@@ -1443,6 +1643,7 @@
     // Print PDF
     if (printBtn) {
       printBtn.addEventListener('click', () => {
+        if (moreMenu) moreMenu.classList.add('hidden');
         if (!rawBytes) return;
         const blob = new Blob([rawBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
@@ -1465,13 +1666,11 @@
       });
     }
 
-    // Android Native "Open With -> PDF Bondhu" Bridge
+    // Android Native "Open With -> PDF Bondhu" Bridge -> Opens directly in Full-Screen Overlay!
     global.openExternalPdfFromAndroid = async function (localUrl, displayName) {
       try {
-        if (typeof global.openPdfBondhuTool === 'function') {
-          global.openPdfBondhuTool('pdfReaderTool');
-        }
-        global.utils?.showLoader?.('Loading Phone PDF (Ad-Free)...', 'text-emerald-600');
+        openFullscreenOverlay();
+        global.utils?.showLoader?.('Opening PDF Full-Screen...', 'text-emerald-500');
         const resp = await fetch(localUrl, { cache: 'no-store' });
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const ab = await resp.arrayBuffer();
@@ -1479,11 +1678,12 @@
       } catch (err) {
         console.error('Failed to open external Android PDF:', err);
         global.utils?.hideLoader?.();
+        closeFullscreenOverlay();
         global.utils?.showToast?.('Open Failed', 'Could not read the selected PDF from device.', 'error');
       }
     };
 
-    // Cold-start safety net: check if MainActivity queued an intent before scripts mounted
+    // Cold-start safety net for Android PDF intent
     setTimeout(() => {
       try {
         if (global.AndroidBridge && typeof global.AndroidBridge.getPendingExternalPdf === 'function') {
@@ -1500,19 +1700,14 @@
       }
     }, 350);
 
-    // PWA File Handler API (when installed as Web App / Chrome PWA)
+    // PWA File Handler API
     if ('launchQueue' in window && window.launchQueue && typeof window.launchQueue.setConsumer === 'function') {
       window.launchQueue.setConsumer(async (launchParams) => {
         if (!launchParams || !launchParams.files || !launchParams.files.length) return;
         try {
           const fileHandle = launchParams.files[0];
           const file = await fileHandle.getFile();
-          if (file) {
-            if (typeof global.openPdfBondhuTool === 'function') {
-              global.openPdfBondhuTool('pdfReaderTool');
-            }
-            await handleFileObject(file);
-          }
+          if (file) await handleFileObject(file);
         } catch (e) {
           console.error('PWA launchQueue PDF error:', e);
         }
