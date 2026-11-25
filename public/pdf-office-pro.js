@@ -996,28 +996,72 @@
     let currentFileName = 'Document.pdf';
     let currentPage = 1;
     let totalPages = 0;
-    let zoomFactor = 1.0; // Relative multiplier: 1.0 = exact Fit-Width for EVERY page!
+    let zoomFactor = 1.0; // 1.0 = exact Fit-Width for every page
     let rotationDeg = 0;
     let viewMode = 'scroll'; // 'scroll' | 'single'
     let readingTheme = 'light'; // 'light' | 'sepia' | 'night'
     let barsHidden = false;
+
+    // Virtualization & Pages-as-Needed Engine state
+    const OVERSCAN_PAGES = 2;
+    const PAGE_GAP = 10;
+    let pageMetrics = []; // [{ pageNum, width, height, top, aspectRatio, measured }]
+    let totalVirtualHeight = 0;
+    let activeSlots = new Map(); // pageNum -> { el, canvas, placeholder, renderedSig }
+    let currentRenderSig = '';
     let renderToken = 0;
-    let pageObserver = null;
-    let renderedPages = new Set();
     let activeRenderTask = null;
-    let renderQueue = [];
+    let activeRenderPage = 0;
+    let renderQueue = []; // array of pageNums prioritized by distance to centerPage
     let isProcessingQueue = false;
+    let scrollRafId = null;
+    let flingSettleTimer = null;
+    let lastScrollTs = 0;
     let searchMatches = [];
     let searchIdx = -1;
+
+    function computeRenderSig() {
+      return `${zoomFactor.toFixed(2)}_${rotationDeg}_${getAvailableStageWidth()}`;
+    }
+
+    function cancelActiveTask() {
+      if (activeRenderTask) {
+        try { activeRenderTask.cancel(); } catch {}
+        activeRenderTask = null;
+        activeRenderPage = 0;
+      }
+    }
 
     function cancelAllRendering() {
       renderToken += 1;
       renderQueue = [];
-      if (activeRenderTask) {
-        try { activeRenderTask.cancel(); } catch {}
-        activeRenderTask = null;
-      }
+      cancelActiveTask();
       isProcessingQueue = false;
+      if (flingSettleTimer) {
+        clearTimeout(flingSettleTimer);
+        flingSettleTimer = null;
+      }
+    }
+
+    function evictSlot(pageNum) {
+      const slot = activeSlots.get(pageNum);
+      if (!slot) return;
+      if (activeRenderPage === pageNum) cancelActiveTask();
+      try {
+        slot.canvas.width = 0;
+        slot.canvas.height = 0;
+        slot.el.remove();
+      } catch {}
+      activeSlots.delete(pageNum);
+      renderQueue = renderQueue.filter((p) => p !== pageNum);
+    }
+
+    function clearAllSlots() {
+      cancelAllRendering();
+      for (const pNum of Array.from(activeSlots.keys())) {
+        evictSlot(pNum);
+      }
+      pagesContainer.innerHTML = '';
     }
 
     function openFullscreenOverlay() {
@@ -1029,7 +1073,7 @@
     }
 
     function closeFullscreenOverlay() {
-      cancelAllRendering();
+      clearAllSlots();
       overlay.classList.add('hidden');
       overlay.classList.remove('flex');
       document.documentElement.style.overflow = '';
@@ -1075,9 +1119,9 @@
         else stage.classList.add('bg-slate-800');
       }
       const flt = getThemeCanvasFilter();
-      pagesContainer.querySelectorAll('canvas.pb-reader-canvas').forEach((cv) => {
-        cv.style.filter = flt;
-      });
+      for (const slot of activeSlots.values()) {
+        slot.canvas.style.filter = flt;
+      }
       if (themeCycleBtn) {
         if (theme === 'sepia') themeCycleBtn.textContent = 'Sepia';
         else if (theme === 'night') themeCycleBtn.textContent = 'Night';
@@ -1086,7 +1130,7 @@
     }
 
     function updateNavUi() {
-      if (pageInput) pageInput.value = String(currentPage);
+      if (pageInput && document.activeElement !== pageInput) pageInput.value = String(currentPage);
       if (pageTotalEl) pageTotalEl.textContent = String(totalPages);
       if (floatingPill) floatingPill.textContent = `${currentPage} / ${totalPages || 1}`;
       if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomFactor * 100)}%`;
@@ -1100,94 +1144,299 @@
       return Math.max(260, w - (window.innerWidth < 640 ? 8 : 28));
     }
 
-    // Properly renders a PDF page using PDF.js official `transform` (NEVER ctx.scale, preventing Y-flip bugs!)
-    // Preserves each page's native `/Rotate` + applies per-page Fit-Width normalization + caps GPU RAM for 60fps!
-    async function renderSingleCanvas(pageNum, canvas, token) {
+    function recomputeVirtualOffsets(startIndex = 0) {
+      let y = startIndex > 0
+        ? pageMetrics[startIndex - 1].top + pageMetrics[startIndex - 1].height + PAGE_GAP
+        : 0;
+      for (let i = startIndex; i < pageMetrics.length; i++) {
+        pageMetrics[i].top = y;
+        y += pageMetrics[i].height + PAGE_GAP;
+      }
+      totalVirtualHeight = Math.max(0, y - PAGE_GAP);
+      if (viewMode === 'scroll') {
+        pagesContainer.style.height = `${totalVirtualHeight}px`;
+        for (const [pNum, slot] of activeSlots.entries()) {
+          const m = pageMetrics[pNum - 1];
+          if (m) {
+            slot.el.style.transform = `translate3d(-50%, ${m.top}px, 0)`;
+            slot.el.style.width = `${m.width}px`;
+            slot.el.style.height = `${m.height}px`;
+          }
+        }
+      }
+    }
+
+    async function initVirtualMetrics(defaultRatio = 1.414) {
+      const targetW = Math.floor(getAvailableStageWidth() * zoomFactor);
+      let firstRatio = defaultRatio;
+      try {
+        const p1 = await pdfDoc.getPage(1);
+        const effRot = ((p1.rotate || 0) + rotationDeg) % 360;
+        const vp1 = p1.getViewport({ scale: 1.0, rotation: effRot });
+        if (vp1.width > 0 && vp1.height > 0) {
+          firstRatio = vp1.height / vp1.width;
+        }
+      } catch {}
+
+      const prevMetrics = pageMetrics;
+      pageMetrics = new Array(totalPages);
+      for (let i = 0; i < totalPages; i++) {
+        const prev = prevMetrics[i];
+        const ratio = (prev && prev.measured && prev.rot === rotationDeg) ? prev.aspectRatio : firstRatio;
+        pageMetrics[i] = {
+          pageNum: i + 1,
+          width: targetW,
+          height: Math.max(120, Math.round(targetW * ratio)),
+          top: 0,
+          aspectRatio: ratio,
+          rot: rotationDeg,
+          measured: Boolean(prev && prev.measured && prev.rot === rotationDeg)
+        };
+      }
+      recomputeVirtualOffsets(0);
+    }
+
+    // O(log N) binary search for first page whose bottom >= scrollTop
+    function findFirstVisibleIndex(scrollTop) {
+      let lo = 0;
+      let hi = pageMetrics.length - 1;
+      let ans = 0;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        const m = pageMetrics[mid];
+        if (m.top + m.height >= scrollTop) {
+          ans = mid;
+          hi = mid - 1;
+        } else {
+          lo = mid + 1;
+        }
+      }
+      return ans;
+    }
+
+    function createVirtualSlot(pageNum) {
+      const m = pageMetrics[pageNum - 1];
+      const wrap = document.createElement('div');
+      wrap.className = 'pb-reader-page-wrap bg-white shadow-lg overflow-hidden flex items-center justify-center';
+      wrap.setAttribute('data-page-num', String(pageNum));
+      wrap.style.contain = 'layout style paint';
+      if (viewMode === 'scroll' && m) {
+        wrap.style.position = 'absolute';
+        wrap.style.top = '0';
+        wrap.style.left = '50%';
+        wrap.style.width = `${m.width}px`;
+        wrap.style.height = `${m.height}px`;
+        wrap.style.transform = `translate3d(-50%, ${m.top}px, 0)`;
+      } else if (m) {
+        wrap.style.position = 'relative';
+        wrap.style.width = `${m.width}px`;
+        wrap.style.height = `${m.height}px`;
+        wrap.className += ' my-auto shadow-2xl';
+      }
+
+      const placeholder = document.createElement('div');
+      placeholder.className = 'pointer-events-none absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-400';
+      placeholder.textContent = `Page ${pageNum}`;
+
+      const cv = document.createElement('canvas');
+      cv.className = 'pb-reader-canvas block max-w-none relative z-10';
+      cv.style.filter = getThemeCanvasFilter();
+
+      wrap.appendChild(placeholder);
+      wrap.appendChild(cv);
+      pagesContainer.appendChild(wrap);
+
+      const slot = { el: wrap, canvas: cv, placeholder, renderedSig: '' };
+      activeSlots.set(pageNum, slot);
+      return slot;
+    }
+
+    function getVisiblePageWindow() {
+      if (!pageMetrics.length || !stage) return { firstVis: 1, lastVis: 1, centerPage: 1 };
+      const scrollTop = Math.max(0, stage.scrollTop - 56);
+      const viewH = stage.clientHeight || window.innerHeight || 640;
+      const scrollBottom = scrollTop + viewH;
+      const centerY = scrollTop + viewH * 0.45;
+
+      const startIdx = findFirstVisibleIndex(scrollTop);
+      let endIdx = startIdx;
+      let centerIdx = startIdx;
+      let bestDist = Infinity;
+
+      for (let i = startIdx; i < pageMetrics.length; i++) {
+        const m = pageMetrics[i];
+        if (m.top > scrollBottom && i > startIdx) break;
+        endIdx = i;
+        const midY = m.top + m.height * 0.5;
+        const dist = Math.abs(midY - centerY);
+        if (dist < bestDist) {
+          bestDist = dist;
+          centerIdx = i;
+        }
+      }
+      return {
+        firstVis: startIdx + 1,
+        lastVis: endIdx + 1,
+        centerPage: centerIdx + 1
+      };
+    }
+
+    function syncVirtualWindow(immediateRender = false) {
+      if (!pdfDoc || !pageMetrics.length || overlay.classList.contains('hidden')) return;
+
+      if (viewMode === 'single') {
+        for (const pNum of Array.from(activeSlots.keys())) {
+          if (pNum !== currentPage) evictSlot(pNum);
+        }
+        const slot = activeSlots.get(currentPage) || createVirtualSlot(currentPage);
+        if (slot.renderedSig !== currentRenderSig) {
+          renderQueue = [currentPage];
+          processRenderQueue();
+        }
+        updateNavUi();
+        return;
+      }
+
+      const { firstVis, lastVis, centerPage } = getVisiblePageWindow();
+      if (centerPage !== currentPage) {
+        currentPage = centerPage;
+        updateNavUi();
+      }
+
+      const winStart = Math.max(1, firstVis - OVERSCAN_PAGES);
+      const winEnd = Math.min(totalPages, lastVis + OVERSCAN_PAGES);
+
+      // 1. Immediately evict pages outside sliding window to keep GPU memory tiny (<25MB)
+      for (const pNum of Array.from(activeSlots.keys())) {
+        if (pNum < winStart || pNum > winEnd) {
+          evictSlot(pNum);
+        }
+      }
+
+      // 2. Mount lightweight DOM slots for pages inside window and collect unrendered ones
+      const needed = [];
+      for (let p = winStart; p <= winEnd; p++) {
+        const slot = activeSlots.get(p) || createVirtualSlot(p);
+        if (slot.renderedSig !== currentRenderSig) {
+          needed.push(p);
+        }
+      }
+
+      // 3. Prioritize centermost visible page first, then immediate neighbors, then overscan
+      needed.sort((a, b) => Math.abs(a - centerPage) - Math.abs(b - centerPage));
+      renderQueue = needed;
+
+      if (!needed.length) return;
+
+      // 4. Fling-aware scheduling: during rapid touch fling, defer rasterizing by 65ms so scrolling stays 60fps
+      const now = performance.now();
+      const isFlinging = !immediateRender && (now - lastScrollTs) < 60;
+      if (flingSettleTimer) {
+        clearTimeout(flingSettleTimer);
+        flingSettleTimer = null;
+      }
+      if (isFlinging) {
+        flingSettleTimer = setTimeout(() => {
+          flingSettleTimer = null;
+          processRenderQueue();
+        }, 65);
+      } else {
+        processRenderQueue();
+      }
+    }
+
+    // Renders a single virtual slot with official PDF.js transform + native page.rotate + capped pixel budget
+    async function renderVirtualSlot(pageNum, token, sig) {
       if (!pdfDoc || token !== renderToken) return;
+      const slot = activeSlots.get(pageNum);
+      if (!slot || slot.renderedSig === sig) return;
+
       try {
         const page = await pdfDoc.getPage(pageNum);
-        if (token !== renderToken) return;
+        if (token !== renderToken || !activeSlots.has(pageNum)) return;
 
-        // Combine PDF's own native rotation with user's manual rotation so scanned pages are NEVER upside-down!
         const effectiveRot = ((page.rotate || 0) + rotationDeg) % 360;
         const baseVp = page.getViewport({ scale: 1.0, rotation: effectiveRot });
-
-        // Per-page fit-to-screen width so mixed-size PDFs (e.g. A4 + 3000px photo scan) fit cleanly edge-to-edge!
-        const targetCssWidth = getAvailableStageWidth() * zoomFactor;
+        const targetCssWidth = Math.floor(getAvailableStageWidth() * zoomFactor);
         const cssScale = Math.max(0.1, targetCssWidth / Math.max(1, baseVp.width));
         const viewport = page.getViewport({ scale: cssScale, rotation: effectiveRot });
 
-        // Safe HiDPI outputScale capped to max 1600x2400px backing buffer to guarantee zero lag on Android WebView
-        const maxDpr = Math.min(window.devicePixelRatio || 1, 1.75);
-        const maxPixelW = 1600;
-        const maxPixelH = 2400;
-        const safeScaleW = maxPixelW / Math.max(1, viewport.width);
-        const safeScaleH = maxPixelH / Math.max(1, viewport.height);
-        const outputScale = Math.max(1, Math.min(maxDpr, safeScaleW, safeScaleH));
-
-        const pixelW = Math.max(1, Math.floor(viewport.width * outputScale));
-        const pixelH = Math.max(1, Math.floor(viewport.height * outputScale));
         const cssW = Math.max(1, Math.floor(viewport.width));
         const cssH = Math.max(1, Math.floor(viewport.height));
 
-        const wrap = canvas.parentElement;
-        if (wrap) {
-          wrap.style.width = `${cssW}px`;
-          wrap.style.minHeight = `${cssH}px`;
+        // Update exact measured geometry if this page differs from estimate (e.g. mixed landscape/portrait scans)
+        const m = pageMetrics[pageNum - 1];
+        if (m && (!m.measured || Math.abs(m.height - cssH) > 2 || Math.abs(m.width - cssW) > 2)) {
+          const oldHeight = m.height;
+          const wasAboveViewport = stage && viewMode === 'scroll' && (m.top + oldHeight < stage.scrollTop);
+          m.width = cssW;
+          m.height = cssH;
+          m.aspectRatio = baseVp.height / Math.max(1, baseVp.width);
+          m.rot = rotationDeg;
+          m.measured = true;
+          recomputeVirtualOffsets(pageNum - 1);
+          if (wasAboveViewport && stage) {
+            stage.scrollTop += (cssH - oldHeight);
+          }
         }
 
-        canvas.width = pixelW;
-        canvas.height = pixelH;
-        canvas.style.width = `${cssW}px`;
-        canvas.style.height = `${cssH}px`;
-        canvas.style.filter = getThemeCanvasFilter();
+        // Safe HiDPI outputScale capped to 1600x2400px so Android WebView never stalls
+        const maxDpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        const outputScale = Math.max(
+          1,
+          Math.min(maxDpr, 1600 / Math.max(1, viewport.width), 2400 / Math.max(1, viewport.height))
+        );
 
-        const ctx = canvas.getContext('2d', { alpha: false });
-        // Reset identity matrix cleanly before PDF.js draws
+        const pixelW = Math.max(1, Math.floor(viewport.width * outputScale));
+        const pixelH = Math.max(1, Math.floor(viewport.height * outputScale));
+
+        const cv = slot.canvas;
+        cv.width = pixelW;
+        cv.height = pixelH;
+        cv.style.width = `${cssW}px`;
+        cv.style.height = `${cssH}px`;
+        cv.style.filter = getThemeCanvasFilter();
+
+        const ctx = cv.getContext('2d', { alpha: false });
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, pixelW, pixelH);
 
-        // Pass `transform` inside renderContext — PDF.js composes this properly without Y-axis inversion!
-        const renderContext = {
+        activeRenderPage = pageNum;
+        activeRenderTask = page.render({
           canvasContext: ctx,
           viewport,
           transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null
-        };
-
-        activeRenderTask = page.render(renderContext);
+        });
         await activeRenderTask.promise;
         activeRenderTask = null;
-        if (token === renderToken) {
-          renderedPages.add(pageNum);
+        activeRenderPage = 0;
+
+        if (token === renderToken && activeSlots.has(pageNum)) {
+          slot.renderedSig = sig;
+          if (slot.placeholder) slot.placeholder.style.display = 'none';
         }
       } catch (err) {
         activeRenderTask = null;
+        activeRenderPage = 0;
         if (err && err.name !== 'RenderingCancelledException') {
           console.error('Reader render error on page', pageNum, err);
         }
       }
     }
 
-    function enqueuePageRender(pageNum, canvas, token, priority = false) {
-      if (renderedPages.has(pageNum)) return;
-      if (renderQueue.some((item) => item.pageNum === pageNum && item.token === token)) return;
-      const job = { pageNum, canvas, token };
-      if (priority) renderQueue.unshift(job);
-      else renderQueue.push(job);
-      processRenderQueue();
-    }
-
     async function processRenderQueue() {
-      if (isProcessingQueue) return;
+      if (isProcessingQueue || !pdfDoc) return;
       isProcessingQueue = true;
+      const myToken = renderToken;
+      const mySig = currentRenderSig;
       try {
-        while (renderQueue.length > 0) {
-          const job = renderQueue.shift();
-          if (!job || job.token !== renderToken) continue;
-          if (renderedPages.has(job.pageNum)) continue;
-          await renderSingleCanvas(job.pageNum, job.canvas, job.token);
-          // Yield 1 animation frame between pages so touch scrolling stays silky 60fps
+        while (renderQueue.length > 0 && myToken === renderToken) {
+          const pNum = renderQueue.shift();
+          const slot = activeSlots.get(pNum);
+          if (!slot || slot.renderedSig === mySig) continue;
+          await renderVirtualSlot(pNum, myToken, mySig);
+          // Yield one frame between page rasters so touch scrolling stays silky 60fps
           await new Promise((r) => requestAnimationFrame(r));
         }
       } finally {
@@ -1197,91 +1446,31 @@
 
     async function renderPagesLayout(keepScrollRatio = false) {
       if (!pdfDoc) return;
-      const prevRatio = keepScrollRatio && stage && stage.scrollHeight > 0
-        ? stage.scrollTop / stage.scrollHeight
+      const prevRatio = keepScrollRatio && stage && totalVirtualHeight > 0
+        ? stage.scrollTop / totalVirtualHeight
         : 0;
 
-      cancelAllRendering();
-      const myToken = renderToken;
-      renderedPages.clear();
-      if (pageObserver) {
-        pageObserver.disconnect();
-        pageObserver = null;
-      }
-      pagesContainer.innerHTML = '';
+      clearAllSlots();
+      currentRenderSig = computeRenderSig();
+      await initVirtualMetrics();
       updateNavUi();
 
-      const availW = getAvailableStageWidth();
-      const estW = Math.floor(availW * zoomFactor);
-      const estH = Math.floor(estW * 1.414); // Clean A4 placeholder ratio until each page measures itself
-
+      const targetW = Math.floor(getAvailableStageWidth() * zoomFactor);
       if (viewMode === 'single') {
-        const wrap = document.createElement('div');
-        wrap.className = 'bg-white shadow-2xl overflow-hidden relative my-auto';
-        wrap.setAttribute('data-page-num', String(currentPage));
-        wrap.style.width = `${estW}px`;
-        wrap.style.minHeight = `${estH}px`;
-        const cv = document.createElement('canvas');
-        cv.className = 'pb-reader-canvas block max-w-none';
-        wrap.appendChild(cv);
-        pagesContainer.appendChild(wrap);
-        enqueuePageRender(currentPage, cv, myToken, true);
+        pagesContainer.style.position = 'relative';
+        pagesContainer.style.height = 'auto';
+        pagesContainer.style.minWidth = `${targetW}px`;
         if (stage) stage.scrollTop = 0;
-        return;
+      } else {
+        pagesContainer.style.position = 'relative';
+        pagesContainer.style.height = `${totalVirtualHeight}px`;
+        pagesContainer.style.minWidth = `${targetW}px`;
+        if (keepScrollRatio && stage && prevRatio > 0) {
+          stage.scrollTop = Math.floor(prevRatio * totalVirtualHeight);
+        }
       }
 
-      const frag = document.createDocumentFragment();
-      for (let p = 1; p <= totalPages; p++) {
-        const wrap = document.createElement('div');
-        wrap.className = 'pb-reader-page-wrap bg-white shadow-lg overflow-hidden relative flex flex-col items-center';
-        wrap.setAttribute('data-page-num', String(p));
-        wrap.style.width = `${estW}px`;
-        wrap.style.minHeight = `${estH}px`;
-
-        const cv = document.createElement('canvas');
-        cv.className = 'pb-reader-canvas block max-w-none';
-        cv.style.filter = getThemeCanvasFilter();
-
-        wrap.appendChild(cv);
-        frag.appendChild(wrap);
-      }
-      pagesContainer.appendChild(frag);
-
-      pageObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            const pNum = parseInt(entry.target.getAttribute('data-page-num'), 10);
-            if (!pNum) return;
-            if (!renderedPages.has(pNum)) {
-              const cv = entry.target.querySelector('canvas.pb-reader-canvas');
-              if (cv) enqueuePageRender(pNum, cv, myToken, entry.intersectionRatio >= 0.2);
-            }
-            if (entry.intersectionRatio >= 0.35) {
-              currentPage = pNum;
-              if (pageInput && document.activeElement !== pageInput) {
-                pageInput.value = String(currentPage);
-              }
-              if (floatingPill) floatingPill.textContent = `${currentPage} / ${totalPages}`;
-              if (prevBtn) prevBtn.disabled = currentPage <= 1;
-              if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-            }
-          });
-        },
-        { root: stage, rootMargin: '250px 0px', threshold: [0.05, 0.35] }
-      );
-
-      pagesContainer.querySelectorAll('.pb-reader-page-wrap').forEach((el) => pageObserver.observe(el));
-
-      if (keepScrollRatio && stage && prevRatio > 0) {
-        stage.scrollTop = Math.floor(prevRatio * stage.scrollHeight);
-      }
-
-      const targetWrap = pagesContainer.querySelector(`.pb-reader-page-wrap[data-page-num="${currentPage}"]`);
-      if (targetWrap) {
-        const cv = targetWrap.querySelector('canvas.pb-reader-canvas');
-        if (cv) enqueuePageRender(currentPage, cv, myToken, true);
-      }
+      syncVirtualWindow(true);
     }
 
     function goToPage(pageNum) {
@@ -1290,17 +1479,28 @@
       currentPage = clamped;
       updateNavUi();
       if (viewMode === 'single') {
-        renderPagesLayout();
+        syncVirtualWindow(true);
+        if (stage) stage.scrollTop = 0;
       } else {
-        const target = pagesContainer.querySelector(`.pb-reader-page-wrap[data-page-num="${clamped}"]`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          if (!renderedPages.has(clamped)) {
-            const cv = target.querySelector('canvas.pb-reader-canvas');
-            if (cv) enqueuePageRender(clamped, cv, renderToken, true);
-          }
+        const m = pageMetrics[clamped - 1];
+        if (m && stage) {
+          stage.scrollTo({ top: m.top, behavior: 'smooth' });
+          syncVirtualWindow(true);
         }
       }
+    }
+
+    // Passive rAF-throttled scroll listener drives the virtualized sliding window at 60fps
+    if (stage) {
+      stage.addEventListener('scroll', () => {
+        if (!pdfDoc || viewMode !== 'scroll' || overlay.classList.contains('hidden')) return;
+        lastScrollTs = performance.now();
+        if (scrollRafId) return;
+        scrollRafId = requestAnimationFrame(() => {
+          scrollRafId = null;
+          syncVirtualWindow(false);
+        });
+      }, { passive: true });
     }
 
     async function loadPdfBytes(bytes, name, password = '') {
@@ -1316,7 +1516,8 @@
       openFullscreenOverlay();
       global.utils?.showLoader?.('Opening PDF Full-Screen...', 'text-emerald-500');
       try {
-        cancelAllRendering();
+        clearAllSlots();
+        pageMetrics = [];
         if (pdfDoc) {
           try { await pdfDoc.destroy(); } catch {}
           pdfDoc = null;
@@ -1374,7 +1575,13 @@
 
     if (closeBtn) closeBtn.addEventListener('click', closeFullscreenOverlay);
     if (pickBtn) pickBtn.addEventListener('click', () => fileInput.click());
-    if (resumeBtn) resumeBtn.addEventListener('click', () => { if (pdfDoc) openFullscreenOverlay(); });
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        if (!pdfDoc) return;
+        openFullscreenOverlay();
+        requestAnimationFrame(() => renderPagesLayout(true));
+      });
+    }
     if (openAnotherBtn) {
       openAnotherBtn.addEventListener('click', () => {
         if (moreMenu) moreMenu.classList.add('hidden');

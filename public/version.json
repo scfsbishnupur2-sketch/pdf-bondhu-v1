@@ -1,6 +1,6 @@
 {
-  "version": "2.2.2",
-  "build": "20261125-3",
+  "version": "2.2.3",
+  "build": "20261125-4",
   "updatedAt": "2026-11-25",
-  "notes": "Fixed upside-down PDF pages, mixed page sizing & laggy scrolling in Full-Screen Reader"
+  "notes": "Virtualized Pages-as-Needed PDF Reader for silky 60fps scrolling & low memory usage"
 }
