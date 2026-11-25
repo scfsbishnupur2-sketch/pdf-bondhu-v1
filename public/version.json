@@ -1,6 +1,6 @@
 {
-  "version": "2.2.1",
-  "build": "20261125-2",
+  "version": "2.2.2",
+  "build": "20261125-3",
   "updatedAt": "2026-11-25",
-  "notes": "Full-Screen Ad-Free PDF Reader with Pinch-to-Zoom, Tap-to-Hide Bars & Rotate"
+  "notes": "Fixed upside-down PDF pages, mixed page sizing & laggy scrolling in Full-Screen Reader"
 }

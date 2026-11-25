@@ -3727,32 +3727,36 @@
     </div>
 
     <!-- True Full-Screen Ad-Free PDF Reader Overlay (Adobe-style edge-to-edge viewer) -->
-    <div id="pdfReaderFullscreenOverlay" class="hidden fixed inset-0 z-[90] w-screen h-[100dvh] flex-col bg-[#121622] text-white overflow-hidden select-none">
-      <!-- Floating Top Bar (auto-hides on page tap) -->
-      <header id="pdfReaderTopBar" class="absolute top-0 left-0 right-0 z-30 bg-[#0F172A]/92 backdrop-blur-md border-b border-white/10 px-2.5 sm:px-4 py-2 flex items-center justify-between gap-2 transition-transform duration-200 ease-out">
+    <div id="pdfReaderFullscreenOverlay" class="hidden fixed inset-0 z-[90] w-screen h-[100dvh] flex-col bg-slate-900 text-white overflow-hidden select-none">
+      <!-- Floating Top Bar (high-contrast dark, zero lag, auto-hides on page tap) -->
+      <header id="pdfReaderTopBar" class="absolute top-0 left-0 right-0 z-30 border-b border-white/10 px-2.5 sm:px-4 py-2 flex items-center justify-between gap-2 transition-transform duration-200 ease-out will-change-transform" style="background-color: rgba(15, 23, 42, 0.96);">
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <button type="button" id="pdfReaderCloseBtn" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center shrink-0 transition" title="Close Reader">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <button type="button" id="pdfReaderCloseBtn" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center shrink-0 transition" title="Close Reader">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </button>
           <div class="min-w-0 flex-1">
             <p id="pdfReaderFileName" class="text-xs sm:text-sm font-extrabold text-white truncate leading-tight">Document.pdf</p>
-            <p id="pdfReaderFileMeta" class="text-[10px] sm:text-[11px] text-emerald-300/90 font-semibold truncate">100% Ad-Free · Offline</p>
+            <p id="pdfReaderFileMeta" class="text-[10px] sm:text-[11px] text-emerald-400 font-semibold truncate">100% Ad-Free · Offline</p>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <button type="button" id="pdfReaderSearchToggleBtn" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" title="Search in PDF">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <button type="button" id="pdfReaderSearchToggleBtn" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" title="Search in PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           </button>
-          <button type="button" id="pdfReaderShareBtn" class="px-3 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition shadow-sm" title="Share PDF">
+          <button type="button" id="pdfReaderShareBtn" class="px-3 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition" title="Share PDF">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             <span class="hidden sm:inline">Share</span>
           </button>
           <div class="relative">
-            <button type="button" id="pdfReaderMoreBtn" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" title="More Options">
-              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            <button type="button" id="pdfReaderMoreBtn" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition" title="More Options">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
             </button>
-            <div id="pdfReaderMoreMenu" class="hidden absolute right-0 top-12 w-56 rounded-2xl bg-[#1A2236] border border-white/15 shadow-2xl p-1.5 space-y-1 z-40 text-xs">
+            <div id="pdfReaderMoreMenu" class="hidden absolute right-0 top-11 w-56 rounded-2xl bg-slate-900 border border-white/15 shadow-2xl p-1.5 space-y-1 z-40 text-xs">
+              <button type="button" id="pdfReaderModeToggle" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/10 font-bold text-indigo-300 flex items-center justify-between">
+                <span>View Mode</span>
+                <span id="pdfReaderModeBadge" class="px-2 py-0.5 rounded-md bg-indigo-500/25 text-[10px]">Scroll</span>
+              </button>
               <button type="button" id="pdfReaderOpenAnotherBtn" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/10 font-bold text-white flex items-center gap-2">Open Another PDF</button>
               <button type="button" id="pdfReaderSaveVaultBtn" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/10 font-bold text-emerald-300 flex items-center gap-2">Save to My Vault</button>
               <button type="button" id="pdfReaderCopyTextBtn" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white/10 font-bold text-slate-200 flex items-center gap-2">Copy Current Page Text</button>
@@ -3771,18 +3775,18 @@
       </header>
 
       <!-- Collapsible Floating Search Bar -->
-      <div id="pdfReaderSearchBar" class="hidden absolute top-[57px] left-0 right-0 z-30 bg-[#151D30]/95 backdrop-blur-md border-b border-white/10 px-3 py-2 flex items-center gap-1.5">
-        <input type="search" id="pdfReaderSearchInput" placeholder="Search text inside this PDF..." class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-xs font-semibold text-white placeholder:text-slate-400 outline-none focus:border-emerald-400 min-h-[38px]" />
-        <button type="button" id="pdfReaderSearchBtn" class="px-3.5 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-extrabold min-h-[38px] shrink-0">Find</button>
-        <button type="button" id="pdfReaderSearchPrevBtn" class="hidden px-2.5 py-2 rounded-xl bg-white/10 text-white text-xs font-extrabold min-h-[38px]" title="Previous Match">↑</button>
-        <button type="button" id="pdfReaderSearchNextBtn" class="hidden px-2.5 py-2 rounded-xl bg-white/10 text-white text-xs font-extrabold min-h-[38px]" title="Next Match">↓</button>
+      <div id="pdfReaderSearchBar" class="hidden absolute top-[53px] left-0 right-0 z-30 border-b border-white/10 px-3 py-2 flex items-center gap-1.5" style="background-color: rgba(15, 23, 42, 0.98);">
+        <input type="search" id="pdfReaderSearchInput" placeholder="Search text inside this PDF..." class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-xs font-semibold text-white placeholder:text-slate-400 outline-none focus:border-emerald-400 min-h-[36px]" />
+        <button type="button" id="pdfReaderSearchBtn" class="px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-extrabold min-h-[36px] shrink-0">Find</button>
+        <button type="button" id="pdfReaderSearchPrevBtn" class="hidden px-2.5 py-2 rounded-xl bg-white/10 text-white text-xs font-extrabold min-h-[36px]" title="Previous Match">↑</button>
+        <button type="button" id="pdfReaderSearchNextBtn" class="hidden px-2.5 py-2 rounded-xl bg-white/10 text-white text-xs font-extrabold min-h-[36px]" title="Next Match">↓</button>
         <span id="pdfReaderSearchStatus" class="text-[11px] font-bold text-emerald-300 whitespace-nowrap"></span>
-        <button type="button" id="pdfReaderSearchCloseBtn" class="px-2.5 py-2 rounded-xl bg-white/10 text-slate-300 hover:text-white text-xs font-bold min-h-[38px]" title="Close Search">✕</button>
+        <button type="button" id="pdfReaderSearchCloseBtn" class="px-2.5 py-2 rounded-xl bg-white/10 text-slate-300 hover:text-white text-xs font-bold min-h-[36px]" title="Close Search">✕</button>
       </div>
 
       <!-- Full-Screen Password Unlock Prompt (for locked e-Aadhaar / Bank PDFs) -->
-      <div id="pdfReaderPasswordBox" class="hidden absolute inset-0 z-20 flex items-center justify-center p-5 bg-[#0F172A]/95">
-        <div class="w-full max-w-sm bg-[#1A2236] border border-amber-400/40 rounded-3xl p-5 space-y-4 shadow-2xl">
+      <div id="pdfReaderPasswordBox" class="hidden absolute inset-0 z-20 flex items-center justify-center p-5 bg-slate-950/95">
+        <div class="w-full max-w-sm bg-slate-900 border border-amber-400/40 rounded-3xl p-5 space-y-4 shadow-2xl">
           <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -3792,7 +3796,7 @@
               <p class="text-[11px] text-slate-300">Unlock locally on your phone (100% private)</p>
             </div>
           </div>
-          <input type="password" id="pdfReaderPasswordInput" placeholder="Enter PDF password..." class="w-full px-3.5 py-3 rounded-xl border border-white/20 bg-slate-900 text-sm font-semibold text-white outline-none focus:border-amber-400 min-h-[44px]" />
+          <input type="password" id="pdfReaderPasswordInput" placeholder="Enter PDF password..." class="w-full px-3.5 py-3 rounded-xl border border-white/20 bg-slate-950 text-sm font-semibold text-white outline-none focus:border-amber-400 min-h-[44px]" />
           <p id="pdfReaderPasswordErr" class="hidden text-xs font-bold text-rose-400"></p>
           <div class="flex gap-2">
             <button type="button" id="pdfReaderPasswordCancel" class="flex-1 py-2.5 rounded-xl bg-white/10 text-slate-200 text-xs font-bold min-h-[42px]">Cancel</button>
@@ -3801,45 +3805,40 @@
         </div>
       </div>
 
-      <!-- Subtle Corner Page Counter Pill (visible even in immersive mode) -->
-      <div id="pdfReaderFloatingPagePill" class="pointer-events-none absolute top-16 right-3 z-20 px-2.5 py-1 rounded-full bg-slate-950/75 border border-white/15 text-[11px] font-extrabold text-white/95 tabular-nums backdrop-blur-sm transition-all duration-200">1 / 1</div>
+      <!-- Subtle Corner Page Counter Pill -->
+      <div id="pdfReaderFloatingPagePill" class="pointer-events-none absolute top-14 right-3 z-20 px-2.5 py-1 rounded-full bg-slate-950/85 border border-white/15 text-[11px] font-extrabold text-white tabular-nums transition-all duration-200">1 / 1</div>
 
       <!-- Full-Bleed Edge-to-Edge PDF Reading Canvas Stage -->
-      <div id="pdfReaderStage" class="flex-1 w-full h-full overflow-auto overscroll-contain bg-[#1E2433] pt-[58px] pb-[72px] px-1 sm:px-3 transition-colors touch-pan-x touch-pan-y">
+      <div id="pdfReaderStage" class="flex-1 w-full h-full overflow-auto overscroll-contain bg-slate-800 pt-[56px] pb-[60px] px-1 sm:px-3 transition-colors" style="-webkit-overflow-scrolling: touch;">
         <div id="pdfReaderPagesContainer" class="flex flex-col items-center gap-2.5 sm:gap-3.5 w-full min-h-full"></div>
       </div>
 
-      <!-- Floating Bottom Control Bar (Rotate, Zoom, Page Nav, Scroll/Single, Eye-Comfort Theme) -->
-      <footer id="pdfReaderBottomBar" class="absolute bottom-0 left-0 right-0 z-30 bg-[#0F172A]/94 backdrop-blur-md border-t border-white/10 px-2 sm:px-4 py-2 transition-transform duration-200 ease-out" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
-        <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+      <!-- Compact Single-Row Floating Bottom Control Bar -->
+      <footer id="pdfReaderBottomBar" class="absolute bottom-0 left-0 right-0 z-30 border-t border-white/10 px-2 sm:px-4 py-1.5 transition-transform duration-200 ease-out will-change-transform" style="background-color: rgba(15, 23, 42, 0.96); padding-bottom: max(0.45rem, env(safe-area-inset-bottom));">
+        <div class="max-w-3xl mx-auto flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar">
           <!-- Page Navigation -->
-          <div class="flex items-center gap-1 bg-white/10 rounded-xl p-0.5">
+          <div class="flex items-center gap-0.5 bg-white/10 rounded-xl p-0.5 shrink-0">
             <button type="button" id="pdfReaderPrevBtn" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-sm font-extrabold disabled:opacity-35" title="Previous Page">‹</button>
-            <div class="flex items-center gap-1 px-1 text-[11px] font-bold">
-              <input type="number" id="pdfReaderPageInput" min="1" value="1" class="w-10 text-center py-0.5 rounded-md bg-slate-900/90 border border-white/15 text-[11px] font-extrabold text-white tabular-nums outline-none" />
+            <div class="flex items-center gap-0.5 px-1 text-[11px] font-bold">
+              <input type="number" id="pdfReaderPageInput" min="1" value="1" class="w-9 text-center py-0.5 rounded-md bg-slate-950 border border-white/15 text-[11px] font-extrabold text-white tabular-nums outline-none" />
               <span class="text-slate-400">/</span>
               <span id="pdfReaderPageTotal" class="tabular-nums font-extrabold text-white">0</span>
             </div>
             <button type="button" id="pdfReaderNextBtn" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-sm font-extrabold disabled:opacity-35" title="Next Page">›</button>
           </div>
 
-          <!-- Zoom & Rotate -->
-          <div class="flex items-center gap-1 bg-white/10 rounded-xl p-0.5">
-            <button type="button" id="pdfReaderZoomOut" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-sm font-extrabold" title="Zoom Out">−</button>
-            <span id="pdfReaderZoomLabel" class="px-1 text-[11px] font-extrabold text-emerald-300 tabular-nums min-w-[38px] text-center">100%</span>
-            <button type="button" id="pdfReaderZoomIn" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-sm font-extrabold" title="Zoom In">+</button>
+          <!-- Zoom Controls -->
+          <div class="flex items-center gap-0.5 bg-white/10 rounded-xl p-0.5 shrink-0">
+            <button type="button" id="pdfReaderZoomOut" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-base font-extrabold leading-none" title="Zoom Out">−</button>
+            <span id="pdfReaderZoomLabel" class="px-1 text-[11px] font-extrabold text-emerald-400 tabular-nums min-w-[36px] text-center">100%</span>
+            <button type="button" id="pdfReaderZoomIn" class="w-8 h-8 rounded-lg hover:bg-white/15 text-white text-base font-extrabold leading-none" title="Zoom In">+</button>
             <button type="button" id="pdfReaderFitBtn" class="px-2 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-extrabold" title="Fit Screen Width">Fit</button>
-            <button type="button" id="pdfReaderRotateBtn" class="px-2.5 h-8 rounded-lg bg-indigo-500/80 hover:bg-indigo-500 text-white text-[11px] font-extrabold flex items-center gap-1" title="Rotate 90°">↻ 90°</button>
           </div>
 
-          <!-- Mode & Eye-Comfort Reading Theme -->
-          <div class="flex items-center gap-1">
-            <button type="button" id="pdfReaderModeToggle" class="px-2.5 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold" title="Toggle Scroll / Single Page">Scroll</button>
-            <div class="flex items-center gap-0.5 bg-white/10 rounded-xl p-0.5">
-              <button type="button" data-rtheme="light" class="pdf-reader-theme-btn px-2 h-7 rounded-lg text-[10px] font-extrabold bg-white text-slate-900">Light</button>
-              <button type="button" data-rtheme="sepia" class="pdf-reader-theme-btn px-2 h-7 rounded-lg text-[10px] font-bold text-amber-200">Sepia</button>
-              <button type="button" data-rtheme="night" class="pdf-reader-theme-btn px-2 h-7 rounded-lg text-[10px] font-bold text-slate-300">Night</button>
-            </div>
+          <!-- Rotate & Reading Theme Cycle -->
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" id="pdfReaderRotateBtn" class="px-2.5 h-8 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-[11px] font-extrabold flex items-center gap-1" title="Rotate 90°">↻ 90°</button>
+            <button type="button" id="pdfReaderThemeCycleBtn" class="px-2.5 h-8 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-extrabold whitespace-nowrap" title="Switch Reading Theme">☀ Light</button>
           </div>
         </div>
       </footer>

@@ -1247,8 +1247,8 @@
   /* ========================================================================
      8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
      ======================================================================== */
-  const CURRENT_BUILD = '20261125-2';
-  const CURRENT_VERSION = '2.2.1';
+  const CURRENT_BUILD = '20261125-3';
+  const CURRENT_VERSION = '2.2.2';
 
   function initLiveAutoUpdater() {
     const banner = document.getElementById('liveUpdateBanner');
