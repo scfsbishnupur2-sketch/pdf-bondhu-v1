@@ -11,7 +11,7 @@
   const STORAGE_KEY = 'pdfBondhuConsentConfig_v2';
 
   const defaultConfig = {
-    appVersion: '2.2.0',
+    appVersion: '2.3.0',
     launchFreeMode: true,
     adsEnabled: false,
     personalizedAdsConsent: false,

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="open_reader"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_reader_short"
+        android:shortcutLongLabel="@string/shortcut_reader_long">
+        <intent
+            android:action="com.nayak.pdfbondhu.ACTION_SHORTCUT"
+            android:targetPackage="com.nayak.pdfbondhu"
+            android:targetClass="com.nayak.pdfbondhu.MainActivity">
+            <extra android:name="shortcut_tool" android:value="pdfReaderTool" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_planner"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_planner_short"
+        android:shortcutLongLabel="@string/shortcut_planner_long">
+        <intent
+            android:action="com.nayak.pdfbondhu.ACTION_SHORTCUT"
+            android:targetPackage="com.nayak.pdfbondhu"
+            android:targetClass="com.nayak.pdfbondhu.MainActivity">
+            <extra android:name="shortcut_tool" android:value="oneoraPlannerTab" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_money"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_money_short"
+        android:shortcutLongLabel="@string/shortcut_money_long">
+        <intent
+            android:action="com.nayak.pdfbondhu.ACTION_SHORTCUT"
+            android:targetPackage="com.nayak.pdfbondhu"
+            android:targetClass="com.nayak.pdfbondhu.MainActivity">
+            <extra android:name="shortcut_tool" android:value="oneoraMoneyTab" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_scanner"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_scanner_short"
+        android:shortcutLongLabel="@string/shortcut_scanner_long">
+        <intent
+            android:action="com.nayak.pdfbondhu.ACTION_SHORTCUT"
+            android:targetPackage="com.nayak.pdfbondhu"
+            android:targetClass="com.nayak.pdfbondhu.MainActivity">
+            <extra android:name="shortcut_tool" android:value="pdfScanner" />
+        </intent>
+    </shortcut>
+</shortcuts>

@@ -1,0 +1,219 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private owner-only profile and sync preferences for an authenticated ONEORA user.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner; must match document ID and request.auth.uid.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name for greeting.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Owner email address (PII, strictly owner-only read).",
+          "maxLength": 200
+        },
+        "language": {
+          "type": "string",
+          "enum": ["en", "bn", "hi"],
+          "description": "Preferred UI language code."
+        },
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark", "system"],
+          "description": "Preferred theme setting."
+        },
+        "defaultPdfAuthor": {
+          "type": "string",
+          "description": "Default PDF author metadata value.",
+          "maxLength": 100
+        },
+        "quickActions": {
+          "type": "array",
+          "description": "Up to 10 pinned quick-action tool IDs."
+        },
+        "updatedAtMs": {
+          "type": "number",
+          "description": "Client conflict-resolution timestamp in epoch milliseconds."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": ["ownerId", "displayName", "language", "theme", "updatedAtMs", "createdAt", "updatedAt"]
+    },
+    "PlannerItem": {
+      "title": "PlannerItem",
+      "description": "Calendar event, date-wise note, reminder, task, voice note, or habit synced for a user.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["event", "note", "reminder", "task", "habit", "voice_note"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "dateKey": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(|[0-9]{4}-[0-9]{2}-[0-9]{2})$"
+        },
+        "timeStr": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "repeat": {
+          "type": "string",
+          "enum": ["none", "daily", "weekly", "monthly", "yearly"]
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "completed", "snoozed", "archived"]
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "streak": {
+          "type": "number"
+        },
+        "checklist": {
+          "type": "array",
+          "description": "Bounded list of up to 30 checklist text items."
+        },
+        "updatedAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["ownerId", "kind", "title", "dateKey", "status", "updatedAtMs", "createdAt", "updatedAt"]
+    },
+    "FinanceRecord": {
+      "title": "FinanceRecord",
+      "description": "Personal finance expense, income, budget, savings goal, debt, or bill reminder.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "recordType": {
+          "type": "string",
+          "enum": ["expense", "income", "budget", "goal", "debt", "bill"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "amount": {
+          "type": "number"
+        },
+        "targetAmount": {
+          "type": "number"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["cash", "upi", "bank", "debit", "credit", "other"]
+        },
+        "dateKey": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^(|[0-9]{4}-[0-9]{2}-[0-9]{2})$"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "counterparty": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "dueDay": {
+          "type": "number"
+        },
+        "recurring": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "paid", "completed", "settled"]
+        },
+        "updatedAtMs": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["ownerId", "recordType", "title", "amount", "category", "dateKey", "status", "updatedAtMs", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private owner-only user profile and app preference document."
+    },
+    "/users/{userId}/planner/{itemId}": {
+      "schema": { "$ref": "#/entities/PlannerItem" },
+      "description": "User's private calendar events, date notes, reminders, tasks, and habits."
+    },
+    "/users/{userId}/finance/{recordId}": {
+      "schema": { "$ref": "#/entities/FinanceRecord" },
+      "description": "User's private expenses, income, budgets, savings goals, debts, and recurring bills."
+    }
+  }
+}

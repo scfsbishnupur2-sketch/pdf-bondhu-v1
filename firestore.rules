@@ -1,0 +1,258 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // Hardened Global Helper Primitives
+    // =========================================================================
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedEmail() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidOptionalString(data, field, maxLen) {
+      return !(field in data) || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isValidOptionalNumber(data, field, minVal, maxVal) {
+      return !(field in data) || (data[field] is number && data[field] >= minVal && data[field] <= maxVal);
+    }
+
+    function isValidOptionalBool(data, field) {
+      return !(field in data) || (data[field] is bool);
+    }
+
+    function isValidStringList(data, field, maxItems) {
+      return !(field in data) || (
+        data[field] is list &&
+        data[field].size() <= maxItems &&
+        (data[field].size() == 0 || (data[field][0] is string && data[field][0].size() <= 200))
+      );
+    }
+
+    function isValidDateKey(val) {
+      return val is string && val.size() <= 20 && val.matches('^(|[0-9]{4}-[0-9]{2}-[0-9]{2})$');
+    }
+
+    // =========================================================================
+    // Validation Blueprints (Anti-Update-Gap)
+    // =========================================================================
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['ownerId', 'displayName', 'language', 'theme', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'displayName', 'email', 'language', 'theme', 'defaultPdfAuthor', 'quickActions', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.ownerId is string
+        && data.ownerId == request.auth.uid
+        && data.ownerId == userId
+        && data.ownerId.size() <= 128
+        && data.displayName is string
+        && data.displayName.size() >= 1
+        && data.displayName.size() <= 100
+        && isValidOptionalString(data, 'email', 200)
+        && data.language is string
+        && data.language in ['en', 'bn', 'hi']
+        && data.theme is string
+        && data.theme in ['light', 'dark', 'system']
+        && isValidOptionalString(data, 'defaultPdfAuthor', 100)
+        && isValidStringList(data, 'quickActions', 10)
+        && data.updatedAtMs is number
+        && data.updatedAtMs >= 0
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPlannerItem(data, userId) {
+      return data.keys().hasAll(['ownerId', 'kind', 'title', 'dateKey', 'status', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'kind', 'title', 'body', 'dateKey', 'timeStr', 'repeat', 'category', 'status', 'pinned', 'streak', 'checklist', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.ownerId is string
+        && data.ownerId == request.auth.uid
+        && data.ownerId == userId
+        && data.ownerId.size() <= 128
+        && data.kind is string
+        && data.kind in ['event', 'note', 'reminder', 'task', 'habit', 'voice_note']
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 200
+        && isValidOptionalString(data, 'body', 4000)
+        && isValidDateKey(data.dateKey)
+        && isValidOptionalString(data, 'timeStr', 16)
+        && (!('repeat' in data) || (data.repeat is string && data.repeat in ['none', 'daily', 'weekly', 'monthly', 'yearly']))
+        && isValidOptionalString(data, 'category', 40)
+        && data.status is string
+        && data.status in ['active', 'completed', 'snoozed', 'archived']
+        && isValidOptionalBool(data, 'pinned')
+        && isValidOptionalNumber(data, 'streak', 0, 10000)
+        && isValidStringList(data, 'checklist', 30)
+        && data.updatedAtMs is number
+        && data.updatedAtMs >= 0
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidFinanceRecord(data, userId) {
+      return data.keys().hasAll(['ownerId', 'recordType', 'title', 'amount', 'category', 'dateKey', 'status', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'recordType', 'title', 'amount', 'targetAmount', 'category', 'paymentMethod', 'dateKey', 'notes', 'counterparty', 'dueDay', 'recurring', 'status', 'updatedAtMs', 'createdAt', 'updatedAt'])
+        && data.ownerId is string
+        && data.ownerId == request.auth.uid
+        && data.ownerId == userId
+        && data.ownerId.size() <= 128
+        && data.recordType is string
+        && data.recordType in ['expense', 'income', 'budget', 'goal', 'debt', 'bill']
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 200
+        && data.amount is number
+        && data.amount >= 0
+        && data.amount <= 1000000000
+        && isValidOptionalNumber(data, 'targetAmount', 0, 1000000000)
+        && data.category is string
+        && data.category.size() >= 1
+        && data.category.size() <= 60
+        && (!('paymentMethod' in data) || (data.paymentMethod is string && data.paymentMethod in ['cash', 'upi', 'bank', 'debit', 'credit', 'other']))
+        && isValidDateKey(data.dateKey)
+        && isValidOptionalString(data, 'notes', 1000)
+        && isValidOptionalString(data, 'counterparty', 100)
+        && isValidOptionalNumber(data, 'dueDay', 0, 31)
+        && isValidOptionalBool(data, 'recurring')
+        && data.status is string
+        && data.status in ['active', 'paid', 'completed', 'settled']
+        && data.updatedAtMs is number
+        && data.updatedAtMs >= 0
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function hasValidParentProfile(userId) {
+      return existsAfter(/databases/$(database)/documents/users/$(userId))
+        && getAfter(/databases/$(database)/documents/users/$(userId)).data.ownerId == request.auth.uid;
+    }
+
+    // =========================================================================
+    // Collection 1: /users/{userId} (PII Isolated, Strictly Owner-Only)
+    // =========================================================================
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && isVerifiedEmail()
+        && isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && isVerifiedEmail()
+        && isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'language', 'theme', 'defaultPdfAuthor', 'quickActions', 'updatedAtMs', 'updatedAt'])
+        );
+
+      allow delete: if isSignedIn() && isVerifiedEmail() && isValidId(userId) && isOwner(userId);
+
+      // =======================================================================
+      // Collection 2: /users/{userId}/planner/{itemId}
+      // =======================================================================
+      match /planner/{itemId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(itemId) && isOwner(userId);
+        allow list: if isSignedIn() && isValidId(userId) && isOwner(userId) && resource.data.ownerId == request.auth.uid;
+
+        allow create: if isSignedIn()
+          && isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(itemId)
+          && isOwner(userId)
+          && isValidPlannerItem(incoming(), userId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && hasValidParentProfile(userId);
+
+        allow update: if isSignedIn()
+          && isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(itemId)
+          && isOwner(userId)
+          && isValidPlannerItem(incoming(), userId)
+          && existing().status != 'archived'
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && hasValidParentProfile(userId)
+          && (
+            incoming().diff(existing()).affectedKeys().hasOnly(['kind', 'title', 'body', 'dateKey', 'timeStr', 'repeat', 'category', 'status', 'pinned', 'streak', 'checklist', 'updatedAtMs', 'updatedAt'])
+            ||
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'pinned', 'streak', 'updatedAtMs', 'updatedAt'])
+          );
+
+        allow delete: if isSignedIn() && isVerifiedEmail() && isValidId(userId) && isValidId(itemId) && isOwner(userId);
+      }
+
+      // =======================================================================
+      // Collection 3: /users/{userId}/finance/{recordId}
+      // =======================================================================
+      match /finance/{recordId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(recordId) && isOwner(userId);
+        allow list: if isSignedIn() && isValidId(userId) && isOwner(userId) && resource.data.ownerId == request.auth.uid;
+
+        allow create: if isSignedIn()
+          && isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(recordId)
+          && isOwner(userId)
+          && isValidFinanceRecord(incoming(), userId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && hasValidParentProfile(userId);
+
+        allow update: if isSignedIn()
+          && isVerifiedEmail()
+          && isValidId(userId)
+          && isValidId(recordId)
+          && isOwner(userId)
+          && isValidFinanceRecord(incoming(), userId)
+          && existing().status != 'settled'
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && hasValidParentProfile(userId)
+          && (
+            incoming().diff(existing()).affectedKeys().hasOnly(['recordType', 'title', 'amount', 'targetAmount', 'category', 'paymentMethod', 'dateKey', 'notes', 'counterparty', 'dueDay', 'recurring', 'status', 'updatedAtMs', 'updatedAt'])
+            ||
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'amount', 'updatedAtMs', 'updatedAt'])
+          );
+
+        allow delete: if isSignedIn() && isVerifiedEmail() && isValidId(userId) && isValidId(recordId) && isOwner(userId);
+      }
+    }
+  }
+}

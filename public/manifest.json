@@ -1,14 +1,15 @@
 {
   "id": "./",
-  "name": "PDF Bondhu",
-  "short_name": "PDF Bondhu",
-  "description": "One App. Everyday Solutions. 100% Free & Offline PDF Studio, Image Studio, Office Tools, Daily Utilities & Personal Document Center.",
+  "name": "ONEORA — One App, More Possibilities",
+  "short_name": "ONEORA",
+  "description": "One App, More Possibilities. Offline-first All-in-One Productivity, PDF Studio, Image Studio, Office Suite, Daily Planner, Money Manager, Encrypted Vault & ONEORA AI.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#151B2B",
   "theme_color": "#293B80",
+  "categories": ["productivity", "finance", "utilities"],
   "icons": [
     {
       "src": "./pwa-192x192.png",
@@ -31,10 +32,50 @@
   ],
   "file_handlers": [
     {
-      "action": "./?open=pdf",
+      "action": "./?open=doc",
       "accept": {
-        "application/pdf": [".pdf"]
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "application/rtf": [".rtf"],
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "text/csv": [".csv"],
+        "application/vnd.ms-powerpoint": [".ppt"],
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
+        "text/plain": [".txt"],
+        "application/zip": [".zip"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+        "image/webp": [".webp"],
+        "image/gif": [".gif"]
       }
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "All-Document Reader",
+      "short_name": "Read Docs",
+      "url": "./?shortcut=pdfReaderTool",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Daily Planner & Reminders",
+      "short_name": "Planner",
+      "url": "./?shortcut=oneoraPlannerTab",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Money & Expenses",
+      "short_name": "Money",
+      "url": "./?shortcut=oneoraMoneyTab",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Scan Document to PDF",
+      "short_name": "Scan PDF",
+      "url": "./?shortcut=pdfScanner",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

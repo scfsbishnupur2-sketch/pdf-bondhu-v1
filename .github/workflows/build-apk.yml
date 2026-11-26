@@ -1,4 +1,4 @@
-name: Build PDF Bondhu 2.0 (APK & Play Store AAB)
+name: Build ONEORA 3.0 (APK & Play Store AAB)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       app_url:
-        description: 'Optional custom URL (leave empty to use built-in bundled PDF Bondhu offline engine)'
+        description: 'Optional custom URL (leave empty to use built-in bundled ONEORA offline engine)'
         required: false
         default: ''
 
@@ -48,34 +48,54 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Generate release signing keystore
+      - name: Prepare Release Signing Keystore (Fixed Secret or Fallback)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          SECRET_STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          SECRET_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SECRET_KEY_PASS: ${{ secrets.KEY_PASSWORD }}
         run: |
           mkdir -p android/keystore
-          keytool -genkeypair -v \
-            -keystore android/keystore/pdfbondhu-release.jks \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias pdfbondhu \
-            -storepass pdfbondhu123 \
-            -keypass pdfbondhu123 \
-            -dname "CN=PDF Bondhu, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
+          KEYSTORE_FILE="${{ github.workspace }}/android/keystore/oneora-release.jks"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using permanent signing keystore from GitHub Secrets (seamless upgrades enabled)."
+            printf "%s" "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_FILE"
+            echo "KEYSTORE_PATH=$KEYSTORE_FILE" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=${SECRET_STORE_PASS}" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=${SECRET_KEY_ALIAS}" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=${SECRET_KEY_PASS}" >> "$GITHUB_ENV"
+          else
+            echo "::warning::KEYSTORE_BASE64 secret not configured. Generating temporary test keystore. Add KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD secrets for permanent Play Store & in-place APK upgrades."
+            keytool -genkeypair -v \
+              -keystore "$KEYSTORE_FILE" \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -alias pdfbondhu \
+              -storepass pdfbondhu123 \
+              -keypass pdfbondhu123 \
+              -dname "CN=ONEORA, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
+            echo "KEYSTORE_PATH=$KEYSTORE_FILE" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=pdfbondhu123" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=pdfbondhu" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=pdfbondhu123" >> "$GITHUB_ENV"
+          fi
 
-      - name: Bundle Web App & All Modules into Android Assets
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build ONEORA Web Bundle & Offline Libraries
         run: |
+          npm ci
+          npm run build
           rm -rf android/app/src/main/assets/www
           mkdir -p android/app/src/main/assets/www
-          cp index.html android/app/src/main/assets/www/index.html
-          for f in public/*.js public/*.json public/*.svg public/*.png public/*.ico; do
-            [ -f "$f" ] && cp "$f" android/app/src/main/assets/www/
-          done
+          cp -r dist/* android/app/src/main/assets/www/
           ls -lh android/app/src/main/assets/www
+          ls -lh android/app/src/main/assets/www/vendor
 
       - name: Build Signed Release APK & Play Store AAB
         working-directory: android
-        env:
-          KEYSTORE_PATH: ${{ github.workspace }}/android/keystore/pdfbondhu-release.jks
-          KEYSTORE_PASSWORD: pdfbondhu123
-          KEY_ALIAS: pdfbondhu
-          KEY_PASSWORD: pdfbondhu123
         run: |
           APP_URL_INPUT="${{ github.event.inputs.app_url }}"
           if [ -n "$APP_URL_INPUT" ]; then
@@ -87,14 +107,14 @@ jobs:
       - name: Prepare Release Artifacts
         run: |
           mkdir -p apk-output
-          cp android/app/build/outputs/apk/release/app-release.apk apk-output/PDF-Bondhu-2.0.apk
-          cp android/app/build/outputs/bundle/release/app-release.aab apk-output/PDF-Bondhu-2.0.aab
+          cp android/app/build/outputs/apk/release/app-release.apk apk-output/ONEORA-3.0.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab apk-output/ONEORA-3.0.aab
           ls -lh apk-output
 
       - name: Upload APK & Play Store AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PDF-Bondhu-2.0-Release
+          name: ONEORA-3.0-Release
           path: apk-output/
           retention-days: 90
 
@@ -102,13 +122,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
-          tag_name: v2.0-latest
-          name: PDF Bondhu 2.0 (APK & Play Store AAB)
+          tag_name: v3.0-latest
+          name: ONEORA 3.0 (APK & Play Store AAB)
           body: |
-            **PDF Bondhu 2.0 — One App. Everyday Solutions.**
-            - Download `PDF-Bondhu-2.0.apk` to install directly on Android phones.
-            - Upload `PDF-Bondhu-2.0.aab` directly to Google Play Console for Play Store release.
+            **ONEORA 3.0 — One App, More Possibilities**
+            - Download `ONEORA-3.0.apk` to install directly on Android phones.
+            - Future web/UI updates arrive automatically inside the app via OTA (no reinstall needed).
+            - Upload `ONEORA-3.0.aab` to Google Play Console for Play Store release.
           files: |
-            apk-output/PDF-Bondhu-2.0.apk
-            apk-output/PDF-Bondhu-2.0.aab
+            apk-output/ONEORA-3.0.apk
+            apk-output/ONEORA-3.0.aab
           make_latest: true

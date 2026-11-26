@@ -8,12 +8,17 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.print.PrintAttributes
+import android.print.PrintManager
+import android.provider.AlarmClock
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Base64
@@ -42,6 +47,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.webkit.WebViewAssetLoader
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
@@ -61,7 +67,9 @@ class MainActivity : AppCompatActivity() {
 
     private val ioExecutor = Executors.newSingleThreadExecutor()
     private val otaDir: File by lazy { File(filesDir, "ota_www").apply { mkdirs() } }
-    private val externalPdfDir: File by lazy { File(cacheDir, "external_pdf").apply { mkdirs() } }
+    private val externalDocDir: File by lazy { File(cacheDir, "external_doc").apply { mkdirs() } }
+    private val adManager: OneoraAdManager by lazy { OneoraAdManager(this) }
+    private val billingManager: OneoraBillingManager by lazy { OneoraBillingManager(this) }
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingChooserParams: WebChromeClient.FileChooserParams? = null
@@ -71,8 +79,17 @@ class MainActivity : AppCompatActivity() {
     private var lastBackPressedMs = 0L
     private var lastOtaCheckMs = 0L
     private var otaUpdatePendingApply = false
-    @Volatile private var pendingExternalPdfUrl: String? = null
-    @Volatile private var pendingExternalPdfName: String? = null
+    @Volatile private var pendingExternalDocUrl: String? = null
+    @Volatile private var pendingExternalDocName: String? = null
+    @Volatile private var pendingExternalDocMime: String? = null
+    @Volatile private var pendingExternalMultiDocsJson: String? = null
+    @Volatile private var pendingShortcutTool: String? = null
+    private var isFlashlightOn = false
+    private val adManager: OneoraAdManager by lazy { OneoraAdManager(this) }
+    private val billingManager: OneoraBillingManager by lazy { OneoraBillingManager(this) }
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ -> }
 
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -170,20 +187,164 @@ class MainActivity : AppCompatActivity() {
 
         configureWebView()
         setupBackNavigation()
-        handleIncomingPdfIntent(intent)
+        requestNotificationPermissionIfNeeded()
+        handleIncomingDocumentIntent(intent)
         loadAppUrl()
         checkForOtaUpdateAsync(manualTrigger = false)
+    }
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleIncomingPdfIntent(intent)
+        handleIncomingDocumentIntent(intent)
     }
 
-    private fun handleIncomingPdfIntent(incoming: Intent?) {
+    private fun inferMimeFromExtension(name: String): String {
+        val lower = name.lowercase()
+        return when {
+            lower.endsWith(".pdf") -> "application/pdf"
+            lower.endsWith(".docx") -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            lower.endsWith(".doc") -> "application/msword"
+            lower.endsWith(".rtf") -> "application/rtf"
+            lower.endsWith(".xlsx") -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            lower.endsWith(".xls") -> "application/vnd.ms-excel"
+            lower.endsWith(".csv") -> "text/csv"
+            lower.endsWith(".ods") -> "application/vnd.oasis.opendocument.spreadsheet"
+            lower.endsWith(".pptx") -> "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            lower.endsWith(".ppt") -> "application/vnd.ms-powerpoint"
+            lower.endsWith(".txt") -> "text/plain"
+            lower.endsWith(".zip") -> "application/zip"
+            lower.endsWith(".jpg") || lower.endsWith(".jpeg") -> "image/jpeg"
+            lower.endsWith(".png") -> "image/png"
+            lower.endsWith(".webp") -> "image/webp"
+            lower.endsWith(".gif") -> "image/gif"
+            lower.endsWith(".bmp") -> "image/bmp"
+            else -> "application/octet-stream"
+        }
+    }
+
+    private fun inferExtensionFromMime(mime: String?): String {
+        return when (mime?.lowercase()?.substringBefore(';')?.trim()) {
+            "application/pdf" -> "pdf"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "docx"
+            "application/msword" -> "doc"
+            "application/rtf", "text/rtf" -> "rtf"
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "xlsx"
+            "application/vnd.ms-excel" -> "xls"
+            "text/csv", "text/comma-separated-values" -> "csv"
+            "application/vnd.oasis.opendocument.spreadsheet" -> "ods"
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "pptx"
+            "application/vnd.ms-powerpoint" -> "ppt"
+            "text/plain" -> "txt"
+            "application/zip", "application/x-zip-compressed" -> "zip"
+            "image/jpeg", "image/jpg" -> "jpg"
+            "image/png" -> "png"
+            "image/webp" -> "webp"
+            "image/gif" -> "gif"
+            "image/bmp" -> "bmp"
+            else -> "bin"
+        }
+    }
+
+    private fun handleIncomingDocumentIntent(incoming: Intent?) {
         if (incoming == null) return
         val action = incoming.action ?: return
+
+        // Handle native Home Screen App Shortcut
+        val shortcutTool = incoming.getStringExtra("shortcut_tool")
+        if (!shortcutTool.isNullOrBlank()) {
+            pendingShortcutTool = shortcutTool
+            if (hasLoadedOnce) {
+                dispatchPendingShortcutToWeb()
+            }
+            return
+        }
+
+        // Handle Multi-File Share (e.g. multiple photos from Gallery / WhatsApp -> Instant PDF)
+        if (action == Intent.ACTION_SEND_MULTIPLE) {
+            val uris = mutableListOf<Uri>()
+            @Suppress("DEPRECATION")
+            val listExtra = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                incoming.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
+            } else {
+                incoming.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+            }
+            if (listExtra != null) uris.addAll(listExtra)
+            if (uris.isEmpty()) {
+                val clip = incoming.clipData
+                if (clip != null) {
+                    for (i in 0 until clip.itemCount) {
+                        clip.getItemAt(i)?.uri?.let { uris.add(it) }
+                    }
+                }
+            }
+            if (uris.isEmpty()) return
+
+            ioExecutor.execute {
+                runCatching {
+                    externalDocDir.listFiles()?.forEach { it.delete() }
+                    val arr = JSONArray()
+                    val stamp = System.currentTimeMillis()
+                    uris.take(40).forEachIndexed { idx, uri ->
+                        val resolvedMime = runCatching { contentResolver.getType(uri) }.getOrNull()
+                            ?.takeIf { it.isNotBlank() && it != "*/*" && it != "application/octet-stream" }
+                        val fallbackExt = inferExtensionFromMime(resolvedMime)
+                        val displayName = queryDisplayName(uri) ?: "File_${idx + 1}.$fallbackExt"
+                        val finalMime = resolvedMime ?: inferMimeFromExtension(displayName)
+                        val safeExt = displayName.substringAfterLast('.', fallbackExt)
+                            .lowercase()
+                            .replace(Regex("[^a-z0-9]"), "")
+                            .take(8)
+                            .ifBlank { fallbackExt }
+                        val token = "multi_${stamp}_${idx}.$safeExt"
+                        val destFile = File(externalDocDir, token)
+                        contentResolver.openInputStream(uri)?.use { input ->
+                            FileOutputStream(destFile).use { output ->
+                                input.copyTo(output)
+                                output.flush()
+                            }
+                        }
+                        if (destFile.exists() && destFile.length() > 0L) {
+                            arr.put(
+                                JSONObject()
+                                    .put("url", "./__external_doc__/$token")
+                                    .put("name", displayName)
+                                    .put("mime", finalMime)
+                            )
+                        }
+                    }
+                    if (arr.length() == 0) return@runCatching
+                    if (arr.length() == 1) {
+                        val single = arr.getJSONObject(0)
+                        pendingExternalDocUrl = single.getString("url")
+                        pendingExternalDocName = single.getString("name")
+                        pendingExternalDocMime = single.getString("mime")
+                        runOnUiThread { if (hasLoadedOnce) dispatchPendingExternalDocToWeb() }
+                    } else {
+                        pendingExternalMultiDocsJson = arr.toString()
+                        runOnUiThread { if (hasLoadedOnce) dispatchPendingExternalMultiDocsToWeb() }
+                    }
+                }.onFailure {
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity, "Could not read shared files.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            return
+        }
+
         val uri: Uri? = when (action) {
             Intent.ACTION_VIEW -> incoming.data
             Intent.ACTION_SEND -> {
@@ -199,12 +360,24 @@ class MainActivity : AppCompatActivity() {
         }
         if (uri == null) return
 
-        val displayName = queryDisplayName(uri) ?: "Document.pdf"
+        val resolvedMime = runCatching { contentResolver.getType(uri) }.getOrNull()
+            ?.takeIf { it.isNotBlank() && it != "*/*" && it != "application/octet-stream" }
+            ?: incoming.type?.takeIf { it.isNotBlank() && it != "*/*" }
+        val rawName = queryDisplayName(uri)
+        val fallbackExt = inferExtensionFromMime(resolvedMime)
+        val displayName = rawName ?: "Document.$fallbackExt"
+        val finalMime = resolvedMime ?: inferMimeFromExtension(displayName)
+        val safeExt = displayName.substringAfterLast('.', fallbackExt)
+            .lowercase()
+            .replace(Regex("[^a-z0-9]"), "")
+            .take(8)
+            .ifBlank { fallbackExt }
+
         ioExecutor.execute {
             runCatching {
-                externalPdfDir.listFiles()?.forEach { it.delete() }
-                val token = "opened_${System.currentTimeMillis()}.pdf"
-                val destFile = File(externalPdfDir, token)
+                externalDocDir.listFiles()?.forEach { it.delete() }
+                val token = "opened_${System.currentTimeMillis()}.$safeExt"
+                val destFile = File(externalDocDir, token)
                 contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(destFile).use { output ->
                         input.copyTo(output)
@@ -214,19 +387,20 @@ class MainActivity : AppCompatActivity() {
 
                 if (!destFile.exists() || destFile.length() <= 0L) return@runCatching
 
-                pendingExternalPdfUrl = "./__external_pdf__/$token"
-                pendingExternalPdfName = displayName
+                pendingExternalDocUrl = "./__external_doc__/$token"
+                pendingExternalDocName = displayName
+                pendingExternalDocMime = finalMime
 
                 runOnUiThread {
                     if (hasLoadedOnce) {
-                        dispatchPendingExternalPdfToWeb()
+                        dispatchPendingExternalDocToWeb()
                     }
                 }
             }.onFailure {
                 runOnUiThread {
                     Toast.makeText(
                         this@MainActivity,
-                        "Could not read selected PDF file.",
+                        "Could not read selected document file.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -234,13 +408,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun dispatchPendingExternalPdfToWeb() {
-        val url = pendingExternalPdfUrl ?: return
-        val name = pendingExternalPdfName ?: "Document.pdf"
+    private fun dispatchPendingExternalDocToWeb() {
+        val url = pendingExternalDocUrl ?: return
+        val name = pendingExternalDocName ?: "Document"
+        val mime = pendingExternalDocMime ?: inferMimeFromExtension(name)
         val qUrl = JSONObject.quote(url)
         val qName = JSONObject.quote(name)
+        val qMime = JSONObject.quote(mime)
         webView.evaluateJavascript(
-            "window.openExternalPdfFromAndroid && window.openExternalPdfFromAndroid($qUrl, $qName);",
+            "(function(){ if (window.openExternalDocFromAndroid) { window.openExternalDocFromAndroid($qUrl, $qName, $qMime); } else if (window.openExternalPdfFromAndroid) { window.openExternalPdfFromAndroid($qUrl, $qName); } })();",
+            null
+        )
+    }
+
+    private fun dispatchPendingExternalMultiDocsToWeb() {
+        val json = pendingExternalMultiDocsJson ?: return
+        val qJson = JSONObject.quote(json)
+        webView.evaluateJavascript(
+            "window.openExternalMultiDocsFromAndroid && window.openExternalMultiDocsFromAndroid($qJson);",
+            null
+        )
+    }
+
+    private fun dispatchPendingShortcutToWeb() {
+        val tool = pendingShortcutTool ?: return
+        val qTool = JSONObject.quote(tool)
+        webView.evaluateJavascript(
+            "window.openPdfBondhuTool && window.openPdfBondhuTool($qTool);",
             null
         )
     }
@@ -279,7 +473,7 @@ class MainActivity : AppCompatActivity() {
         settings.javaScriptCanOpenWindowsAutomatically = true
         settings.mediaPlaybackRequiresUserGesture = false
         settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-        settings.userAgentString = "${settings.userAgentString} PDFBondhuAndroid/${BuildConfig.VERSION_NAME}"
+        settings.userAgentString = "${settings.userAgentString} ONEORAAndroid/${BuildConfig.VERSION_NAME} PDFBondhuAndroid/${BuildConfig.VERSION_NAME}"
 
         webView.overScrollMode = View.OVER_SCROLL_NEVER
         webView.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
@@ -333,7 +527,9 @@ class MainActivity : AppCompatActivity() {
                         null
                     )
                 }
-                dispatchPendingExternalPdfToWeb()
+                dispatchPendingExternalDocToWeb()
+                dispatchPendingExternalMultiDocsToWeb()
+                dispatchPendingShortcutToWeb()
             }
 
             override fun onReceivedError(
@@ -436,11 +632,21 @@ class MainActivity : AppCompatActivity() {
                 val repo = BuildConfig.GITHUB_REPO
                 val stamp = System.currentTimeMillis()
                 val primaryBase = "https://pdf-bondhu-v1.vercel.app"
+                val repoParts = repo.split("/")
+                val pagesBase = if (repoParts.size == 2 && repoParts[0].isNotBlank() && repoParts[1].isNotBlank()) {
+                    "https://${repoParts[0]}.github.io/${repoParts[1]}"
+                } else {
+                    ""
+                }
                 val fallbackBase = if (repo.isNotBlank()) "https://raw.githubusercontent.com/$repo/main" else ""
 
-                fun fetchSmart(vercelPath: String, githubPath: String): String? {
-                    val primary = downloadText("$primaryBase/$vercelPath?t=$stamp")
+                fun fetchSmart(webPath: String, githubPath: String): String? {
+                    val primary = downloadText("$primaryBase/$webPath?t=$stamp")
                     if (!primary.isNullOrBlank()) return primary
+                    if (pagesBase.isNotBlank()) {
+                        val fromPages = downloadText("$pagesBase/$webPath?t=$stamp")
+                        if (!fromPages.isNullOrBlank()) return fromPages
+                    }
                     if (fallbackBase.isNotBlank()) {
                         return downloadText("$fallbackBase/$githubPath?t=$stamp")
                     }
@@ -451,7 +657,7 @@ class MainActivity : AppCompatActivity() {
                 val remoteJs = fetchSmart("app.js", "public/app.js")
 
                 if (remoteHtml.isNullOrBlank() || remoteJs.isNullOrBlank() ||
-                    !remoteHtml.contains("PDF Bondhu") || remoteJs.length < 5000
+                    !(remoteHtml.contains("ONEORA") || remoteHtml.contains("PDF Bondhu")) || remoteJs.length < 5000
                 ) {
                     if (manualTrigger) {
                         notifyWebUpdateStatus("error", "Could not reach update server. Try again in a moment.")
@@ -459,16 +665,39 @@ class MainActivity : AppCompatActivity() {
                     return@runCatching
                 }
 
-                val extraModules = listOf(
+                val extraModules = mutableListOf(
                     "i18n.js",
                     "pdf-office-pro.js",
                     "daily-utilities.js",
                     "india-vault.js",
+                    "oneora-design-system.css",
+                    "oneora-planner.js",
+                    "oneora-money.js",
+                    "oneora-ai-extras.js",
+                    "oneora-shell.js",
+                    "oneora-onboarding.js",
+                    "oneora-db.js",
+                    "oneora-monetization.js",
+                    "oneora-smarthub.js",
+                    "oneora-companion.js",
                     "admob-service.js",
+                    "vendor/pdf-lib.min.js",
+                    "vendor/xlsx.full.min.js",
+                    "vendor/jszip.min.js",
+                    "vendor/mammoth.browser.min.js",
+                    "vendor/jsQR.js",
                     "icon.svg",
                     "manifest.json",
                     "version.json"
                 )
+                // Also discover and sync any Vite-built /assets/*.js or /assets/*.css referenced in remoteHtml
+                val assetRegex = Regex("""(?:src|href)=["']\.?/?(assets/[A-Za-z0-9._\-]+\.(?:js|css))["']""")
+                assetRegex.findAll(remoteHtml).forEach { match ->
+                    val assetPath = match.groupValues[1]
+                    if (assetPath.isNotBlank() && !extraModules.contains(assetPath)) {
+                        extraModules.add(assetPath)
+                    }
+                }
                 val fetchedExtras = mutableMapOf<String, String>()
                 for (mod in extraModules) {
                     val content = fetchSmart(mod, "public/$mod")
@@ -492,14 +721,14 @@ class MainActivity : AppCompatActivity() {
                             runOnUiThread {
                                 Toast.makeText(
                                     this@MainActivity,
-                                    "Applying latest PDF Bondhu update...",
+                                    "Applying latest ONEORA update...",
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 webView.clearCache(true)
                                 webView.reload()
                             }
                         } else {
-                            notifyWebUpdateStatus("uptodate", "PDF Bondhu is already on the latest version!")
+                            notifyWebUpdateStatus("uptodate", "ONEORA is already on the latest version!")
                         }
                     }
                     return@runCatching
@@ -513,9 +742,12 @@ class MainActivity : AppCompatActivity() {
                 jsTmp.renameTo(File(otaDir, "app.js"))
 
                 for ((mod, content) in fetchedExtras) {
+                    val targetMod = File(otaDir, mod)
+                    targetMod.parentFile?.mkdirs()
                     val modTmp = File(otaDir, "$mod.tmp")
+                    modTmp.parentFile?.mkdirs()
                     modTmp.writeText(content, Charsets.UTF_8)
-                    modTmp.renameTo(File(otaDir, mod))
+                    modTmp.renameTo(targetMod)
                 }
 
                 prefs.edit().putString("ota_hash", remoteHash).apply()
@@ -572,7 +804,22 @@ class MainActivity : AppCompatActivity() {
                 "pdf-office-pro.js",
                 "daily-utilities.js",
                 "india-vault.js",
+                "oneora-design-system.css",
+                "oneora-planner.js",
+                "oneora-money.js",
+                "oneora-ai-extras.js",
+                "oneora-shell.js",
+                "oneora-onboarding.js",
+                "oneora-db.js",
+                "oneora-monetization.js",
+                "oneora-smarthub.js",
+                "oneora-companion.js",
                 "admob-service.js",
+                "vendor/pdf-lib.min.js",
+                "vendor/xlsx.full.min.js",
+                "vendor/jszip.min.js",
+                "vendor/mammoth.browser.min.js",
+                "vendor/jsQR.js",
                 "icon.svg",
                 "manifest.json",
                 "version.json"
@@ -615,18 +862,21 @@ class MainActivity : AppCompatActivity() {
             val cleanPath = path.trimStart('/').ifEmpty { "index.html" }
             if (cleanPath.contains("..")) return null
 
-            // Stream externally opened phone PDF directly from private cache without Base64 memory overhead
-            if (cleanPath.startsWith("__external_pdf__/")) {
-                val fileName = cleanPath.removePrefix("__external_pdf__/")
+            // Stream externally opened phone documents (PDF, Word, Excel, PPT, CSV, TXT) directly from private cache
+            if (cleanPath.startsWith("__external_doc__/") || cleanPath.startsWith("__external_pdf__/")) {
+                val fileName = cleanPath
+                    .removePrefix("__external_doc__/")
+                    .removePrefix("__external_pdf__/")
                 if (fileName.contains("/") || fileName.contains("\\") || fileName.isBlank()) return null
-                val pdfFile = File(externalPdfDir, fileName)
-                if (pdfFile.exists() && pdfFile.isFile) {
-                    val pdfHeaders = mapOf(
+                val docFile = File(externalDocDir, fileName)
+                if (docFile.exists() && docFile.isFile) {
+                    val docHeaders = mapOf(
                         "Access-Control-Allow-Origin" to "*",
                         "Cache-Control" to "no-store"
                     )
+                    val docMime = inferMimeFromExtension(fileName)
                     return runCatching {
-                        WebResourceResponse("application/pdf", null, 200, "OK", pdfHeaders, FileInputStream(pdfFile))
+                        WebResourceResponse(docMime, null, 200, "OK", docHeaders, FileInputStream(docFile))
                     }.getOrNull()
                 }
                 return null
@@ -769,12 +1019,22 @@ class MainActivity : AppCompatActivity() {
     private fun mapAcceptToMime(raw: String): String? {
         return when (raw.lowercase()) {
             ".pdf" -> "application/pdf"
+            ".doc" -> "application/msword"
+            ".docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ".rtf" -> "application/rtf"
+            ".txt" -> "text/plain"
             ".xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ".xls" -> "application/vnd.ms-excel"
             ".csv" -> "text/csv"
+            ".ods" -> "application/vnd.oasis.opendocument.spreadsheet"
+            ".ppt" -> "application/vnd.ms-powerpoint"
+            ".pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            ".zip" -> "application/zip"
             ".jpg", ".jpeg" -> "image/jpeg"
             ".png" -> "image/png"
             ".webp" -> "image/webp"
+            ".gif" -> "image/gif"
+            ".bmp" -> "image/bmp"
             else -> if (raw.contains("/")) raw else null
         }
     }
@@ -999,12 +1259,148 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun getPendingExternalDoc(): String {
+            val url = pendingExternalDocUrl ?: return ""
+            val name = pendingExternalDocName ?: "Document"
+            val mime = pendingExternalDocMime ?: inferMimeFromExtension(name)
+            pendingExternalDocUrl = null
+            pendingExternalDocName = null
+            pendingExternalDocMime = null
+            return JSONObject().put("url", url).put("name", name).put("mime", mime).toString()
+        }
+
+        @JavascriptInterface
         fun getPendingExternalPdf(): String {
-            val url = pendingExternalPdfUrl ?: return ""
-            val name = pendingExternalPdfName ?: "Document.pdf"
-            pendingExternalPdfUrl = null
-            pendingExternalPdfName = null
-            return JSONObject().put("url", url).put("name", name).toString()
+            return getPendingExternalDoc()
+        }
+
+        @JavascriptInterface
+        fun getPendingExternalMultiDocs(): String {
+            val json = pendingExternalMultiDocsJson ?: return ""
+            pendingExternalMultiDocsJson = null
+            return json
+        }
+
+        @JavascriptInterface
+        fun getPendingShortcutTool(): String {
+            val tool = pendingShortcutTool ?: return ""
+            pendingShortcutTool = null
+            return tool
+        }
+
+        @JavascriptInterface
+        fun printDocument(jobName: String) {
+            runOnUiThread {
+                runCatching {
+                    val pm = getSystemService(Context.PRINT_SERVICE) as PrintManager
+                    val cleanJob = jobName.ifBlank { "PDF Bondhu Document" }
+                    val adapter = webView.createPrintDocumentAdapter(cleanJob)
+                    pm.print(cleanJob, adapter, PrintAttributes.Builder().build())
+                }.onFailure {
+                    Toast.makeText(this@MainActivity, "Print service unavailable on this device.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun openPlayStorePage() {
+            runOnUiThread {
+                val pkg = packageName
+                val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkg"))
+                runCatching {
+                    startActivity(marketIntent)
+                }.onFailure {
+                    runCatching {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
+                    }
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun scheduleReminder(id: String, title: String, body: String, triggerAtMillis: Long, repeat: String) {
+            runCatching {
+                ReminderReceiver.scheduleReminder(
+                    this@MainActivity,
+                    id.ifBlank { "rem_${System.currentTimeMillis()}" },
+                    title.ifBlank { "ONEORA Reminder" },
+                    body.ifBlank { "Scheduled reminder from ONEORA" },
+                    triggerAtMillis,
+                    repeat.ifBlank { "none" }
+                )
+            }
+        }
+
+        @JavascriptInterface
+        fun cancelReminder(id: String) {
+            if (id.isBlank()) return
+            runCatching {
+                ReminderReceiver.cancelReminder(this@MainActivity, id)
+            }
+        }
+
+        @JavascriptInterface
+        fun toggleFlashlight(): Boolean {
+            return runCatching {
+                val cm = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                val cameraId = cm.cameraIdList.firstOrNull { cid ->
+                    val chars = cm.getCameraCharacteristics(cid)
+                    chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+                } ?: return false
+                val nextState = !isFlashlightOn
+                cm.setTorchMode(cameraId, nextState)
+                isFlashlightOn = nextState
+                nextState
+            }.getOrDefault(false)
+        }
+
+        @JavascriptInterface
+        fun openSystemAlarm() {
+            runOnUiThread {
+                val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                runCatching {
+                    startActivity(intent)
+                }.onFailure {
+                    Toast.makeText(this@MainActivity, "Clock app unavailable on this device.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun getMonetizationStatusJson(): String {
+            return billingManager.getStatusJson()
+        }
+
+        @JavascriptInterface
+        fun setAdSafeZone(active: Boolean, zoneName: String) {
+            adManager.setSafeZone(active, zoneName)
+        }
+
+        @JavascriptInterface
+        fun hideBannerAd() {
+            adManager.hideBanner()
+        }
+
+        @JavascriptInterface
+        fun updateAdConsent(allowPersonalized: Boolean) {
+            adManager.setPersonalizedConsent(allowPersonalized)
+        }
+
+        @JavascriptInterface
+        fun requestAdPlacement(slotType: String, zoneName: String): String {
+            return adManager.requestPlacement(slotType, zoneName).toString()
+        }
+
+        @JavascriptInterface
+        fun requestPlayPurchase(productId: String): String {
+            return billingManager.requestPurchase(productId)
+        }
+
+        @JavascriptInterface
+        fun restorePlayPurchases(): String {
+            return billingManager.restorePurchases()
         }
     }
 
@@ -1012,7 +1408,7 @@ class MainActivity : AppCompatActivity() {
         runCatching {
             val captureDir = File(cacheDir, "captures")
             if (captureDir.exists()) captureDir.deleteRecursively()
-            if (externalPdfDir.exists()) externalPdfDir.deleteRecursively()
+            if (externalDocDir.exists()) externalDocDir.deleteRecursively()
         }
         ioExecutor.shutdownNow()
         webView.destroy()

@@ -1,0 +1,17 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/website", "destination": "/landing.html" },
+      { "source": "/about", "destination": "/landing.html" },
+      { "source": "/pricing", "destination": "/landing.html" },
+      { "source": "/privacy", "destination": "/landing.html" },
+      { "source": "/terms", "destination": "/landing.html" },
+      { "source": "**", "destination": "/index.html" }
+    ]
+  }
+}

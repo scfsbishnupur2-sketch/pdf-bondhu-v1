@@ -4,6 +4,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -19,6 +23,18 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:mimeType="application/pdf" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
         </intent>
     </queries>
 
@@ -43,13 +59,43 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Open ANY PDF on the phone directly in PDF Bondhu (WhatsApp, Files, Gmail, Downloads) -->
+            <!-- Open ANY PDF, Word, Excel, PowerPoint, CSV, RTF or Text file directly in PDF Bondhu (WhatsApp, Files, Gmail, Downloads) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="content" android:mimeType="application/pdf" />
                 <data android:scheme="file" android:mimeType="application/pdf" />
+                <data android:scheme="content" android:mimeType="application/msword" />
+                <data android:scheme="file" android:mimeType="application/msword" />
+                <data android:scheme="content" android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:scheme="file" android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:scheme="content" android:mimeType="application/rtf" />
+                <data android:scheme="file" android:mimeType="application/rtf" />
+                <data android:scheme="content" android:mimeType="text/rtf" />
+                <data android:scheme="file" android:mimeType="text/rtf" />
+                <data android:scheme="content" android:mimeType="application/vnd.ms-excel" />
+                <data android:scheme="file" android:mimeType="application/vnd.ms-excel" />
+                <data android:scheme="content" android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                <data android:scheme="file" android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                <data android:scheme="content" android:mimeType="text/csv" />
+                <data android:scheme="file" android:mimeType="text/csv" />
+                <data android:scheme="content" android:mimeType="text/comma-separated-values" />
+                <data android:scheme="file" android:mimeType="text/comma-separated-values" />
+                <data android:scheme="content" android:mimeType="application/vnd.oasis.opendocument.spreadsheet" />
+                <data android:scheme="file" android:mimeType="application/vnd.oasis.opendocument.spreadsheet" />
+                <data android:scheme="content" android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:scheme="file" android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:scheme="content" android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:scheme="file" android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:scheme="content" android:mimeType="text/plain" />
+                <data android:scheme="file" android:mimeType="text/plain" />
+                <data android:scheme="content" android:mimeType="application/zip" />
+                <data android:scheme="file" android:mimeType="application/zip" />
+                <data android:scheme="content" android:mimeType="application/x-zip-compressed" />
+                <data android:scheme="file" android:mimeType="application/x-zip-compressed" />
+                <data android:scheme="content" android:mimeType="image/*" />
+                <data android:scheme="file" android:mimeType="image/*" />
             </intent-filter>
 
             <intent-filter>
@@ -59,13 +105,74 @@
                 <data android:scheme="file" android:host="*" android:pathPattern=".*\\.pdf" />
                 <data android:scheme="content" android:host="*" android:pathPattern=".*\\.PDF" />
                 <data android:scheme="file" android:host="*" android:pathPattern=".*\\.PDF" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.doc" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.doc" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.DOC" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.DOC" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.docx" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.docx" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.DOCX" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.DOCX" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.xls" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.xls" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.XLS" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.XLS" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.xlsx" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.xlsx" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.XLSX" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.XLSX" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.csv" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.csv" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.CSV" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.CSV" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.ppt" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.ppt" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.PPT" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.PPT" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.pptx" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.pptx" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.PPTX" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.PPTX" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.rtf" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.rtf" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.txt" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.txt" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.zip" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.zip" />
+                <data android:scheme="content" android:host="*" android:pathPattern=".*\\.ZIP" />
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.ZIP" />
             </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/msword" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:mimeType="application/rtf" />
+                <data android:mimeType="text/rtf" />
+                <data android:mimeType="application/vnd.ms-excel" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                <data android:mimeType="text/csv" />
+                <data android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="image/*" />
             </intent-filter>
+
+            <!-- Share multiple photos or PDFs at once (e.g. Gallery -> Share -> PDF Bondhu -> Instant PDF) -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <provider
@@ -77,6 +184,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".ReminderBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

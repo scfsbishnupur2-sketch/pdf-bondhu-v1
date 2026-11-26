@@ -3,33 +3,34 @@
     android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brand_slate_dark">
+    android:background="@color/brand_dark_bg">
 
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Branded Splash Loading Overlay -->
+    <!-- ONEORA Branded Splash Screen Overlay -->
     <LinearLayout
         android:id="@+id/splashOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/brand_slate_dark"
+        android:background="@color/brand_navy"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
+            android:letterSpacing="0.12"
             android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="26sp"
@@ -40,14 +41,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="@string/splash_subtitle"
-            android:textColor="#94A3B8"
+            android:textColor="#A5ADC2"
             android:textSize="13sp" />
 
         <ProgressBar
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_marginTop="28dp"
-            android:indeterminateTint="@color/brand_sky" />
+            android:indeterminateTint="@color/brand_violet" />
     </LinearLayout>
 
     <!-- Offline First-Launch Error View -->
@@ -83,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginTop="24dp"
-            android:backgroundTint="@color/brand_sky"
+            android:backgroundTint="@color/brand_violet"
             android:paddingHorizontal="28dp"
             android:text="@string/retry_button"
             android:textAllCaps="false"

@@ -19,11 +19,17 @@ android {
         applicationId = "com.nayak.pdfbondhu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 5
-        versionName = "2.2.0"
+        versionCode = 7
+        versionName = "3.0.0"
 
         buildConfigField("String", "APP_URL", "\"$configuredAppUrl\"")
         buildConfigField("String", "GITHUB_REPO", "\"$configuredGithubRepo\"")
+        buildConfigField("boolean", "MONETIZATION_ENABLED", (project.findProperty("MONETIZATION_ENABLED") as? String ?: "false"))
+        buildConfigField("boolean", "ADS_ENABLED", (project.findProperty("ADS_ENABLED") as? String ?: "false"))
+        buildConfigField("boolean", "SUBSCRIPTION_ENABLED", (project.findProperty("SUBSCRIPTION_ENABLED") as? String ?: "false"))
+        buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"${project.findProperty("ADMOB_BANNER_UNIT_ID") as? String ?: ""}\"")
+        buildConfigField("String", "ADMOB_NATIVE_UNIT_ID", "\"${project.findProperty("ADMOB_NATIVE_UNIT_ID") as? String ?: ""}\"")
+        buildConfigField("String", "ADMOB_REWARDED_UNIT_ID", "\"${project.findProperty("ADMOB_REWARDED_UNIT_ID") as? String ?: ""}\"")
     }
 
     signingConfigs {

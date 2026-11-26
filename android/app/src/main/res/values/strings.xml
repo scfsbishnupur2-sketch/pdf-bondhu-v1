@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PDF Bondhu</string>
-    <string name="splash_subtitle">One App. Everyday Solutions.</string>
+    <string name="app_name">ONEORA</string>
+    <string name="splash_subtitle">One App, More Possibilities</string>
     <string name="offline_title">No Internet Connection</string>
-    <string name="offline_message">PDF Bondhu works offline once loaded. Tap Try Again to reload your local workspace.</string>
+    <string name="offline_message">ONEORA works offline once loaded. Tap Try Again to reload your local workspace.</string>
     <string name="retry_button">Try Again</string>
-    <string name="press_back_again">Press back again to exit PDF Bondhu</string>
+    <string name="press_back_again">Press back again to exit ONEORA</string>
+    <string name="shortcut_reader_short">Read Docs</string>
+    <string name="shortcut_reader_long">Read PDF, Word, Excel &amp; PPT</string>
+    <string name="shortcut_planner_short">Daily Planner</string>
+    <string name="shortcut_planner_long">Calendar, Notes &amp; Reminders</string>
+    <string name="shortcut_money_short">Money Manager</string>
+    <string name="shortcut_money_long">Expenses, Budgets &amp; Reports</string>
+    <string name="shortcut_scanner_short">Scan to PDF</string>
+    <string name="shortcut_scanner_long">Smart Document Scanner</string>
 </resources>

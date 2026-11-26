@@ -5,7 +5,7 @@
 (function (global) {
   const TOOL_CATALOG = [
     // PDF Studio
-    { id: 'pdfReaderTool', cat: 'pdf', name: 'Ad-Free PDF Reader', desc: 'Open & read any phone PDF fast with zero ads, night mode & search', popular: true, keywords: 'read pdf viewer open pdf reader ad free night mode sepia search book' },
+    { id: 'pdfReaderTool', cat: 'pdf', name: 'All-Document Reader (PDF, Word, Excel, PPT, Photo, ZIP)', desc: 'Auto-open PDF, Word, Excel, PPT, Photos & ZIP full-screen with zero ads', popular: true, keywords: 'read pdf viewer open word doc docx excel xls xlsx csv ppt pptx powerpoint rtf txt photo image zip extract reader ad free night mode sepia search' },
     { id: 'pdfScanner', cat: 'pdf', name: 'AI Document Scanner', desc: 'Auto 4-corner crop, Magic Color & instant PDF', popular: true, keywords: 'scan document camera adobe auto crop photo to pdf' },
     { id: 'pdfCompress', cat: 'pdf', name: 'Compress PDF', desc: 'Shrink PDF to exact KB or MB size locally', popular: true, keywords: 'compress pdf reduce pdf size shrink kb mb small' },
     { id: 'pdfMerge', cat: 'pdf', name: 'Merge PDF', desc: 'Combine two or more PDFs into one file', popular: true, keywords: 'merge pdf merge two pdfs combine join pdf' },
@@ -45,9 +45,17 @@
     { id: 'dailyUtilitiesHub', sub: 'dailyPanelProd', cat: 'daily', name: 'Notes, To-Do, Expenses & Timer', desc: 'Notes, Shopping List, Daily Expenses, Calendar, Reminders', popular: false, keywords: 'notes todo shopping list expense tracker calendar stopwatch timer reminders' },
     { id: 'dailyUtilitiesHub', sub: 'dailyPanelSmart', cat: 'daily', name: 'QR Scanner, QR Generator & Speed Test', desc: 'Scan QR/Barcode, make Wi-Fi QR & test internet speed', popular: true, keywords: 'create qr code qr scanner wifi qr barcode internet speed test' },
 
-    // India Essentials & Vault
+    // India Essentials, Vault, Planner, Money, AI & Pro Extras
     { id: 'indiaEssentials', cat: 'india', name: 'India Essentials', desc: 'Official Govt Portals, PAN/Aadhaar/Passport checklists', popular: false, keywords: 'india government portal pan aadhaar voter passport checklist scholarship' },
-    { id: 'documentCenter', cat: 'vault', name: 'Personal Document Center', desc: 'Folders, PIN Lock, Biometric & AES-GCM Encrypted Vault', popular: false, keywords: 'my files document center vault folders pin biometric encrypt' }
+    { id: 'documentCenter', cat: 'vault', name: 'Personal Document Center', desc: 'Folders, PIN Lock, Biometric & AES-GCM Encrypted Vault', popular: false, keywords: 'my files document center vault folders pin biometric encrypt' },
+    { id: 'oneoraPlannerTab', cat: 'life', name: 'My Daily Life Planner', desc: 'Calendar, Date Notes, Reliable Reminders, Tasks & Habits', popular: true, keywords: 'planner calendar date notes reminders medicine birthday tasks habits daily schedule' },
+    { id: 'oneoraCompanionTab', sub: 'lifeplus', cat: 'life', name: 'Life+ (Shopping, Birthdays & Routine)', desc: 'Shopping Lists, Birthday Countdowns & Daily Routine Builder', popular: true, keywords: 'shopping list grocery birthday anniversary countdown daily routine morning evening' },
+    { id: 'oneoraCompanionTab', sub: 'doctemplates', cat: 'pdf', name: 'Document Templates Studio', desc: 'Offline Resume, GST Invoice, Quotation, Receipt & Official Letter PDF Maker', popular: true, keywords: 'resume cv maker invoice gst quotation receipt official letter template a4 pdf' },
+    { id: 'oneoraCompanionTab', sub: 'lifestyle', cat: 'lifestyle', name: 'Lifestyle & Wellness Hub', desc: 'Exercise Checklist, Sleep Notes, Medicine Tracker & Personal Goals', popular: false, keywords: 'exercise workout sleep notes medicine tracker personal goals wellness health' },
+    { id: 'oneoraCompanionTab', sub: 'securityplus', cat: 'vault', name: 'AES-256 Password Vault & Secure Notes', desc: 'Zero-plaintext encrypted passwords, generator & private secure notes', popular: true, keywords: 'password vault manager secure notes aes 256 encryption secret pin generator' },
+    { id: 'oneoraMoneyTab', cat: 'finance', name: 'Money & Expense Manager', desc: 'Income, Expenses, Budgets, Goals, Bills, SIP & PDF/Excel Reports', popular: true, keywords: 'money expense income budget savings goals bills debt sip fuel split salary report' },
+    { id: 'oneoraAiTab', cat: 'ai', name: 'ONEORA AI Assistant', desc: 'Multilingual Bengali/English/Hindi AI Chat, Voice & Document Q&A', popular: true, keywords: 'ai assistant chat summarize pdf letter email translate grammar voice' },
+    { id: 'oneoraExtrasTab', cat: 'pdf', name: 'PDF Redact, Collage & Smart Pro', desc: 'Permanent PDF Redaction, Collage, Watermark, Password Gen, World Clock & Expiry', popular: false, keywords: 'redact flatten pdf collage watermark background color password generator world clock text formatter links emergency helpline expiry' }
   ];
 
   const FAV_KEY = 'pdfBondhuFavs_v2';
@@ -86,14 +94,14 @@
     activeToolId = sectionId;
 
     // Show/hide top tool back bar when inside an individual tool screen
-    const topFive = ['homeDashboard', 'allToolsHub', 'documentCenter', 'recentActivityTab', 'profileSettingsTab'];
+    const topFive = ['homeDashboard', 'oneoraPlannerTab', 'oneoraMoneyTab', 'allToolsHub', 'profileSettingsTab'];
     const isTopTab = topFive.includes(sectionId);
     const backBar = document.getElementById('toolContextBackBar');
     const backTitle = document.getElementById('toolContextTitle');
     if (backBar) backBar.classList.toggle('hidden', isTopTab);
     if (!isTopTab && backTitle) {
       const meta = TOOL_CATALOG.find((t) => t.id === sectionId);
-      backTitle.textContent = meta ? meta.name : 'PDF Bondhu';
+      backTitle.textContent = meta ? meta.name : 'ONEORA';
     }
 
     // Highlight active bottom nav & desktop rail button
@@ -105,12 +113,11 @@
     });
 
     // Record tool usage if it's a functional tool
-    if (!isTopTab || sectionId === 'documentCenter') {
+    if (!isTopTab || sectionId === 'documentCenter' || sectionId === 'oneoraPlannerTab' || sectionId === 'oneoraMoneyTab') {
       recordRecentTool(sectionId, options.sub || '');
     }
 
     if (options.sub && typeof global.openDailyUtilitySubTab === 'function' && sectionId === 'dailyUtilitiesHub') {
-      // Trigger subtab directly without recursion
       const subBtn = document.querySelector(`.daily-subtab-btn[data-subtab="${options.sub}"]`);
       if (subBtn) subBtn.click();
     }
@@ -120,6 +127,11 @@
     if (sectionId === 'allToolsHub') renderAllToolsGrid();
     if (sectionId === 'documentCenter') refreshVaultView();
     if (sectionId === 'profileSettingsTab') refreshStorageOverview();
+    if (sectionId === 'oneoraPlannerTab' && global.OneoraPlanner) global.OneoraPlanner.render();
+    if (sectionId === 'oneoraMoneyTab' && global.OneoraMoney) global.OneoraMoney.render();
+    if (sectionId === 'oneoraAiTab' && global.OneoraExtras) global.OneoraExtras.renderAi();
+    if (sectionId === 'oneoraExtrasTab' && global.OneoraExtras) global.OneoraExtras.renderExtras();
+    if (sectionId === 'oneoraCompanionTab' && global.OneoraCompanion) global.OneoraCompanion.render(options.sub || '');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -142,6 +154,10 @@
     // Support Android hardware back press smoothly
     const prevBack = global.handleAndroidBackPress;
     global.handleAndroidBackPress = () => {
+      if (typeof global.isOfficeDocFullscreenOpen === 'function' && global.isOfficeDocFullscreenOpen()) {
+        if (typeof global.closeOfficeDocFullscreen === 'function') global.closeOfficeDocFullscreen();
+        return true;
+      }
       if (typeof global.isPdfReaderFullscreenOpen === 'function' && global.isPdfReaderFullscreenOpen()) {
         if (typeof global.closePdfReaderFullscreen === 'function') global.closePdfReaderFullscreen();
         return true;
@@ -257,14 +273,32 @@
     dailyPanelProd:   { bg: 'from-pink-500 to-violet-600',    svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
     dailyPanelSmart:  { bg: 'from-emerald-500 to-cyan-500',   svg: '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/>' },
     indiaEssentials:  { bg: 'from-orange-500 via-amber-500 to-emerald-600', svg: '<path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/>' },
-    documentCenter:   { bg: 'from-teal-500 to-emerald-600',   svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>' }
+    documentCenter:   { bg: 'from-teal-500 to-emerald-600',   svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>' },
+    oneoraPlannerTab: { bg: 'from-indigo-600 to-cyan-500',    svg: '<rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>' },
+    oneoraMoneyTab:   { bg: 'from-emerald-600 to-teal-500',   svg: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>' },
+    oneoraAiTab:      { tone: 'tone-violet',  svg: '<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>' },
+    oneoraExtrasTab:  { tone: '',             svg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/>' },
+    lifeplus:         { tone: 'tone-violet',  svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+    doctemplates:     { tone: 'tone-blue',    svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>' },
+    lifestyle:        { tone: 'tone-emerald', svg: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>' },
+    securityplus:     { tone: 'tone-emerald', svg: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' }
   };
 
+  function getToolTone(tool) {
+    const vis = TOOL_VISUALS[tool.sub || tool.id] || TOOL_VISUALS[tool.id];
+    if (vis && vis.tone !== undefined) return vis.tone;
+    if (tool.cat === 'pdf') return 'tone-rose';
+    if (tool.cat === 'image') return 'tone-blue';
+    if (tool.cat === 'office' || tool.cat === 'finance' || tool.cat === 'vault' || tool.cat === 'lifestyle') return 'tone-emerald';
+    if (tool.cat === 'daily' || tool.cat === 'india') return 'tone-amber';
+    return 'tone-violet';
+  }
+
   function getToolVisual(tool) {
-    return TOOL_VISUALS[tool.sub || tool.id] || TOOL_VISUALS[tool.id] || {
-      bg: 'from-blue-600 to-violet-600',
+    const vis = TOOL_VISUALS[tool.sub || tool.id] || TOOL_VISUALS[tool.id] || {
       svg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'
     };
+    return { svg: vis.svg, tone: getToolTone(tool) };
   }
 
   function renderToolMiniCard(tool, showStar = true) {
@@ -272,19 +306,19 @@
     const isFav = getFavourites().includes(key);
     const vis = getToolVisual(tool);
     return `
-      <div class="group relative bg-white dark:bg-[#1A2138] border border-indigo-100/90 dark:border-slate-800 rounded-2xl p-3.5 hover:border-indigo-400 dark:hover:border-violet-500 hover:-translate-y-0.5 transition-all flex items-center gap-3 shadow-[0_4px_16px_rgba(49,70,158,0.06)]">
+      <div class="pb-tool-tile group relative rounded-2xl p-3.5 transition-all flex items-center gap-3">
         <button type="button" data-open-tool="${tool.id}" data-open-sub="${tool.sub || ''}" class="text-left flex items-center gap-3 flex-1 min-w-0 focus:outline-none">
-          <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br ${vis.bg} text-white shadow-md shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${vis.svg}</svg>
+          <span class="oneora-icon-well ${vis.tone}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${vis.svg}</svg>
           </span>
           <div class="min-w-0 flex-1">
-            <h4 class="text-sm font-bold text-[#151B2B] dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors truncate">${escHtml(tool.name)}</h4>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">${escHtml(tool.desc)}</p>
+            <h4 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] group-hover:text-[#7457E8] dark:group-hover:text-[#B4A5FF] transition-colors truncate">${escHtml(tool.name)}</h4>
+            <p class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] mt-0.5 line-clamp-1">${escHtml(tool.desc)}</p>
           </div>
         </button>
-        ${showStar ? `<button type="button" data-fav-key="${key}" aria-label="Toggle Favourite" class="pb-fav-btn p-1.5 rounded-lg text-slate-300 hover:text-amber-500 transition min-h-[34px] min-w-[34px] flex items-center justify-center shrink-0 ${isFav ? 'text-amber-500' : ''}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </button>` : `<span class="text-slate-300 dark:text-slate-600 font-bold text-sm pr-1">›</span>`}
+        ${showStar ? `<button type="button" data-fav-key="${key}" aria-label="Toggle Favourite" class="pb-fav-btn p-1.5 rounded-lg text-[#C7CDD9] dark:text-[#445070] hover:text-amber-500 transition min-h-[36px] min-w-[36px] flex items-center justify-center shrink-0 ${isFav ? '!text-amber-500' : ''}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>` : `<span class="text-[#777F91] font-semibold text-sm pr-1">›</span>`}
       </div>
     `;
   }
@@ -313,9 +347,9 @@
         .map((t) => {
           const vis = getToolVisual(t);
           return `
-          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 hover:border-indigo-400 text-xs font-bold text-[#151B2B] dark:text-slate-100 whitespace-nowrap shrink-0 transition min-h-[42px] flex items-center gap-2 shadow-[0_3px_12px_rgba(49,70,158,0.06)]">
-            <span class="w-7 h-7 rounded-lg bg-gradient-to-br ${vis.bg} text-white flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">${vis.svg}</svg>
+          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] hover:border-[#7457E8] text-xs font-semibold text-[#171B2C] dark:text-[#F5F6FC] whitespace-nowrap shrink-0 transition min-h-[42px] flex items-center gap-2">
+            <span class="oneora-icon-well ${vis.tone} !w-7 !h-7 !rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${vis.svg}</svg>
             </span>
             ${escHtml(t.name)}
           </button>`;
@@ -334,9 +368,9 @@
         .map((t) => {
           const vis = getToolVisual(t);
           return `
-          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap shrink-0 transition min-h-[40px] flex items-center gap-2 shadow-[0_3px_12px_rgba(49,70,158,0.05)]">
-            <span class="w-6 h-6 rounded-md bg-gradient-to-br ${vis.bg} text-white flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">${vis.svg}</svg>
+          <button type="button" data-open-tool="${t.id}" data-open-sub="${t.sub || ''}" class="pl-2 pr-3.5 py-1.5 rounded-xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] hover:border-[#7457E8] text-xs font-semibold text-[#171B2C] dark:text-[#F5F6FC] whitespace-nowrap shrink-0 transition min-h-[40px] flex items-center gap-2">
+            <span class="oneora-icon-well ${vis.tone} !w-6 !h-6 !rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${vis.svg}</svg>
             </span>
             ${escHtml(t.name)}
           </button>`;
@@ -359,17 +393,23 @@
       const docs = loadJson(RECENT_DOCS_KEY, []).slice(0, 4);
       if (!docs.length) {
         const emptyTxt = global.PDFBondhuI18n ? global.PDFBondhuI18n.t('recentDocsEmpty') : 'No processed documents yet.';
-        docsList.innerHTML = `<div class="p-4 rounded-2xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 text-center">${escHtml(emptyTxt)}</div>`;
+        docsList.innerHTML = `
+          <div class="oneora-empty-state flex flex-col items-center gap-2">
+            <p class="text-xs font-semibold text-[#171B2C] dark:text-[#F5F6FC]">${escHtml(emptyTxt)}</p>
+            <p class="text-[11px] text-[#777F91] dark:text-[#A5ADC2]">PDFs, invoices, resumes, and photos you process offline appear right here.</p>
+            <button type="button" data-open-tool="pdfScanner" class="mt-1 px-3.5 py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[36px] transition">Scan or Open a Document</button>
+          </div>`;
+        bindToolCards(docsList);
       } else {
         docsList.innerHTML = docs
           .map(
             (d) => `
-            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A]">
               <div class="min-w-0">
-                <div class="text-xs font-bold text-[#151B2B] dark:text-white truncate">${escHtml(d.name)}</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums mt-0.5">${global.utils.formatBytes(d.size)} · ${new Date(d.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                <div class="text-xs font-bold text-[#171B2C] dark:text-[#F5F6FC] truncate">${escHtml(d.name)}</div>
+                <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] tabular-nums mt-0.5">${global.utils.formatBytes(d.size)} · ${new Date(d.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
               </div>
-              <button type="button" data-open-tool="${d.toolId || 'homeDashboard'}" class="px-3 py-1.5 rounded-lg bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#c7beff] text-[11px] font-bold whitespace-nowrap min-h-[34px]">Repeat</button>
+              <button type="button" data-open-tool="${d.toolId || 'homeDashboard'}" class="px-3 py-1.5 rounded-lg bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] text-[11px] font-bold whitespace-nowrap min-h-[34px]">Repeat</button>
             </div>`
           )
           .join('');
@@ -486,12 +526,16 @@
   let currentAllToolsCat = 'all';
 
   const ALL_TOOLS_GROUPS = [
-    { key: 'pdf', label: 'PDF Studio', accent: 'from-rose-500 to-indigo-600' },
-    { key: 'image', label: 'Image Studio', accent: 'from-sky-500 to-emerald-500' },
-    { key: 'office', label: 'Office Studio', accent: 'from-emerald-500 to-teal-600' },
-    { key: 'daily', label: 'Daily Utilities', accent: 'from-amber-500 to-orange-500' },
-    { key: 'india', label: 'India Essentials', accent: 'from-orange-500 to-emerald-600' },
-    { key: 'vault', label: 'Personal Document Vault', accent: 'from-teal-500 to-indigo-600' }
+    { key: 'pdf', label: 'ONEORA Documents · PDF & Templates' },
+    { key: 'image', label: 'Image & Photo Studio' },
+    { key: 'office', label: 'Office & Spreadsheet Studio' },
+    { key: 'life', label: 'ONEORA Life · Planner, Shopping & Routine' },
+    { key: 'finance', label: 'ONEORA Money · Personal Finance' },
+    { key: 'ai', label: 'ONEORA AI · Intelligent Assistant' },
+    { key: 'lifestyle', label: 'ONEORA Lifestyle · Health & Goals' },
+    { key: 'daily', label: 'ONEORA Tools · Daily Utilities' },
+    { key: 'india', label: 'ONEORA India · Services & Checklists' },
+    { key: 'vault', label: 'ONEORA Security · Encrypted Vaults' }
   ];
 
   function renderAllToolsGrid(filterCat = currentAllToolsCat) {
@@ -503,8 +547,8 @@
     document.querySelectorAll('.alltools-cat-btn').forEach((btn) => {
       const act = btn.getAttribute('data-cat') === filterCat;
       btn.className = act
-        ? 'alltools-cat-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm whitespace-nowrap min-h-[38px] transition'
-        : 'alltools-cat-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#151B2B] border border-indigo-100 dark:border-slate-700 hover:border-indigo-400 whitespace-nowrap min-h-[38px] transition';
+        ? 'alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#7457E8] text-white whitespace-nowrap min-h-[38px] transition'
+        : 'alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-[#232C4A] hover:border-[#7457E8] whitespace-nowrap min-h-[38px] transition';
     });
 
     const filtered = TOOL_CATALOG.filter((t) => {
@@ -514,7 +558,7 @@
     });
 
     if (!filtered.length) {
-      grid.innerHTML = '<div class="py-12 rounded-2xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 text-center text-sm font-semibold text-slate-500">No tools match your search.</div>';
+      grid.innerHTML = '<div class="oneora-empty-state py-10 text-sm font-semibold text-[#777F91]">No tools match your search. Try another keyword.</div>';
       return;
     }
 
@@ -524,12 +568,9 @@
         if (!items.length) return '';
         return `
           <div class="space-y-3">
-            <div class="flex items-center justify-between px-1">
-              <h3 class="flex items-center gap-2 text-sm sm:text-base font-extrabold text-[#151B2B] dark:text-white">
-                <span class="w-1.5 h-5 rounded-full bg-gradient-to-b ${grp.accent}"></span>
-                <span>${grp.label}</span>
-              </h3>
-              <span class="text-[11px] font-bold text-slate-400">${items.length} ${items.length === 1 ? 'tool' : 'tools'}</span>
+            <div class="flex items-center justify-between px-0.5">
+              <h3 class="text-sm sm:text-base font-bold text-[#171B2C] dark:text-[#F5F6FC]">${grp.label}</h3>
+              <span class="text-[11px] font-semibold text-[#777F91] dark:text-[#A5ADC2] tabular-nums">${items.length} ${items.length === 1 ? 'tool' : 'tools'}</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               ${items.map((t) => renderToolMiniCard(t, true)).join('')}
@@ -1174,29 +1215,29 @@
 
     const INFO_DOCS = {
       privacy: {
-        title: 'Privacy Policy — PDF Bondhu 2.0',
-        html: `<p><strong>100% On-Device Processing:</strong> Every PDF tool, image reducer, passport photo maker, OCR scan, Excel operation, and calculator runs strictly inside your device's browser or Android WebView.</p>
-               <p><strong>Zero Server Uploads:</strong> We never upload, store, or inspect your personal PDFs, Aadhaar/PAN cards, photos, or notes on any external server.</p>
-               <p><strong>Encrypted Local Vault:</strong> Files added to Personal Document Center with a Vault PIN are encrypted using Web Crypto PBKDF2 + AES-256-GCM before being stored in your device's local IndexedDB.</p>
-               <p><strong>Minimal Permissions:</strong> Camera permission is requested strictly when you scan a document or QR code.</p>`
+        title: 'Privacy Policy — ONEORA',
+        html: `<p><strong>Offline-First On-Device Processing:</strong> Every PDF tool, image reducer, passport photo maker, OCR scan, Excel operation, planner entry, expense ledger, and encrypted vault runs locally on your device.</p>
+               <p><strong>Optional Cloud Sync &amp; AI:</strong> Your documents are never uploaded unless you explicitly attach one to ONEORA AI or sign in with Google to sync Planner &amp; Money data to your private owner-only Firebase Firestore database.</p>
+               <p><strong>Encrypted Local Vault:</strong> Files added to Personal Document Center with a Vault PIN are encrypted using Web Crypto PBKDF2 + AES-256-GCM in local IndexedDB.</p>
+               <p><strong>Minimal Permissions:</strong> Camera, Notification, and Alarm permissions are requested strictly when you scan a document, scan QR, or set a reminder.</p>`
       },
       terms: {
-        title: 'Terms & Conditions',
-        html: `<p><strong>100% Free Utility Suite:</strong> PDF Bondhu 2.0 is provided free of charge for personal, educational, and everyday office productivity.</p>
-               <p><strong>Independent Application:</strong> PDF Bondhu is an independent utility application created by Suman Nayak and is <strong>not affiliated with or endorsed by any Government of India agency</strong>. Official links in India Essentials open official .gov.in / .nic.in portals in your browser.</p>
+        title: 'Terms & Conditions — ONEORA',
+        html: `<p><strong>Personal &amp; Everyday Productivity:</strong> ONEORA (formerly PDF Bondhu) provides free offline-first document, planner, finance, and utility tools.</p>
+               <p><strong>Independent Application:</strong> ONEORA is created by Suman Nayak and is <strong>not affiliated with or endorsed by any Government of India agency</strong>. Official links in India Essentials open official .gov.in / .nic.in portals.</p>
                <p><strong>Authorized Use Only:</strong> PDF Password Removal must only be used on documents you own or are legally authorized to unlock.</p>`
       },
       help: {
-        title: 'Help & Support',
-        html: `<p><strong>Where are my saved files stored?</strong> On Android APK, saved files go directly to <code>Downloads/PDF Bondhu/</code>. On Web/Desktop, they save to your browser's default Downloads folder.</p>
-               <p><strong>Does PDF Bondhu work offline?</strong> Yes! Once opened once, all core PDF, Image, Office, Calculator, Converter, Productivity, and Vault tools work smoothly without internet.</p>
-               <p><strong>Need assistance?</strong> Tap Send Feedback in Settings to reach developer Suman Nayak.</p>`
+        title: 'Help & Support — ONEORA',
+        html: `<p><strong>Where are my saved files stored?</strong> On Android APK, saved files go to <code>Downloads/ONEORA/</code> (or <code>Downloads/PDF Bondhu/</code>). On Web/Desktop, they save to your browser Downloads folder.</p>
+               <p><strong>Does ONEORA work offline?</strong> Yes! Core PDF, Image, Office, Planner, Money Manager, Calculators, and Document Vault tools run completely offline in Airplane Mode.</p>
+               <p><strong>Need assistance?</strong> Tap Send Feedback in Profile to reach developer Suman Nayak.</p>`
       },
       about: {
-        title: 'About PDF Bondhu 2.0',
-        html: `<p><strong>PDF Bondhu 2.0 — One App. Everyday Solutions.</strong></p>
-               <p>A lightweight, private, commercial-grade offline utility suite combining PDF Studio, Image Studio, Office Studio, Daily Utility Center, Personal Document Center, and India Essentials in English, বাংলা, and हिन्दी.</p>
-               <p><strong>App Developer:</strong> Suman Nayak<br/><strong>Version:</strong> 2.0.0 (100% Free Launch Edition)</p>`
+        title: 'About ONEORA v3.0.0',
+        html: `<p><strong>ONEORA — One App, More Possibilities.</strong></p>
+               <p>The next-generation evolution of PDF Bondhu: combining PDF Studio, Image Studio, Office Suite, My Daily Life Planner, Personal Finance Money Manager, Encrypted Document Vault, India Essentials, and Multilingual ONEORA AI in English, বাংলা, and हिन्दी.</p>
+               <p><strong>App Developer:</strong> Suman Nayak<br/><strong>Version:</strong> 3.0.0 (ONEORA Super App Edition)</p>`
       }
     };
 
@@ -1222,12 +1263,12 @@
     const shareBtn = document.getElementById('settingsShareAppBtn');
     if (shareBtn) {
       shareBtn.addEventListener('click', () => {
-        const shareUrl = 'https://pdf-bondhu-v1.vercel.app';
-        const shareMsg = 'Try PDF Bondhu 2.0 — One App. Everyday Solutions. 100% Free & Offline PDF, Image, Passport Photo, QR & Daily Utility Suite: ' + shareUrl;
+        const shareUrl = window.location.origin;
+        const shareMsg = 'Try ONEORA — One App, More Possibilities. Offline-first PDF, Image, Office, Daily Planner, Money Manager & AI Super App: ' + shareUrl;
         if (global.AndroidBridge && global.AndroidBridge.shareText) {
-          global.AndroidBridge.shareText('PDF Bondhu 2.0', shareMsg);
+          global.AndroidBridge.shareText('ONEORA — One App, More Possibilities', shareMsg);
         } else if (navigator.share) {
-          navigator.share({ title: 'PDF Bondhu 2.0', text: shareMsg, url: shareUrl }).catch(() => {});
+          navigator.share({ title: 'ONEORA', text: shareMsg, url: shareUrl }).catch(() => {});
         } else {
           navigator.clipboard?.writeText(shareUrl).then(() => global.utils.showToast('Link Copied!', shareUrl));
         }
@@ -1239,7 +1280,7 @@
       rateBtn.addEventListener('click', () => {
         const openFb = document.getElementById('settingsFeedbackBtn');
         if (openFb) openFb.click();
-        else global.utils.showToast('Thank You!', 'Thank you for supporting PDF Bondhu 2.0!', 'info');
+        else global.utils.showToast('Thank You!', 'Thank you for supporting ONEORA!', 'info');
       });
     }
   }
@@ -1247,8 +1288,8 @@
   /* ========================================================================
      8. Instant Live OTA Auto-Update Engine (APK + Web + Installed PWA)
      ======================================================================== */
-  const CURRENT_BUILD = '20261125-4';
-  const CURRENT_VERSION = '2.2.3';
+  const CURRENT_BUILD = '20261126-7';
+  const CURRENT_VERSION = '3.0.0';
 
   function initLiveAutoUpdater() {
     const banner = document.getElementById('liveUpdateBanner');
@@ -1259,7 +1300,7 @@
     const versionText = document.getElementById('settingsAppVersionText');
 
     if (versionText) {
-      versionText.textContent = `Version ${CURRENT_VERSION} · Build ${CURRENT_BUILD} · Auto-Updates Enabled`;
+      versionText.textContent = `ONEORA v${CURRENT_VERSION} · Build ${CURRENT_BUILD} · Auto-Updates Enabled`;
     }
 
     function showUpdateBanner(note) {
@@ -1520,5 +1561,24 @@
     document.addEventListener('pdfbondhu:langchange', () => {
       renderHomeDynamicWidgets();
     });
+
+    // Route Home-Screen App Shortcuts (Native Android APK & Installed PWA)
+    setTimeout(() => {
+      try {
+        let shortcutTool = '';
+        if (global.AndroidBridge && typeof global.AndroidBridge.getPendingShortcutTool === 'function') {
+          shortcutTool = global.AndroidBridge.getPendingShortcutTool() || '';
+        }
+        if (!shortcutTool) {
+          const params = new URLSearchParams(window.location.search);
+          shortcutTool = params.get('shortcut') || '';
+        }
+        if (shortcutTool && document.getElementById(shortcutTool)) {
+          openSection(shortcutTool);
+        }
+      } catch (e) {
+        console.warn('Shortcut route check failed:', e);
+      }
+    }, 220);
   });
 })(window);
