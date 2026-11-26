@@ -357,7 +357,7 @@ function initPdfMetadataModal() {
 const PUBLISHED_APP_URL = 'https://pdf-bondhu-v1.vercel.app';
 
 window.onAndroidDownloadSuccess = (savedName) => {
-  utils.showToast('Saved to Downloads', `${savedName} saved in Downloads/PDF Bondhu.`);
+  utils.showToast('Saved to Downloads', `${savedName} saved in Downloads/ONEORA.`);
 };
 
 window.onAndroidDownloadError = (msg) => {
@@ -420,7 +420,7 @@ function initPWA() {
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (hadController) {
-        utils.showToast('App Updated', 'Latest published version of PDF Bondhu is now active.', 'info');
+        utils.showToast('App Updated', 'Latest published version of ONEORA is now active.', 'info');
       }
       hadController = true;
     });
@@ -452,7 +452,7 @@ function initPWA() {
   if (isAndroidApk) {
     const ver = window.AndroidBridge && window.AndroidBridge.getAppVersion ? window.AndroidBridge.getAppVersion() : '1.0';
     if (appEnvLabel) appEnvLabel.textContent = `Android App v${ver} · Auto-Update`;
-    if (appHubModeText) appHubModeText.textContent = `Running inside PDF Bondhu Android App v${ver} · Auto-updates active`;
+    if (appHubModeText) appHubModeText.textContent = `Running inside ONEORA Android App v${ver} · Auto-updates active`;
   } else if (isStandalone) {
     if (appEnvLabel) appEnvLabel.textContent = 'Installed App · Offline Ready';
     if (appHubModeText) appHubModeText.textContent = 'Running as Installed App · Offline ready';
@@ -484,7 +484,7 @@ function initPWA() {
       if (outcome === 'accepted') {
         if (installBtn) installBtn.classList.add('hidden');
         if (hubInstallBtn) hubInstallBtn.classList.add('hidden');
-        utils.showToast('Installed', 'PDF Bondhu added to your home screen!');
+        utils.showToast('Installed', 'ONEORA added to your home screen!');
       }
       deferredPrompt = null;
       return;
@@ -560,8 +560,8 @@ function initPWA() {
 
   if (appHubShareBtn) {
     appHubShareBtn.addEventListener('click', async () => {
-      const shareTitle = 'PDF Bondhu - Offline PDF & Document Utility App';
-      const shareMessage = `Use PDF Bondhu to Scan, Merge, Split, Compress PDFs, OCR, and Excel tools 100% privately: ${PUBLISHED_APP_URL}`;
+      const shareTitle = 'ONEORA — One App, More Possibilities';
+      const shareMessage = `Try ONEORA for offline PDF, Image, Office, Daily Planner, Money Manager & Multilingual AI: ${PUBLISHED_APP_URL}`;
 
       if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
         window.AndroidBridge.shareText(shareTitle, shareMessage);
@@ -572,7 +572,7 @@ function initPWA() {
         try {
           await navigator.share({
             title: shareTitle,
-            text: 'Scan, Merge, Split & Compress PDFs offline with PDF Bondhu:',
+            text: 'Documents, Daily Planner, Personal Finance & Multilingual AI — all in ONEORA:',
             url: PUBLISHED_APP_URL
           });
           return;
@@ -583,7 +583,7 @@ function initPWA() {
 
       try {
         await navigator.clipboard.writeText(PUBLISHED_APP_URL);
-        utils.showToast('Link Copied', 'Paste and share PDF Bondhu anywhere!');
+        utils.showToast('Link Copied', 'Paste and share ONEORA anywhere!');
       } catch {
         utils.showToast('Share Link', PUBLISHED_APP_URL, 'info');
       }

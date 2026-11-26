@@ -1,4 +1,4 @@
-const APP_SHELL_CACHE = 'oneora-shell-v21';
+const APP_SHELL_CACHE = 'oneora-shell-v22';
 const CDN_CACHE = 'oneora-cdn-v7';
 
 const APP_SHELL_ASSETS = [

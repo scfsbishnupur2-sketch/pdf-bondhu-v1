@@ -149,48 +149,6 @@
       .hide-scrollbar::-webkit-scrollbar { display: none; }
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      /* Material 3 Surface Navigation */
-      .pb-nav-surface {
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-      }
-      html.dark .pb-nav-surface {
-        background: rgba(21, 27, 43, 0.94);
-      }
-      .pb-nav-btn {
-        color: #64748b;
-        transition: color 0.18s ease, background-color 0.18s ease;
-      }
-      html.dark .pb-nav-btn {
-        color: #94a3b8;
-      }
-      .pb-nav-btn.pb-nav-active {
-        color: #2563EB;
-        font-weight: 800;
-      }
-      html.dark .pb-nav-btn.pb-nav-active {
-        color: #a5b4fc;
-      }
-      .pb-nav-btn.pb-nav-active .pb-nav-icon-wrap {
-        background: linear-gradient(135deg, #2563EB, #7C3AED);
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-      }
-      html.dark .pb-nav-btn.pb-nav-active .pb-nav-icon-wrap {
-        background: linear-gradient(135deg, #4F46E5, #7C3AED);
-        color: #ffffff;
-      }
-      .pb-hero-mesh {
-        background: linear-gradient(130deg, #1E3A8A 0%, #3730A3 38%, #6D28D9 72%, #0891B2 100%);
-      }
-      .pb-tool-tile {
-        box-shadow: 0 6px 20px rgba(49, 70, 158, 0.08);
-      }
-      html.dark .pb-tool-tile {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-      }
-
       /* Dancing Horse Companion Animation */
       @keyframes horseBounce {
         0%, 100% { transform: translateY(0) rotate(-2deg); }
@@ -355,62 +313,86 @@
 
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row w-full flex-1 relative">
       <!-- ONEORA 5-Destination Fixed Bottom Navigation Bar (Mobile) + Left Rail (Desktop) -->
-      <nav aria-label="Primary Navigation" class="fixed bottom-0 left-0 right-0 pb-nav-surface border-t border-indigo-100/90 dark:border-slate-800 z-30 shadow-[0_-4px_20px_rgba(49,70,158,0.08)] lg:shadow-none lg:static lg:w-60 lg:border-t-0 lg:border-r lg:bg-white/90 dark:lg:bg-[#131A2F] lg:min-h-[calc(100vh-4rem)] lg:backdrop-filter-none transition-colors">
+      <nav aria-label="Primary Navigation" class="fixed bottom-0 left-0 right-0 pb-nav-surface border-t border-[#E6E9F2] dark:border-[#232C4A] z-30 shadow-[0_-6px_24px_rgba(16,21,42,0.06)] lg:shadow-none lg:static lg:w-60 lg:border-t-0 lg:border-r lg:bg-white/95 dark:lg:bg-[#111629] lg:min-h-[calc(100vh-4rem)] lg:backdrop-filter-none transition-colors">
         <div class="lg:sticky lg:top-16 px-2 py-1.5 lg:p-4">
           <ul class="grid grid-cols-5 lg:flex lg:flex-col gap-1 lg:gap-1.5" id="navTabs">
             <li>
-              <button type="button" data-nav-target="homeDashboard" aria-current="page" class="pb-nav-btn pb-nav-active w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl hover:bg-indigo-50/70 dark:hover:bg-[#1C2438] min-h-[48px]">
+              <button type="button" data-nav-target="homeDashboard" aria-current="page" class="pb-nav-btn pb-nav-active w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
                 <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </span>
                 <span data-i18n="navHome" class="text-[11px] lg:text-sm whitespace-nowrap">Home</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="oneoraPlannerTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl hover:bg-indigo-50/70 dark:hover:bg-[#1C2438] min-h-[48px]">
+              <button type="button" data-nav-target="oneoraPlannerTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
                 <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                 </span>
                 <span class="text-[11px] lg:text-sm whitespace-nowrap">Planner</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="oneoraMoneyTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl hover:bg-indigo-50/70 dark:hover:bg-[#1C2438] min-h-[48px]">
+              <button type="button" data-nav-target="oneoraMoneyTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
                 <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
                 </span>
                 <span class="text-[11px] lg:text-sm whitespace-nowrap">Money</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="allToolsHub" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl hover:bg-indigo-50/70 dark:hover:bg-[#1C2438] min-h-[48px]">
+              <button type="button" data-nav-target="allToolsHub" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
                 <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
                 </span>
                 <span class="text-[11px] lg:text-sm whitespace-nowrap">Tools</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="profileSettingsTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl hover:bg-indigo-50/70 dark:hover:bg-[#1C2438] min-h-[48px]">
+              <button type="button" data-nav-target="profileSettingsTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
                 <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                 </span>
                 <span data-i18n="navProfile" class="text-[11px] lg:text-sm whitespace-nowrap">Profile</span>
               </button>
             </li>
           </ul>
 
-          <!-- Desktop Quick Studio & AI Shortcuts in Rail -->
-          <div class="hidden lg:block mt-6 pt-5 border-t border-indigo-100/80 dark:border-slate-800 space-y-1.5">
-            <div class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-indigo-400">Studios &amp; AI</div>
-            <button type="button" data-open-tool="oneoraAiTab" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-violet-700 dark:text-violet-300 bg-violet-50/80 dark:bg-violet-950/40 hover:bg-violet-100 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-violet-500 to-fuchsia-600"></span>ONEORA AI</button>
-            <button type="button" data-open-cat="pdf" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-[#1C2438] hover:text-rose-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-rose-500 to-pink-500"></span>PDF Studio</button>
-            <button type="button" data-open-cat="image" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-[#1C2438] hover:text-sky-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-sky-500 to-blue-600"></span>Image Studio</button>
-            <button type="button" data-open-cat="office" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-[#1C2438] hover:text-emerald-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-emerald-500 to-green-600"></span>Office Studio</button>
-            <button type="button" data-open-tool="documentCenter" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-[#1C2438] hover:text-teal-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-teal-500 to-emerald-600"></span>Document Vault</button>
-            <button type="button" data-open-tool="dailyUtilitiesHub" data-open-sub="dailyPanelCalc" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-[#1C2438] hover:text-amber-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-amber-500 to-orange-500"></span>Daily Utilities</button>
-            <button type="button" data-open-tool="indiaEssentials" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-[#1C2438] hover:text-indigo-600 transition flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm bg-gradient-to-br from-orange-500 to-emerald-600"></span>India Essentials</button>
-            <a href="/website" class="block w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-cyan-400 hover:bg-indigo-50 dark:hover:bg-[#1C2438] transition">ONEORA Website ↗</a>
+          <!-- Desktop Clean Studio & AI Shortcuts in Rail -->
+          <div class="hidden lg:block mt-6 pt-5 border-t border-[#E6E9F2] dark:border-[#232C4A] space-y-1">
+            <div class="px-3 mb-2 text-[11px] font-bold tracking-wide text-[#647087] dark:text-[#9EA8C0]">Studios &amp; AI</div>
+            <button type="button" data-open-tool="oneoraAiTab" class="oneora-rail-link is-accent">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+              <span>ONEORA AI</span>
+            </button>
+            <button type="button" data-open-cat="pdf" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>PDF Studio</span>
+            </button>
+            <button type="button" data-open-cat="image" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              <span>Image Studio</span>
+            </button>
+            <button type="button" data-open-cat="office" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              <span>Office Studio</span>
+            </button>
+            <button type="button" data-open-tool="documentCenter" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Document Vault</span>
+            </button>
+            <button type="button" data-open-tool="dailyUtilitiesHub" data-open-sub="dailyPanelCalc" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/></svg>
+              <span>Daily Utilities</span>
+            </button>
+            <button type="button" data-open-tool="indiaEssentials" class="oneora-rail-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/></svg>
+              <span>India Essentials</span>
+            </button>
+            <a href="/website" class="oneora-rail-link text-[#7457E8] dark:text-[#9FAFFF]">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>ONEORA Website ↗</span>
+            </a>
           </div>
         </div>
       </nav>
@@ -555,12 +537,12 @@
             <div id="oneoraQuickActionsGrid" class="grid grid-cols-4 gap-2.5 sm:gap-3"></div>
           </div>
 
-          <!-- 3B. Live Daily Life & Fintech Widgets (Planner, Reminders, Expenses, Monthly Budget) -->
-          <div id="homeLiveWidgetsBlock" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <button type="button" data-open-tool="oneoraPlannerTab" id="homeTodayPlannerCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[124px]"></button>
-            <button type="button" onclick="window.OneoraPlanner && window.OneoraPlanner.openSubTab('reminders')" id="homeUpcomingRemindersCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[124px]"></button>
-            <button type="button" data-open-tool="oneoraMoneyTab" id="homeTodayExpensesCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[124px]"></button>
-            <button type="button" onclick="window.OneoraMoney && window.OneoraMoney.openSubTab('budgets')" id="homeMonthlyBudgetCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[124px]"></button>
+          <!-- 3B. Live Daily Life & Fintech Bento Grid (2x2 Mobile · 4-Col Desktop) -->
+          <div id="homeLiveWidgetsBlock" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <button type="button" data-open-tool="oneoraPlannerTab" id="homeTodayPlannerCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
+            <button type="button" onclick="window.OneoraPlanner && window.OneoraPlanner.openSubTab('reminders')" id="homeUpcomingRemindersCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
+            <button type="button" data-open-tool="oneoraMoneyTab" id="homeTodayExpensesCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
+            <button type="button" onclick="window.OneoraMoney && window.OneoraMoney.openSubTab('budgets')" id="homeMonthlyBudgetCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
           </div>
 
           <!-- 3C. ONEORA Smart Hub (Cross-Module Suggestions · Explicit User Confirmation Only) -->
@@ -2581,19 +2563,19 @@
           </div>
 
           <!-- PIN / Biometric Lock Gate -->
-          <div id="vaultLockGate" class="hidden bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center max-w-md mx-auto space-y-4 shadow-sm">
-            <div class="w-14 h-14 rounded-2xl bg-[#293B80]/10 dark:bg-[#7666D8]/20 text-[#293B80] dark:text-[#7666D8] mx-auto flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div id="vaultLockGate" class="hidden oneora-surface p-8 text-center max-w-md mx-auto space-y-4">
+            <div class="oneora-icon-well tone-violet !w-14 !h-14 !rounded-2xl mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
             <div>
-              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Personal Vault Locked</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Enter your 4–8 digit PIN to decrypt and view your local files.</p>
+              <h3 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Personal Vault Locked</h3>
+              <p class="text-xs text-[#647087] dark:text-[#9EA8C0] mt-1">Enter your 4–8 digit PIN to decrypt and view your local files.</p>
             </div>
             <div class="flex gap-2">
-              <input type="password" inputmode="numeric" id="vaultUnlockPinInput" maxlength="8" placeholder="Enter PIN" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-center text-base font-bold tracking-widest text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[44px]" />
-              <button type="button" id="vaultUnlockPinBtn" class="px-5 py-2.5 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-sm font-bold min-h-[44px]">Unlock</button>
+              <input type="password" inputmode="numeric" id="vaultUnlockPinInput" maxlength="8" placeholder="Enter PIN" class="oneora-input flex-1 text-center text-base font-bold tracking-widest" />
+              <button type="button" id="vaultUnlockPinBtn" class="oneora-btn-primary text-sm">Unlock</button>
             </div>
-            <button type="button" id="vaultBiometricUnlockBtn" class="hidden w-full py-2.5 rounded-xl bg-[#20A779]/10 hover:bg-[#20A779]/20 text-[#20A779] border border-[#20A779]/30 text-xs font-bold min-h-[42px]">
+            <button type="button" id="vaultBiometricUnlockBtn" class="hidden w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold min-h-[42px]">
               Unlock with Fingerprint / Face ID
             </button>
           </div>
@@ -2601,17 +2583,17 @@
           <!-- Main Unlocked Vault Content -->
           <div id="vaultMainContent" class="space-y-4">
             <!-- Storage Overview & Quick Import -->
-            <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+            <div class="oneora-surface p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Local Encrypted Storage</p>
-                <p id="vaultStorageSummary" class="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5 tabular-nums">0 files · 0 KB stored locally</p>
+                <p class="text-xs font-semibold text-[#647087] dark:text-[#9EA8C0]">Local Encrypted Storage</p>
+                <p id="vaultStorageSummary" class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 tabular-nums">0 files · 0 KB stored locally</p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <select id="vaultUploadFolderSelect" class="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[42px]">
+                <select id="vaultUploadFolderSelect" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
                   <option value="General">General</option>
                 </select>
-                <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-xs font-bold min-h-[42px] transition">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <label class="cursor-pointer oneora-btn-primary text-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   Import Files
                   <input type="file" id="vaultImportInput" multiple class="hidden" />
                 </label>
@@ -2619,22 +2601,22 @@
             </div>
 
             <!-- Folders Row -->
-            <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3 shadow-sm">
+            <div class="oneora-surface p-4 space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div id="vaultFoldersBar" class="flex flex-wrap items-center gap-2"></div>
                 <div class="flex items-center gap-1.5">
-                  <input type="text" id="vaultNewFolderInput" placeholder="New folder..." class="w-36 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[38px]" />
-                  <button type="button" id="vaultAddFolderBtn" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold min-h-[38px]">+ Folder</button>
+                  <input type="text" id="vaultNewFolderInput" placeholder="New folder..." class="oneora-input !w-36 !min-h-[38px] !py-1.5 text-xs" />
+                  <button type="button" id="vaultAddFolderBtn" class="oneora-btn-secondary !min-h-[38px] !py-1.5 text-xs">+ Folder</button>
                 </div>
               </div>
 
               <!-- Search, Sort & Inline Rename -->
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-[#E6E9F2] dark:border-[#232C4A]">
                 <div class="sm:col-span-8">
-                  <input type="search" id="vaultSearchInput" placeholder="Search files by name or folder..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[40px]" />
+                  <input type="search" id="vaultSearchInput" placeholder="Search files by name or folder..." class="oneora-input !min-h-[40px] text-xs" />
                 </div>
                 <div class="sm:col-span-4">
-                  <select id="vaultSortSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-700 dark:text-slate-200 min-h-[40px]">
+                  <select id="vaultSortSelect" class="oneora-input !min-h-[40px] text-xs font-semibold">
                     <option value="date_desc">Newest First</option>
                     <option value="name_asc">Name (A–Z)</option>
                     <option value="size_desc">Largest First</option>
@@ -2643,9 +2625,9 @@
                 </div>
               </div>
 
-              <div id="vaultRenameRow" class="hidden items-center gap-2 p-2.5 rounded-xl bg-[#293B80]/5 dark:bg-[#7666D8]/10 border border-[#293B80]/20">
-                <input type="text" id="vaultRenameInput" class="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#151B2B] text-xs font-semibold text-slate-900 dark:text-white min-h-[36px]" />
-                <button type="button" id="vaultRenameSaveBtn" class="px-3.5 py-2 rounded-lg bg-[#293B80] text-white text-xs font-bold min-h-[36px]">Save Name</button>
+              <div id="vaultRenameRow" class="hidden items-center gap-2 p-2.5 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/15 border border-[#7457E8]/25">
+                <input type="text" id="vaultRenameInput" class="oneora-input flex-1 !min-h-[36px] text-xs font-semibold" />
+                <button type="button" id="vaultRenameSaveBtn" class="oneora-btn-primary !min-h-[36px] !py-1.5 text-xs">Save Name</button>
               </div>
             </div>
 
@@ -2653,14 +2635,14 @@
             <div id="vaultFilesList" class="space-y-2.5"></div>
 
             <!-- Vault Security Setup Card -->
-            <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="oneora-surface p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Vault PIN &amp; AES-256 Encryption</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Set a 4–8 digit PIN to encrypt newly imported documents and lock access. Enter blank to remove PIN.</p>
+                <h4 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC]">Vault PIN &amp; AES-256 Encryption</h4>
+                <p class="text-xs text-[#647087] dark:text-[#9EA8C0] mt-0.5">Set a 4–8 digit PIN to encrypt newly imported documents and lock access. Enter blank to remove PIN.</p>
               </div>
               <div class="flex items-center gap-2">
-                <input type="password" inputmode="numeric" id="vaultSetupPinInput" maxlength="8" placeholder="4–8 digit PIN" class="w-36 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[40px]" />
-                <button type="button" id="vaultSetupPinBtn" class="px-4 py-2 rounded-xl bg-[#20A779] hover:bg-[#1a8e66] text-white text-xs font-bold min-h-[40px] whitespace-nowrap">Save PIN</button>
+                <input type="password" inputmode="numeric" id="vaultSetupPinInput" maxlength="8" placeholder="4–8 digit PIN" class="oneora-input !w-36 !min-h-[40px] text-xs font-bold" />
+                <button type="button" id="vaultSetupPinBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold min-h-[40px] whitespace-nowrap">Save PIN</button>
               </div>
             </div>
           </div>
@@ -2730,38 +2712,38 @@
           </div>
 
           <!-- Personal Details -->
-          <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-4 shadow-sm">
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Personal Profile</h3>
+          <div class="oneora-surface p-5 space-y-4">
+            <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC]">Personal Profile</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label for="profileUserNameInput" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Display Name (Greeting)</label>
-                <input type="text" id="profileUserNameInput" placeholder="e.g. Suman" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[44px]" />
+                <label for="profileUserNameInput" class="block text-xs font-semibold text-[#647087] dark:text-[#9EA8C0] mb-1">Display Name (Greeting)</label>
+                <input type="text" id="profileUserNameInput" placeholder="e.g. Suman" class="oneora-input text-sm font-semibold" />
               </div>
               <div>
-                <label for="profileDefaultAuthorInput" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Default PDF Author Metadata</label>
-                <input type="text" id="profileDefaultAuthorInput" placeholder="e.g. Suman Nayak" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-[#293B80] min-h-[44px]" />
+                <label for="profileDefaultAuthorInput" class="block text-xs font-semibold text-[#647087] dark:text-[#9EA8C0] mb-1">Default PDF Author Metadata</label>
+                <input type="text" id="profileDefaultAuthorInput" placeholder="e.g. Suman Nayak" class="oneora-input text-sm font-semibold" />
               </div>
             </div>
-            <button type="button" id="profileSaveBtn" class="px-5 py-2.5 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-xs font-bold min-h-[42px] transition">Save Profile</button>
+            <button type="button" id="profileSaveBtn" class="oneora-btn-primary text-xs">Save Profile</button>
           </div>
 
           <!-- Language & Theme -->
-          <div class="bg-white dark:bg-[#1C2438] rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-5 shadow-sm">
+          <div class="oneora-surface p-5 space-y-5">
             <div>
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-2.5">App Language</h3>
+              <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] mb-2.5">App Language</h3>
               <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" data-set-lang="en" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">English</button>
-                <button type="button" data-set-lang="bn" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">বাংলা</button>
-                <button type="button" data-set-lang="hi" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">हिन्दी</button>
+                <button type="button" data-set-lang="en" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">English</button>
+                <button type="button" data-set-lang="bn" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">বাংলা</button>
+                <button type="button" data-set-lang="hi" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">हिन्दी</button>
               </div>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-              <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-2.5">Appearance Theme</h3>
+            <div class="pt-4 border-t border-[#E6E9F2] dark:border-[#232C4A]">
+              <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] mb-2.5">Appearance Theme</h3>
               <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" data-theme-mode="light" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">Light</button>
-                <button type="button" data-theme-mode="dark" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">Dark</button>
-                <button type="button" data-theme-mode="system" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 min-h-[44px] transition">System</button>
+                <button type="button" data-theme-mode="light" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">Light</button>
+                <button type="button" data-theme-mode="dark" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">Dark</button>
+                <button type="button" data-theme-mode="system" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">System</button>
               </div>
             </div>
           </div>
@@ -3588,78 +3570,76 @@
 
         <!-- TAB: 100% Ad-Free All-Document Reader Launcher (PDF, Word, Excel, PowerPoint) -->
         <section id="pdfReaderTool" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-4">
-          <div class="bg-white dark:bg-[#1C2438] rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 text-center space-y-5 shadow-sm">
-            <div class="inline-flex flex-wrap items-center justify-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold">
-              <span>100% Ad-Free · Full-Screen All-Document Reader · Offline</span>
-            </div>
-            <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            </div>
-            <div class="max-w-lg mx-auto space-y-1.5">
-              <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">All-Document Full-Screen Reader</h2>
-              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                Automatically detects file type and opens <strong>PDF</strong>, <strong>Word</strong>, <strong>Excel</strong>, <strong>PowerPoint</strong>, <strong>Photos</strong> &amp; <strong>ZIP</strong> in their dedicated full-screen viewer with zero ads.
+          <div class="oneora-surface p-6 sm:p-8 text-center space-y-6">
+            <div class="space-y-2 max-w-xl mx-auto">
+              <p class="text-xs font-bold text-[#7457E8] dark:text-[#B4A5FF]">Universal Offline Reader · Zero Ads</p>
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-[#10152A] dark:bg-[#7457E8] text-white flex items-center justify-center shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-[#14182B] dark:text-[#F5F6FC] tracking-tight pt-1">All-Document Full-Screen Reader</h2>
+              <p class="text-xs sm:text-sm text-[#647087] dark:text-[#9EA8C0]">
+                Automatically detects file type and opens <strong>PDF</strong>, <strong>Word</strong>, <strong>Excel</strong>, <strong>PowerPoint</strong>, <strong>Photos</strong> &amp; <strong>ZIP</strong> locally in a distraction-free reader.
               </p>
             </div>
 
-            <!-- 1-Tap Format Quick Launchers -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-w-xl mx-auto">
-              <button type="button" data-doc-pick-accept=".pdf,application/pdf" class="pb-doc-format-btn p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 hover:border-rose-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">PDF</span>
+            <!-- 1-Tap Format Quick Launchers (Restrained ONEORA Tinted Wells) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-w-2xl mx-auto">
+              <button type="button" data-doc-pick-accept=".pdf,application/pdf" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-rose text-[11px] font-extrabold">PDF</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open PDF</div>
-                  <div class="text-[10px] text-rose-600 dark:text-rose-300 font-semibold">.pdf</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open PDF</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">.pdf</div>
                 </div>
               </button>
-              <button type="button" data-doc-pick-accept=".doc,.docx,.rtf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/rtf" class="pb-doc-format-btn p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 hover:border-blue-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">DOC</span>
+              <button type="button" data-doc-pick-accept=".doc,.docx,.rtf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/rtf" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-blue text-[11px] font-extrabold">DOC</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open Word</div>
-                  <div class="text-[10px] text-blue-600 dark:text-blue-300 font-semibold">.docx / .doc</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open Word</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">.docx · .doc</div>
                 </div>
               </button>
-              <button type="button" data-doc-pick-accept=".xls,.xlsx,.csv,.ods,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="pb-doc-format-btn p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 hover:border-emerald-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">XLS</span>
+              <button type="button" data-doc-pick-accept=".xls,.xlsx,.csv,.ods,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-emerald text-[11px] font-extrabold">XLS</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open Excel</div>
-                  <div class="text-[10px] text-emerald-600 dark:text-emerald-300 font-semibold">.xlsx / .xls / .csv</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open Excel</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">.xlsx · .csv</div>
                 </div>
               </button>
-              <button type="button" data-doc-pick-accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="pb-doc-format-btn p-3 rounded-2xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/60 hover:border-orange-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">PPT</span>
+              <button type="button" data-doc-pick-accept=".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-amber text-[11px] font-extrabold">PPT</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open PPT</div>
-                  <div class="text-[10px] text-orange-600 dark:text-orange-300 font-semibold">.pptx / .ppt</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open PPT</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">.pptx · .ppt</div>
                 </div>
               </button>
-              <button type="button" data-doc-pick-accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.bmp" class="pb-doc-format-btn p-3 rounded-2xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/60 hover:border-pink-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">IMG</span>
+              <button type="button" data-doc-pick-accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.bmp" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-rose text-[11px] font-extrabold">IMG</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open Photo</div>
-                  <div class="text-[10px] text-pink-600 dark:text-pink-300 font-semibold">JPG / PNG → PDF</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open Photo</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">JPG · PNG → PDF</div>
                 </div>
               </button>
-              <button type="button" data-doc-pick-accept=".zip,application/zip,application/x-zip-compressed" class="pb-doc-format-btn p-3 rounded-2xl bg-violet-50 dark:bg-violet-950/40 border border-violet-200 dark:border-violet-900/60 hover:border-violet-400 text-left transition flex items-center gap-2.5">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white text-[11px] font-black flex items-center justify-center shrink-0 shadow">ZIP</span>
+              <button type="button" data-doc-pick-accept=".zip,application/zip,application/x-zip-compressed" class="pb-doc-format-btn pb-tool-tile p-3.5 rounded-2xl text-left flex items-center gap-3">
+                <span class="oneora-icon-well tone-violet text-[11px] font-extrabold">ZIP</span>
                 <div class="min-w-0">
-                  <div class="text-xs font-extrabold text-slate-900 dark:text-white truncate">Open ZIP</div>
-                  <div class="text-[10px] text-violet-600 dark:text-violet-300 font-semibold">View &amp; Extract</div>
+                  <div class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Open ZIP</div>
+                  <div class="text-[11px] text-[#647087] dark:text-[#9EA8C0]">Browse &amp; Extract</div>
                 </div>
               </button>
             </div>
 
             <div id="pdfReaderEmptyState" class="flex flex-wrap items-center justify-center gap-3 pt-1">
-              <button type="button" id="pdfReaderPickBtn" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-105 text-white text-sm font-extrabold shadow-lg shadow-emerald-500/25 transition min-h-[48px] flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+              <button type="button" id="pdfReaderPickBtn" class="oneora-btn-primary px-6 py-3.5 text-sm min-h-[48px]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
                 <span>Open Any File (Auto-Detect)</span>
               </button>
-              <button type="button" id="pdfReaderResumeBtn" class="hidden px-5 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-extrabold shadow-md transition min-h-[48px]">
+              <button type="button" id="pdfReaderResumeBtn" class="hidden oneora-btn-secondary px-5 py-3.5 text-sm min-h-[48px]">
                 Resume Last File
               </button>
               <input type="file" id="pdfReaderFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ods,.ppt,.pptx,.rtf,.txt,.zip,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,application/rtf,application/zip" class="hidden" />
             </div>
-            <div class="max-w-lg mx-auto rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/60 p-3.5 text-left text-[11px] sm:text-xs text-emerald-900 dark:text-emerald-200 leading-relaxed">
-              <strong class="font-extrabold">All-in-One Ready:</strong> Tap any PDF, Word, Excel, PPT, Photo, or ZIP in WhatsApp/Gallery and choose <strong>PDF Bondhu</strong> — or share multiple photos at once to combine them into 1 instant PDF!
+            <div class="max-w-xl mx-auto rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] p-3.5 text-left text-xs text-[#647087] dark:text-[#9EA8C0] leading-relaxed">
+              <strong class="font-bold text-[#14182B] dark:text-[#F5F6FC]">Direct Share Ready:</strong> Tap any PDF, Word, Excel, PPT, Photo, or ZIP in WhatsApp or Files and choose <strong>ONEORA</strong> — or share multiple photos to merge into 1 instant PDF.
             </div>
           </div>
         </section>
@@ -3764,102 +3744,99 @@
     </div>
 
     <!-- Android APK & Share Hub Modal -->
-    <div id="appShareModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex-col items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-      <div class="w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-indigo-50 to-sky-50 dark:from-slate-900 dark:to-indigo-950/60">
+    <div id="appShareModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex-col items-center justify-center p-4 sm:p-6">
+      <div class="oneora-sheet-enter w-full max-w-xl bg-white dark:bg-[#151B2F] rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] border border-[#E6E9F2] dark:border-[#232C4A]">
+        <div class="oneora-hero-card !rounded-none !shadow-none !border-0 flex items-center justify-between px-5 py-4 text-white">
           <div>
-            <h3 class="text-slate-900 dark:text-white font-bold text-lg">Android App (APK) &amp; Share</h3>
-            <p id="appHubModeText" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Auto-updating Android wrapper · Offline capable</p>
+            <h3 class="font-extrabold text-base sm:text-lg">ONEORA Android App (APK) &amp; Share</h3>
+            <p id="appHubModeText" class="text-xs text-[#C9D1E8] mt-0.5">Auto-updating Android wrapper · Offline capable</p>
           </div>
-          <button type="button" id="closeAppHubModal" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <button type="button" id="closeAppHubModal" class="text-white/80 hover:text-white transition p-2 bg-white/10 hover:bg-white/20 rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
 
         <div class="p-5 overflow-y-auto space-y-5">
-          <!-- Share & Install Actions -->
           <div class="space-y-3">
-            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Live Website Link (Desktop, Laptop &amp; Mobile)</label>
+            <label class="block text-xs font-semibold text-[#647087] dark:text-[#9EA8C0]">Live App Link (Desktop, Laptop &amp; Mobile)</label>
             <div class="flex items-stretch gap-2">
-              <input type="text" id="appHubLiveUrl" readonly value="https://pdf-bondhu-v1.vercel.app" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-700 dark:text-slate-200 outline-none truncate" />
-              <button type="button" id="appHubCopyUrlBtn" class="bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition whitespace-nowrap min-h-[44px]">Copy Link</button>
+              <input type="text" id="appHubLiveUrl" readonly value="https://pdf-bondhu-v1.vercel.app" class="oneora-input flex-1 text-xs font-mono truncate" />
+              <button type="button" id="appHubCopyUrlBtn" class="oneora-btn-primary text-xs whitespace-nowrap">Copy Link</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <button type="button" id="appHubShareBtn" class="bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white px-4 py-3 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 min-h-[46px] whitespace-nowrap">
+              <button type="button" id="appHubShareBtn" class="oneora-btn-primary text-sm min-h-[46px] whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                Share with Friends
+                Share ONEORA
               </button>
-              <button type="button" id="appHubInstallPwaBtn" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 px-4 py-3 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 min-h-[46px] whitespace-nowrap">
+              <button type="button" id="appHubInstallPwaBtn" class="oneora-btn-secondary text-sm min-h-[46px] whitespace-nowrap">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Install on Phone (PWA)
               </button>
             </div>
 
-            <!-- iOS Safari Guided Install Note -->
-            <div id="appHubIosGuide" class="hidden bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 rounded-xl p-3.5 text-xs text-sky-900 dark:text-sky-200 leading-relaxed">
+            <div id="appHubIosGuide" class="hidden bg-[#F3F0FF] dark:bg-[#7457E8]/15 border border-[#7457E8]/25 rounded-xl p-3.5 text-xs text-[#14182B] dark:text-[#F5F6FC] leading-relaxed">
               <strong>Install on Phone:</strong> Open this link in Chrome (Android) or Safari (iPhone), tap the browser menu / Share button, and choose <strong>Add to Home Screen</strong> or <strong>Install App</strong>.
             </div>
           </div>
 
-          <hr class="border-slate-200 dark:border-slate-800" />
+          <hr class="border-[#E6E9F2] dark:border-[#232C4A]" />
 
-          <!-- Direct APK Info -->
-          <div class="space-y-2.5">
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Android APK &amp; Auto-Update</h4>
-            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              PDF Bondhu works as both an installable Android APK and a Desktop/Mobile Website. Developed by <strong>Suman Nayak</strong>.
+          <div class="space-y-2">
+            <h4 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC]">Android APK &amp; Auto-Update</h4>
+            <p class="text-xs text-[#647087] dark:text-[#9EA8C0] leading-relaxed">
+              ONEORA works as both an installable Android APK and an offline-first Desktop/Mobile Web App. Developed by <strong class="text-[#14182B] dark:text-[#F5F6FC]">Suman Nayak</strong>.
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Universal PDF Metadata Editor Modal (Shown before saving any merged/processed PDF) -->
-    <div id="pdfMetadataModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex-col items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-      <div class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
-        <div class="px-5 py-4 bg-gradient-to-r from-indigo-600 via-violet-600 to-sky-600 text-white flex items-center justify-between gap-3">
+    <!-- Universal PDF Metadata Editor Modal -->
+    <div id="pdfMetadataModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex-col items-center justify-center p-4 sm:p-6">
+      <div class="oneora-sheet-enter w-full max-w-lg bg-white dark:bg-[#151B2F] rounded-3xl overflow-hidden shadow-2xl border border-[#E6E9F2] dark:border-[#232C4A] flex flex-col max-h-[90vh]">
+        <div class="oneora-hero-card !rounded-none !shadow-none !border-0 px-5 py-4 text-white flex items-center justify-between gap-3">
           <div>
             <h3 class="font-extrabold text-base sm:text-lg">Edit PDF Metadata &amp; Save</h3>
-            <p class="text-[11px] text-indigo-100 mt-0.5">Customize Title, Author &amp; Creation Date before downloading</p>
+            <p class="text-[11px] text-[#C9D1E8] mt-0.5">Customize Title, Author &amp; Creation Date before downloading</p>
           </div>
-          <button type="button" id="pdfMetaCancelTopBtn" class="p-2 rounded-lg bg-white/15 hover:bg-white/25 text-white transition min-h-[38px] min-w-[38px] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <button type="button" id="pdfMetaCancelTopBtn" class="p-2 rounded-xl bg-white/12 hover:bg-white/22 text-white transition min-h-[38px] min-w-[38px] flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
 
         <form id="pdfMetadataForm" class="p-5 overflow-y-auto space-y-4">
           <div>
-            <label for="pdfMetaFileName" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">File Name</label>
-            <input type="text" id="pdfMetaFileName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold outline-none focus:border-indigo-500 min-h-[44px]" />
+            <label for="pdfMetaFileName" class="block text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1">File Name</label>
+            <input type="text" id="pdfMetaFileName" required class="oneora-input text-sm font-semibold" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label for="pdfMetaTitle" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">PDF Title</label>
-              <input type="text" id="pdfMetaTitle" placeholder="Document title" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:border-indigo-500 min-h-[44px]" />
+              <label for="pdfMetaTitle" class="block text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1">PDF Title</label>
+              <input type="text" id="pdfMetaTitle" placeholder="Document title" class="oneora-input text-sm" />
             </div>
             <div>
-              <label for="pdfMetaAuthor" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Author</label>
-              <input type="text" id="pdfMetaAuthor" placeholder="e.g. Suman Nayak" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:border-indigo-500 min-h-[44px]" />
+              <label for="pdfMetaAuthor" class="block text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1">Author</label>
+              <input type="text" id="pdfMetaAuthor" placeholder="e.g. Suman Nayak" class="oneora-input text-sm" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label for="pdfMetaCreationDate" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Creation Date &amp; Time</label>
-              <input type="datetime-local" id="pdfMetaCreationDate" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:border-indigo-500 min-h-[44px]" />
+              <label for="pdfMetaCreationDate" class="block text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1">Creation Date &amp; Time</label>
+              <input type="datetime-local" id="pdfMetaCreationDate" class="oneora-input text-sm" />
             </div>
             <div>
-              <label for="pdfMetaSubject" class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Subject (Optional)</label>
-              <input type="text" id="pdfMetaSubject" placeholder="e.g. Office / Study / ID" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:border-indigo-500 min-h-[44px]" />
+              <label for="pdfMetaSubject" class="block text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1">Subject (Optional)</label>
+              <input type="text" id="pdfMetaSubject" placeholder="e.g. Office / Study / ID" class="oneora-input text-sm" />
             </div>
           </div>
 
-          <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <button type="button" id="pdfMetaCancelBtn" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold min-h-[44px]">Cancel</button>
-            <button type="submit" id="pdfMetaSaveBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-700 hover:to-sky-700 text-white text-sm font-extrabold shadow-lg shadow-indigo-500/25 min-h-[44px] flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E6E9F2] dark:border-[#232C4A]">
+            <button type="button" id="pdfMetaCancelBtn" class="oneora-btn-secondary text-sm">Cancel</button>
+            <button type="submit" id="pdfMetaSaveBtn" class="oneora-btn-primary text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
               Save PDF
             </button>
           </div>
@@ -3868,48 +3845,48 @@
     </div>
 
     <!-- First-Launch Language Picker Modal -->
-    <div id="firstLaunchLangModal" class="hidden fixed inset-0 bg-slate-950/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="w-full max-w-sm bg-white dark:bg-[#1C2438] rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-center space-y-5">
-        <div class="w-12 h-12 rounded-2xl bg-[#293B80] text-white mx-auto flex items-center justify-center font-extrabold text-lg">PB</div>
+    <div id="firstLaunchLangModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex items-center justify-center p-4">
+      <div class="oneora-sheet-enter w-full max-w-sm bg-white dark:bg-[#151B2F] rounded-3xl p-6 shadow-2xl border border-[#E6E9F2] dark:border-[#232C4A] text-center space-y-5">
+        <img src="./icon.svg" alt="ONEORA" class="w-12 h-12 rounded-2xl mx-auto shadow-sm" />
         <div>
-          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Welcome to PDF Bondhu</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose your preferred language · ভাষা নির্বাচন করুন · भाषा चुनें</p>
+          <h3 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Welcome to ONEORA</h3>
+          <p class="text-xs text-[#647087] dark:text-[#9EA8C0] mt-1">Choose your preferred language · ভাষা নির্বাচন করুন · भाषा चुनें</p>
         </div>
         <div class="grid grid-cols-1 gap-2.5">
-          <button type="button" data-modal-lang="en" class="py-3 px-4 rounded-xl border-2 border-[#293B80] bg-[#293B80]/10 text-sm font-bold text-[#293B80] dark:text-white min-h-[46px]">English</button>
-          <button type="button" data-modal-lang="bn" class="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-200 min-h-[46px]">বাংলা (Bengali)</button>
-          <button type="button" data-modal-lang="hi" class="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-200 min-h-[46px]">हिन्दी (Hindi)</button>
+          <button type="button" data-modal-lang="en" class="py-3 px-4 rounded-xl border-2 border-[#7457E8] bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-sm font-bold text-[#7457E8] dark:text-white min-h-[46px]">English</button>
+          <button type="button" data-modal-lang="bn" class="py-3 px-4 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[46px]">বাংলা (Bengali)</button>
+          <button type="button" data-modal-lang="hi" class="py-3 px-4 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[46px]">हिन्दी (Hindi)</button>
         </div>
-        <button type="button" id="firstLaunchLangContinueBtn" class="w-full py-3 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-sm font-extrabold min-h-[46px]">Continue</button>
+        <button type="button" id="firstLaunchLangContinueBtn" class="w-full oneora-btn-primary text-sm min-h-[46px]">Continue</button>
       </div>
     </div>
 
     <!-- Personal Vault File Preview Modal -->
-    <div id="vaultPreviewModal" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="w-full max-w-3xl bg-white dark:bg-[#1C2438] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[88vh]">
-        <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
-          <h3 id="vaultPreviewTitle" class="text-sm font-bold text-slate-900 dark:text-white truncate pr-4">Document Preview</h3>
-          <button type="button" id="vaultPreviewCloseBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 min-h-[38px] min-w-[38px] flex items-center justify-center">✕</button>
+    <div id="vaultPreviewModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex items-center justify-center p-4">
+      <div class="oneora-sheet-enter w-full max-w-3xl bg-white dark:bg-[#151B2F] rounded-3xl overflow-hidden shadow-2xl border border-[#E6E9F2] dark:border-[#232C4A] flex flex-col max-h-[88vh]">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#E6E9F2] dark:border-[#232C4A]">
+          <h3 id="vaultPreviewTitle" class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] truncate pr-4">Document Preview</h3>
+          <button type="button" id="vaultPreviewCloseBtn" class="p-2 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#9EA8C0] min-h-[38px] min-w-[38px] flex items-center justify-center">✕</button>
         </div>
-        <div id="vaultPreviewBody" class="flex-1 overflow-auto p-4 bg-slate-50 dark:bg-[#151B2B] flex items-center justify-center min-h-[300px]"></div>
+        <div id="vaultPreviewBody" class="flex-1 overflow-auto p-4 bg-[#F6F7FB] dark:bg-[#0C1020] flex items-center justify-center min-h-[300px]"></div>
       </div>
     </div>
 
     <!-- Settings Info / Legal / About Modal -->
-    <div id="settingsInfoModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="w-full max-w-lg bg-white dark:bg-[#1C2438] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]">
-        <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-slate-800">
-          <h3 id="settingsInfoModalTitle" class="text-base font-extrabold text-slate-900 dark:text-white">Information</h3>
-          <button type="button" id="settingsInfoModalClose" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 min-h-[38px] min-w-[38px] flex items-center justify-center">✕</button>
+    <div id="settingsInfoModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex items-center justify-center p-4">
+      <div class="oneora-sheet-enter w-full max-w-lg bg-white dark:bg-[#151B2F] rounded-3xl overflow-hidden shadow-2xl border border-[#E6E9F2] dark:border-[#232C4A] flex flex-col max-h-[85vh]">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-[#E6E9F2] dark:border-[#232C4A]">
+          <h3 id="settingsInfoModalTitle" class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Information</h3>
+          <button type="button" id="settingsInfoModalClose" class="p-2 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#9EA8C0] min-h-[38px] min-w-[38px] flex items-center justify-center">✕</button>
         </div>
-        <div id="settingsInfoModalBody" class="p-5 overflow-y-auto text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-3"></div>
+        <div id="settingsInfoModalBody" class="p-5 overflow-y-auto text-xs sm:text-sm text-[#647087] dark:text-[#9EA8C0] leading-relaxed space-y-3"></div>
       </div>
     </div>
 
     <!-- Friends Feedback Composer Modal -->
-    <div id="feedbackModal" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="w-full max-w-md bg-white dark:bg-[#1C2438] rounded-3xl overflow-hidden shadow-2xl border border-indigo-100 dark:border-slate-800 flex flex-col max-h-[90vh]">
-        <div class="px-5 py-4 oneora-hero-card rounded-none border-0 text-white flex items-center justify-between gap-3">
+    <div id="feedbackModal" class="hidden fixed inset-0 oneora-modal-backdrop z-50 flex items-center justify-center p-4">
+      <div class="oneora-sheet-enter w-full max-w-md bg-white dark:bg-[#151B2F] rounded-3xl overflow-hidden shadow-2xl border border-[#E6E9F2] dark:border-[#232C4A] flex flex-col max-h-[90vh]">
+        <div class="px-5 py-4 oneora-hero-card !rounded-none !shadow-none !border-0 text-white flex items-center justify-between gap-3">
           <div>
             <h3 class="font-extrabold text-base">Send Feedback to Suman</h3>
             <p class="text-[11px] text-[#C9D1E8] mt-0.5">Help make ONEORA even better for everyone</p>
@@ -3919,7 +3896,7 @@
 
         <div class="p-5 overflow-y-auto space-y-4">
           <div class="text-center">
-            <p class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">How is your experience?</p>
+            <p class="text-xs font-bold text-[#647087] dark:text-[#9EA8C0] mb-1.5">How is your experience?</p>
             <div class="inline-flex items-center gap-1.5">
               <button type="button" data-star="1" class="fb-star-btn text-3xl text-amber-400 leading-none transition hover:scale-110">★</button>
               <button type="button" data-star="2" class="fb-star-btn text-3xl text-amber-400 leading-none transition hover:scale-110">★</button>
@@ -3930,22 +3907,22 @@
           </div>
 
           <div class="flex flex-wrap gap-1.5 justify-center">
-            <button type="button" data-fb-type="UI / Feature Idea" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm">Feature Idea</button>
-            <button type="button" data-fb-type="Bug Report" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Bug Report</button>
-            <button type="button" data-fb-type="Design / Color" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Design / UI</button>
-            <button type="button" data-fb-type="Love It" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Love It</button>
+            <button type="button" data-fb-type="UI / Feature Idea" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-[#7457E8] text-white shadow-sm">Feature Idea</button>
+            <button type="button" data-fb-type="Bug Report" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#9EA8C0]">Bug Report</button>
+            <button type="button" data-fb-type="Design / Color" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#9EA8C0]">Design / UI</button>
+            <button type="button" data-fb-type="Love It" class="fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#9EA8C0]">Love It</button>
           </div>
 
           <div class="space-y-2.5">
-            <input type="text" id="fbSenderName" placeholder="Your Name (optional)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 min-h-[42px]" />
-            <textarea id="fbMessageInput" rows="3" placeholder="Write what you liked, any bug, or a new tool you want..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white outline-none focus:border-indigo-500"></textarea>
+            <input type="text" id="fbSenderName" placeholder="Your Name (optional)" class="oneora-input text-xs font-semibold" />
+            <textarea id="fbMessageInput" rows="3" placeholder="Write what you liked, any bug, or a new tool you want..." class="oneora-input text-xs !min-h-[84px]"></textarea>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <button type="button" id="fbSendWhatsappBtn" class="py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-xs font-extrabold shadow-md min-h-[44px]">Send via WhatsApp</button>
-            <button type="button" id="fbSendEmailBtn" class="py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold shadow-md min-h-[44px]">Send via Email</button>
+            <button type="button" id="fbSendWhatsappBtn" class="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold min-h-[44px]">Send via WhatsApp</button>
+            <button type="button" id="fbSendEmailBtn" class="oneora-btn-primary text-xs min-h-[44px]">Send via Email</button>
           </div>
-          <button type="button" id="fbCopyTextBtn" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold min-h-[40px]">Copy Feedback Text</button>
+          <button type="button" id="fbCopyTextBtn" class="w-full oneora-btn-secondary text-xs min-h-[40px]">Copy Feedback Text</button>
         </div>
       </div>
     </div>

@@ -36,8 +36,8 @@
       subBtns.forEach((b) => {
         const act = b.getAttribute('data-subtab') === targetId;
         b.className = act
-          ? 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm whitespace-nowrap min-h-[42px] transition'
-          : 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-700 hover:border-indigo-400 whitespace-nowrap min-h-[42px] transition';
+          ? 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-[#7457E8] text-white shadow-sm whitespace-nowrap min-h-[42px] transition'
+          : 'daily-subtab-btn py-2.5 px-3 rounded-xl text-xs font-semibold text-[#647087] dark:text-[#A5ADC2] bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] hover:border-[#7457E8]/50 whitespace-nowrap min-h-[42px] transition';
       });
     }
 

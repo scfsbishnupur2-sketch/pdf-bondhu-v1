@@ -316,10 +316,10 @@
         cells.push(`
           <button type="button" data-cal-date="${key}" class="relative h-12 sm:h-14 rounded-xl border text-left p-1.5 flex flex-col justify-between transition ${
             isSel
-              ? 'bg-[#293B80] text-white border-[#293B80] shadow-md'
+              ? 'bg-[#7457E8] text-white border-[#7457E8] shadow-sm'
               : isToday
-                ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-400 text-indigo-900 dark:text-indigo-200'
-                : 'bg-slate-50/70 dark:bg-[#151B2B] border-slate-200/70 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-indigo-400'
+                ? 'bg-[#F3F0FF] dark:bg-[#7457E8]/20 border-[#7457E8]/50 text-[#7457E8] dark:text-[#C4B5FD]'
+                : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC] hover:border-[#7457E8]/50'
           }">
             <span class="text-xs font-extrabold tabular-nums">${d}</span>
             <div class="flex items-center gap-0.5 flex-wrap">
@@ -333,7 +333,7 @@
         `);
       }
       calendarGridHtml = `
-        <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-400 mb-1.5">
+        <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-[#647087] dark:text-[#A5ADC2] mb-1.5">
           <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
         </div>
         <div class="grid grid-cols-7 gap-1.5">${cells.join('')}</div>
@@ -352,24 +352,24 @@
         const isSel = key === selectedDateKey;
         weekCards.push(`
           <button type="button" data-cal-date="${key}" class="p-3 rounded-2xl border text-left transition ${
-            isSel ? 'bg-[#293B80] text-white border-[#293B80]' : 'bg-slate-50 dark:bg-[#151B2B] border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100'
+            isSel ? 'bg-[#7457E8] text-white border-[#7457E8]' : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC]'
           }">
             <div class="text-[11px] font-bold opacity-75">${cur.toLocaleDateString('en-IN', { weekday: 'short' })}</div>
             <div class="text-lg font-extrabold tabular-nums">${cur.getDate()}</div>
-            <div class="text-[10px] mt-1 truncate ${isSel ? 'text-indigo-200' : 'text-indigo-600 dark:text-indigo-300'}">${holiday ? esc(holiday) : `${dayItems.length} items`}</div>
+            <div class="text-[10px] mt-1 truncate ${isSel ? 'text-white/85' : 'text-[#7457E8] dark:text-[#C4B5FD]'}">${holiday ? esc(holiday) : `${dayItems.length} items`}</div>
           </button>
         `);
       }
       calendarGridHtml = `<div class="grid grid-cols-2 sm:grid-cols-7 gap-2">${weekCards.join('')}</div>`;
     } else {
       calendarGridHtml = `
-        <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-[#151B2B] border border-indigo-100 dark:border-slate-800 flex items-center justify-between">
+        <div class="p-4 rounded-2xl bg-[#F3F0FF]/70 dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-indigo-600 dark:text-indigo-300">Daily Focus View</p>
-            <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">${esc(selectedDateKey)}</h4>
+            <p class="text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD]">Daily Focus View</p>
+            <h4 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC]">${esc(selectedDateKey)}</h4>
             ${INDIAN_HOLIDAYS[selectedDateKey] ? `<p class="text-xs font-bold text-orange-600 dark:text-orange-400 mt-0.5">Holiday: ${esc(INDIAN_HOLIDAYS[selectedDateKey])}</p>` : ''}
           </div>
-          <input type="date" id="calDayPickerInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1A2138] text-xs font-bold text-slate-800 dark:text-white min-h-[40px]" />
+          <input type="date" id="calDayPickerInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
         </div>
       `;
     }
@@ -379,18 +379,18 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-7 bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="lg:col-span-7 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 sm:p-5 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <button type="button" id="calPrevMonthBtn" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#151B2B] text-slate-700 dark:text-slate-200 font-extrabold hover:bg-indigo-100">‹</button>
-              <h3 class="text-base font-extrabold text-slate-900 dark:text-white min-w-[140px] text-center">${monthNames[viewMonth]} ${viewYear}</h3>
-              <button type="button" id="calNextMonthBtn" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#151B2B] text-slate-700 dark:text-slate-200 font-extrabold hover:bg-indigo-100">›</button>
-              <button type="button" id="calTodayBtn" class="px-3 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold">Today</button>
+              <button type="button" id="calPrevMonthBtn" class="w-9 h-9 rounded-xl bg-[#F6F7FB] dark:bg-[#0C1020] text-[#14182B] dark:text-[#F5F6FC] font-extrabold hover:bg-[#F3F0FF]">‹</button>
+              <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC] min-w-[140px] text-center">${monthNames[viewMonth]} ${viewYear}</h3>
+              <button type="button" id="calNextMonthBtn" class="w-9 h-9 rounded-xl bg-[#F6F7FB] dark:bg-[#0C1020] text-[#14182B] dark:text-[#F5F6FC] font-extrabold hover:bg-[#F3F0FF]">›</button>
+              <button type="button" id="calTodayBtn" class="px-3 h-9 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] text-xs font-bold">Today</button>
             </div>
-            <div class="flex items-center gap-1 bg-slate-100 dark:bg-[#151B2B] p-1 rounded-xl">
+            <div class="flex items-center gap-1 bg-[#F6F7FB] dark:bg-[#0C1020] p-1 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A]">
               ${['month', 'week', 'day'].map((m) => `
-                <button type="button" data-cal-mode="${m}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold capitalize ${
-                  calViewMode === m ? 'bg-white dark:bg-[#293B80] text-[#293B80] dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400'
+                <button type="button" data-cal-mode="${m}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold capitalize transition ${
+                  calViewMode === m ? 'bg-white dark:bg-[#7457E8] text-[#14182B] dark:text-white shadow-sm' : 'text-[#647087] dark:text-[#A5ADC2]'
                 }">${m}</button>
               `).join('')}
             </div>
@@ -398,7 +398,7 @@
 
           ${calendarGridHtml}
 
-          <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+          <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-[#E6E9F2] dark:border-[#232C4A] text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2]">
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-500"></span>Indian Holiday</span>
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Event / Birthday</span>
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Date Note</span>
@@ -407,49 +407,49 @@
         </div>
 
         <!-- Selected Date Agenda & Quick Add -->
-        <div class="lg:col-span-5 bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 sm:p-5 shadow-sm space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-[11px] font-bold uppercase tracking-wide text-indigo-600 dark:text-cyan-400">Selected Date</p>
-              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white tabular-nums">${esc(selectedDateKey)}</h3>
+              <p class="text-[11px] font-bold uppercase tracking-wide text-[#7457E8] dark:text-[#C4B5FD]">Selected Date</p>
+              <h3 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC] tabular-nums">${esc(selectedDateKey)}</h3>
             </div>
             ${selHoliday ? `<span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300">${esc(selHoliday)}</span>` : ''}
           </div>
 
           <!-- Quick Add Event/Note/Reminder for Selected Date -->
-          <form id="calQuickAddForm" class="space-y-2.5 p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151B2B] border border-slate-200/80 dark:border-slate-800">
+          <form id="calQuickAddForm" class="space-y-2.5 p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
             <div class="grid grid-cols-2 gap-2">
-              <select id="calAddKind" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1A2138] text-xs font-bold text-slate-800 dark:text-white min-h-[40px]">
+              <select id="calAddKind" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]">
                 <option value="event">Event / Birthday</option>
                 <option value="note">Date Note</option>
                 <option value="reminder">Reminder</option>
                 <option value="task">Task</option>
               </select>
-              <input type="time" id="calAddTime" value="09:00" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1A2138] text-xs font-bold text-slate-800 dark:text-white min-h-[40px]" />
+              <input type="time" id="calAddTime" value="09:00" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
             </div>
-            <input type="text" id="calAddTitle" required maxlength="180" placeholder="Title (e.g. Mom's Birthday, Pay Electricity Bill)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1A2138] text-xs font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 min-h-[42px]" />
-            <textarea id="calAddBody" rows="2" maxlength="1000" placeholder="Optional details or notes..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1A2138] text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500"></textarea>
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-[#293B80] hover:bg-indigo-700 text-white text-xs font-extrabold min-h-[42px] transition">+ Save to ${esc(selectedDateKey)}</button>
+            <input type="text" id="calAddTitle" required maxlength="180" placeholder="Title (e.g. Mom's Birthday, Pay Electricity Bill)..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8] min-h-[42px]" />
+            <textarea id="calAddBody" rows="2" maxlength="1000" placeholder="Optional details or notes..." class="w-full px-3.5 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8]"></textarea>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[42px] transition">+ Save to ${esc(selectedDateKey)}</button>
           </form>
 
           <!-- Agenda Items for Selected Date -->
           <div class="space-y-2 max-h-72 overflow-y-auto">
             ${selItems.length ? selItems.map((it) => `
-              <div class="p-3 rounded-2xl bg-slate-50 dark:bg-[#151B2B] border border-slate-200/80 dark:border-slate-800 flex items-start justify-between gap-2">
+              <div class="p-3 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] flex items-start justify-between gap-2">
                 <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wide text-indigo-600 dark:text-cyan-400">
+                  <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-[#7457E8] dark:text-[#C4B5FD]">
                     <span>${esc(it.kind)}</span>
                     ${it.timeStr ? `<span>· ${esc(it.timeStr)}</span>` : ''}
                   </div>
-                  <p class="text-xs font-bold text-slate-900 dark:text-white mt-0.5 ${it.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(it.title)}</p>
-                  ${it.body ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 whitespace-pre-wrap">${esc(it.body)}</p>` : ''}
+                  <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 ${it.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(it.title)}</p>
+                  ${it.body ? `<p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-0.5 whitespace-pre-wrap">${esc(it.body)}</p>` : ''}
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <button type="button" data-pl-toggle="${it.id}" class="px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">${it.status === 'completed' ? 'Undo' : 'Done'}</button>
                   <button type="button" data-pl-del="${it.id}" class="px-2 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 text-[11px] font-bold">✕</button>
                 </div>
               </div>
-            `).join('') : '<p class="text-xs text-slate-400 text-center py-6">No events or notes scheduled for this date yet.</p>'}
+            `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-6">No events or notes scheduled for this date yet.</p>'}
           </div>
         </div>
       </div>
@@ -463,43 +463,43 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <form id="oneoraNoteForm" class="lg:col-span-5 bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-3">
+        <form id="oneoraNoteForm" class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">New Date-Wise Note</h3>
-            <button type="button" id="oneoraVoiceNoteBtn" class="px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 text-xs font-bold min-h-[36px]">Voice Dictate</button>
+            <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">New Date-Wise Note</h3>
+            <button type="button" id="oneoraVoiceNoteBtn" class="px-3 py-1.5 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] border border-[#7457E8]/25 text-xs font-bold min-h-[36px]">Voice Dictate</button>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="noteDateInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-800 dark:text-white min-h-[42px]" />
-            <input type="text" id="noteCatInput" placeholder="Tag (Work, Study, Home)" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold text-slate-800 dark:text-white min-h-[42px]" />
+            <input type="date" id="noteDateInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+            <input type="text" id="noteCatInput" placeholder="Tag (Work, Study, Home)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
           </div>
-          <input type="text" id="noteTitleInput" required maxlength="180" placeholder="Note Title..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-indigo-500 min-h-[44px]" />
-          <textarea id="noteBodyInput" rows="4" maxlength="3800" placeholder="Write description, meeting notes, or checklist items (one per line starting with - )..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500"></textarea>
-          <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            <input type="checkbox" id="notePinCheck" class="rounded" /> Pin this note to top
+          <input type="text" id="noteTitleInput" required maxlength="180" placeholder="Note Title..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8] min-h-[44px]" />
+          <textarea id="noteBodyInput" rows="4" maxlength="3800" placeholder="Write description, meeting notes, or checklist items (one per line starting with - )..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8]"></textarea>
+          <label class="flex items-center gap-2 text-xs font-semibold text-[#647087] dark:text-[#A5ADC2]">
+            <input type="checkbox" id="notePinCheck" class="rounded accent-[#7457E8]" /> Pin this note to top
           </label>
-          <button type="submit" class="w-full py-3 rounded-xl bg-[#293B80] hover:bg-indigo-700 text-white text-xs font-extrabold min-h-[44px] transition">Save Note Offline</button>
+          <button type="submit" class="w-full py-3 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] transition">Save Note Offline</button>
         </form>
 
         <div class="lg:col-span-7 space-y-3">
           ${notes.length ? notes.map((n) => `
-            <div class="bg-white dark:bg-[#1A2138] rounded-2xl border ${n.pinned ? 'border-amber-300 dark:border-amber-700' : 'border-indigo-100 dark:border-slate-800'} p-4 shadow-sm space-y-2">
+            <div class="bg-white dark:bg-[#151B2F] rounded-2xl border ${n.pinned ? 'border-amber-300 dark:border-amber-700' : 'border-[#E6E9F2] dark:border-[#232C4A]'} p-4 shadow-sm space-y-2">
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
-                  <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400">
+                  <div class="flex items-center gap-2 text-[11px] font-bold text-[#647087] dark:text-[#A5ADC2]">
                     <span class="tabular-nums">${esc(n.dateKey || 'No date')}</span>
                     ${n.category ? `<span>· ${esc(n.category)}</span>` : ''}
                     ${n.pinned ? '<span class="text-amber-600 dark:text-amber-400">· Pinned</span>' : ''}
                   </div>
-                  <h4 class="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5">${esc(n.title)}</h4>
+                  <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5">${esc(n.title)}</h4>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <button type="button" data-pl-pin="${n.id}" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-[11px] font-bold">${n.pinned ? 'Unpin' : 'Pin'}</button>
                   <button type="button" data-pl-del="${n.id}" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 text-[11px] font-bold">Delete</button>
                 </div>
               </div>
-              ${n.body ? `<p class="text-xs text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">${esc(n.body)}</p>` : ''}
+              ${n.body ? `<p class="text-xs text-[#647087] dark:text-[#A5ADC2] whitespace-pre-wrap leading-relaxed">${esc(n.body)}</p>` : ''}
             </div>
-          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 text-center text-xs text-slate-400">No saved notes yet. Add your first date-wise or voice note on the left.</div>'}
+          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-center text-xs text-[#647087] dark:text-[#A5ADC2]">No saved notes yet. Add your first date-wise or voice note on the left.</div>'}
         </div>
       </div>
     `;
@@ -514,10 +514,10 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <form id="oneoraReminderForm" class="lg:col-span-5 bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-3">
+        <form id="oneoraReminderForm" class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
           <div>
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Set Reliable Reminder</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${
+            <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Set Reliable Reminder</h3>
+            <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-0.5">${
               global.AndroidBridge && typeof global.AndroidBridge.scheduleReminder === 'function'
                 ? 'Backed by Android AlarmManager & reboot persistence.'
                 : notifSupported
@@ -527,36 +527,36 @@
           </div>
           <div class="flex flex-wrap gap-1.5">
             ${['Medicine', 'Bill Payment', 'Birthday', 'Document Renewal', 'Meeting'].map((p) => `
-              <button type="button" data-rem-preset="${p}" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-[#151B2B] text-indigo-700 dark:text-indigo-300 text-[11px] font-bold hover:bg-indigo-100">${p}</button>
+              <button type="button" data-rem-preset="${p}" class="px-2.5 py-1 rounded-lg bg-[#F3F0FF] dark:bg-[#0C1020] text-[#7457E8] dark:text-[#C4B5FD] text-[11px] font-bold hover:bg-[#7457E8] hover:text-white transition">${p}</button>
             `).join('')}
           </div>
-          <input type="text" id="remTitleInput" required maxlength="180" placeholder="Remind me to..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-bold text-slate-900 dark:text-white min-h-[44px]" />
+          <input type="text" id="remTitleInput" required maxlength="180" placeholder="Remind me to..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
           <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="remDateInput" value="${esc(todayKey())}" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-800 dark:text-white min-h-[42px]" />
-            <input type="time" id="remTimeInput" value="09:00" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-800 dark:text-white min-h-[42px]" />
+            <input type="date" id="remDateInput" value="${esc(todayKey())}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+            <input type="time" id="remTimeInput" value="09:00" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
           </div>
-          <select id="remRepeatInput" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-800 dark:text-white min-h-[42px]">
+          <select id="remRepeatInput" class="w-full px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
             <option value="none">One-Time Reminder</option>
             <option value="daily">Repeat Daily</option>
             <option value="weekly">Repeat Weekly</option>
             <option value="monthly">Repeat Monthly</option>
             <option value="yearly">Repeat Yearly</option>
           </select>
-          <input type="text" id="remBodyInput" maxlength="400" placeholder="Optional note or dosage / bill account info..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-800 dark:text-white min-h-[42px]" />
-          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold min-h-[44px] shadow-sm transition">Schedule Reminder</button>
+          <input type="text" id="remBodyInput" maxlength="400" placeholder="Optional note or dosage / bill account info..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+          <button type="submit" class="w-full py-3 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] shadow-sm transition">Schedule Reminder</button>
         </form>
 
         <div class="lg:col-span-7 space-y-2.5">
           ${reminders.length ? reminders.map((r) => `
-            <div class="bg-white dark:bg-[#1A2138] rounded-2xl border border-indigo-100 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+            <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
               <div class="min-w-0">
-                <div class="flex items-center gap-2 text-[11px] font-extrabold text-rose-600 dark:text-rose-400 tabular-nums">
+                <div class="flex items-center gap-2 text-[11px] font-bold text-rose-600 dark:text-rose-400 tabular-nums">
                   <span>${esc(r.dateKey)} · ${esc(r.timeStr || '09:00')}</span>
-                  ${r.repeat && r.repeat !== 'none' ? `<span class="text-indigo-600 dark:text-indigo-300 uppercase">· ${esc(r.repeat)}</span>` : ''}
+                  ${r.repeat && r.repeat !== 'none' ? `<span class="text-[#7457E8] dark:text-[#C4B5FD] uppercase">· ${esc(r.repeat)}</span>` : ''}
                   ${r.status === 'completed' ? '<span class="text-emerald-600">· Completed</span>' : ''}
                 </div>
-                <h4 class="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5 ${r.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(r.title)}</h4>
-                ${r.body ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${esc(r.body)}</p>` : ''}
+                <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 ${r.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(r.title)}</h4>
+                ${r.body ? `<p class="text-xs text-[#647087] dark:text-[#A5ADC2] mt-0.5">${esc(r.body)}</p>` : ''}
               </div>
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <button type="button" data-rem-snooze="${r.id}" class="px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-[11px] font-bold min-h-[34px]">+15m</button>
@@ -564,7 +564,7 @@
                 <button type="button" data-pl-del="${r.id}" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-[11px] font-bold min-h-[34px]">Delete</button>
               </div>
             </div>
-          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#1A2138] border border-indigo-100 dark:border-slate-800 text-center text-xs text-slate-400">No reminders scheduled yet.</div>'}
+          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-center text-xs text-[#647087] dark:text-[#A5ADC2]">No reminders scheduled yet.</div>'}
         </div>
       </div>
     `;
@@ -573,33 +573,33 @@
   function renderTasksView(items) {
     const tasks = items.filter((i) => i.kind === 'task' && i.status !== 'archived');
     return `
-      <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
+      <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
         <form id="oneoraTaskForm" class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="taskTitleInput" required maxlength="180" placeholder="Add a to-do or shopping item..." class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-semibold text-slate-900 dark:text-white min-h-[44px]" />
-          <select id="taskCatInput" class="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold text-slate-800 dark:text-white min-h-[44px]">
+          <input type="text" id="taskTitleInput" required maxlength="180" placeholder="Add a to-do or shopping item..." class="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
+          <select id="taskCatInput" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]">
             <option value="To-Do">To-Do</option>
             <option value="Shopping">Shopping List</option>
             <option value="Work">Work</option>
             <option value="Personal">Personal</option>
           </select>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#293B80] hover:bg-indigo-700 text-white text-xs font-extrabold min-h-[44px] whitespace-nowrap">+ Add Task</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] whitespace-nowrap">+ Add Task</button>
         </form>
 
         <div class="space-y-2">
           ${tasks.length ? tasks.map((t) => `
-            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151B2B] border border-slate-200/80 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
               <button type="button" data-pl-toggle="${t.id}" class="flex items-center gap-3 flex-1 min-w-0 text-left">
-                <span class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${t.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'}">
+                <span class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${t.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-[#CBD5E1] dark:border-[#2E385C]'}">
                   ${t.status === 'completed' ? '✓' : ''}
                 </span>
                 <div class="min-w-0">
-                  <p class="text-sm font-bold text-slate-900 dark:text-white truncate ${t.status === 'completed' ? 'line-through opacity-55' : ''}">${esc(t.title)}</p>
-                  <p class="text-[11px] text-slate-400">${esc(t.category || 'To-Do')} · ${esc(t.dateKey || '')}</p>
+                  <p class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] truncate ${t.status === 'completed' ? 'line-through opacity-55' : ''}">${esc(t.title)}</p>
+                  <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2]">${esc(t.category || 'To-Do')} · ${esc(t.dateKey || '')}</p>
                 </div>
               </button>
               <button type="button" data-pl-del="${t.id}" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-xs font-bold">✕</button>
             </div>
-          `).join('') : '<p class="text-xs text-slate-400 text-center py-6">All clear! Add tasks or grocery items above.</p>'}
+          `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-6">All clear! Add tasks or grocery items above.</p>'}
         </div>
       </div>
     `;
@@ -614,25 +614,25 @@
     return `
       <div class="space-y-4">
         <!-- Quick Water Counter Card -->
-        <div class="bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl p-5 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="oneora-hero-card rounded-3xl p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="space-y-1 flex-1">
-            <p class="text-[11px] font-bold uppercase tracking-wider text-sky-100">Daily Hydration Tracker</p>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-[#C4B5FD]">Daily Hydration Tracker</p>
             <h3 class="text-xl font-extrabold tabular-nums">${water.count} / ${water.goal} Glasses Today</h3>
-            <div class="w-full max-w-sm h-2 rounded-full bg-white/25 overflow-hidden mt-2">
+            <div class="w-full max-w-sm h-2 rounded-full bg-white/20 overflow-hidden mt-2">
               <div class="h-full bg-white rounded-full transition-all" style="width:${waterPct}%"></div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button type="button" id="waterDecBtn" class="w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 text-white text-lg font-extrabold">−</button>
-            <button type="button" id="waterIncBtn" class="px-4 h-11 rounded-xl bg-white text-sky-700 hover:bg-sky-50 text-xs font-extrabold">+1 Glass</button>
+            <button type="button" id="waterDecBtn" class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white text-lg font-extrabold">−</button>
+            <button type="button" id="waterIncBtn" class="px-4 h-11 rounded-xl bg-white text-[#10152A] hover:bg-[#F3F0FF] text-xs font-bold">+1 Glass</button>
           </div>
         </div>
 
         <!-- Custom Habits List -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
           <form id="oneoraHabitForm" class="flex flex-col sm:flex-row gap-2">
-            <input type="text" id="habitTitleInput" required maxlength="140" placeholder="Add a daily habit (e.g. Meditate 10 min, No Sugar)..." class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-sm font-semibold text-slate-900 dark:text-white min-h-[44px]" />
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold min-h-[44px]">+ Add Habit</button>
+            <input type="text" id="habitTitleInput" required maxlength="140" placeholder="Add a daily habit (e.g. Meditate 10 min, No Sugar)..." class="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px]">+ Add Habit</button>
           </form>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -643,19 +643,19 @@
               const monthCount = dates.filter((d) => String(d).startsWith(monthPrefix)).length;
               const pct = Math.min(100, Math.round((monthCount / 30) * 100));
               return `
-                <div class="p-4 rounded-2xl border ${doneToday ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : 'bg-slate-50 dark:bg-[#151B2B] border-slate-200 dark:border-slate-800'} space-y-3">
+                <div class="p-4 rounded-2xl border ${doneToday ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A]'} space-y-3">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <h4 class="text-sm font-extrabold text-slate-900 dark:text-white truncate">${esc(h.title)}</h4>
-                      <p class="text-[11px] font-bold text-indigo-600 dark:text-indigo-300 mt-0.5 tabular-nums">Streak: ${Number(h.streak || 0)} days · ${monthCount} days this month</p>
+                      <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] truncate">${esc(h.title)}</h4>
+                      <p class="text-[11px] font-bold text-[#7457E8] dark:text-[#C4B5FD] mt-0.5 tabular-nums">Streak: ${Number(h.streak || 0)} days · ${monthCount} days this month</p>
                     </div>
-                    <button type="button" data-pl-del="${h.id}" class="text-xs font-bold text-slate-400 hover:text-rose-500 px-1.5">✕</button>
+                    <button type="button" data-pl-del="${h.id}" class="text-xs font-bold text-[#647087] hover:text-rose-500 px-1.5">✕</button>
                   </div>
-                  <div class="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div class="h-1.5 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] overflow-hidden">
                     <div class="h-full bg-emerald-500 rounded-full" style="width:${pct}%"></div>
                   </div>
-                  <button type="button" data-habit-checkin="${h.id}" class="w-full py-2 rounded-xl text-xs font-extrabold min-h-[38px] transition ${
-                    doneToday ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-[#1A2138] border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white hover:border-emerald-500'
+                  <button type="button" data-habit-checkin="${h.id}" class="w-full py-2 rounded-xl text-xs font-bold min-h-[38px] transition ${
+                    doneToday ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC] hover:border-emerald-500'
                   }">${doneToday ? '✓ Completed Today' : 'Mark Done Today'}</button>
                 </div>
               `;

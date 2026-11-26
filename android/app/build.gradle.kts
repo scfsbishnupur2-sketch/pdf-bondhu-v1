@@ -19,8 +19,8 @@ android {
         applicationId = "com.nayak.pdfbondhu"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "3.0.0"
+        versionCode = 8
+        versionName = "3.0.1"
 
         buildConfigField("String", "APP_URL", "\"$configuredAppUrl\"")
         buildConfigField("String", "GITHUB_REPO", "\"$configuredGithubRepo\"")
@@ -40,6 +40,8 @@ android {
                 storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "pdfbondhu123"
                 keyAlias = System.getenv("KEY_ALIAS") ?: "pdfbondhu"
                 keyPassword = System.getenv("KEY_PASSWORD") ?: "pdfbondhu123"
+                enableV1Signing = true
+                enableV2Signing = true
             }
         }
     }

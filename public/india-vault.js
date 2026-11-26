@@ -794,26 +794,26 @@
     if (!listEl) return;
 
     if (!list.length) {
-      listEl.innerHTML = '<div class="col-span-full p-8 rounded-2xl bg-white dark:bg-[#1C2438] border border-dashed border-slate-300 dark:border-slate-700 text-center text-xs text-slate-500">No documents in this folder yet. Tap <strong>Import Files</strong> above to save documents securely on your device.</div>';
+      listEl.innerHTML = '<div class="col-span-full p-8 rounded-2xl bg-white dark:bg-[#151B2F] border border-dashed border-[#E6E9F2] dark:border-[#232C4A] text-center text-xs text-[#647087] dark:text-[#A5ADC2]">No documents in this folder yet. Tap <strong>Import Files</strong> above to save documents securely on your device.</div>';
       return;
     }
 
     listEl.innerHTML = list
       .map(
         (d) => `
-        <div class="p-4 rounded-2xl bg-white dark:bg-[#1C2438] border border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] flex flex-col gap-3 shadow-sm">
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 flex-1">
-              <div class="text-sm font-bold text-[#151B2B] dark:text-white truncate">${escHtml(d.name)}</div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">${escHtml(d.folder || 'Personal')} · ${global.utils.formatBytes(d.size)}${d.encrypted ? ' · AES-256' : ''}</div>
+              <div class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">${escHtml(d.name)}</div>
+              <div class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-0.5 tabular-nums">${escHtml(d.folder || 'Personal')} · ${global.utils.formatBytes(d.size)}${d.encrypted ? ' · AES-256' : ''}</div>
             </div>
             <button type="button" data-id="${d.id}" class="vault-fav-btn p-1.5 rounded-lg ${d.favourite ? 'text-amber-500' : 'text-slate-300 hover:text-amber-500'}">★</button>
           </div>
-          <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <button type="button" data-id="${d.id}" class="vault-preview-btn px-2.5 py-1.5 rounded-lg bg-[#293B80] text-white text-[11px] font-bold min-h-[32px]">Preview</button>
-            <button type="button" data-id="${d.id}" class="vault-dl-btn px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold min-h-[32px]">Download</button>
-            <button type="button" data-id="${d.id}" class="vault-share-btn px-2.5 py-1.5 rounded-lg bg-[#20A779]/15 text-[#20A779] text-[11px] font-bold min-h-[32px]">Share</button>
-            <button type="button" data-id="${d.id}" class="vault-ren-btn px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-semibold min-h-[32px]">Rename</button>
+          <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#E6E9F2] dark:border-[#232C4A]">
+            <button type="button" data-id="${d.id}" class="vault-preview-btn px-2.5 py-1.5 rounded-lg bg-[#7457E8] hover:bg-[#5E42D4] text-white text-[11px] font-bold min-h-[32px] transition">Preview</button>
+            <button type="button" data-id="${d.id}" class="vault-dl-btn px-2.5 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#1D2540] text-[#14182B] dark:text-[#F5F6FC] text-[11px] font-bold min-h-[32px]">Download</button>
+            <button type="button" data-id="${d.id}" class="vault-share-btn px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold min-h-[32px]">Share</button>
+            <button type="button" data-id="${d.id}" class="vault-ren-btn px-2.5 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#A5ADC2] text-[11px] font-semibold min-h-[32px]">Rename</button>
             <button type="button" data-id="${d.id}" class="vault-del-btn ml-auto px-2.5 py-1.5 rounded-lg text-rose-500 text-[11px] font-bold min-h-[32px]">Delete</button>
           </div>
         </div>`
@@ -964,7 +964,7 @@
         importInput.value = '';
         if (!files.length) return;
         const folder = document.getElementById('vaultUploadFolderSelect')?.value || 'Personal';
-        global.utils.showLoader('Securing Files in Local Vault...', 'text-[#293B80]');
+        global.utils.showLoader('Securing Files in Local Vault...', 'text-[#7457E8]');
         try {
           for (const f of files) {
             const ab = await f.arrayBuffer();
@@ -1153,7 +1153,7 @@
       const prof = loadJson(PROFILE_KEY, { name: '', author: localStorage.getItem('pdfBondhuDefaultAuthor') || 'Suman Nayak' });
       if (nameInput) nameInput.value = prof.name || '';
       if (authorInput) authorInput.value = prof.author || '';
-      const init = (prof.name || 'PB').trim().slice(0, 2).toUpperCase();
+      const init = (prof.name || 'ON').trim().slice(0, 2).toUpperCase();
       avatarInitials.forEach((el) => (el.textContent = init));
       if (global.PDFBondhuI18n) global.PDFBondhuI18n.applyTranslations();
     }
@@ -1178,13 +1178,13 @@
       document.documentElement.classList.toggle('dark', isDark);
       localStorage.setItem('pdfBondhuTheme', isDark ? 'dark' : 'light');
       const meta = document.getElementById('metaThemeColor');
-      if (meta) meta.setAttribute('content', isDark ? '#151B2B' : '#293B80');
+      if (meta) meta.setAttribute('content', isDark ? '#0C1020' : '#10152A');
 
       document.querySelectorAll('[data-theme-mode]').forEach((btn) => {
         const act = btn.getAttribute('data-theme-mode') === mode;
-        btn.classList.toggle('bg-[#293B80]', act);
+        btn.classList.toggle('bg-[#7457E8]', act);
         btn.classList.toggle('text-white', act);
-        btn.classList.toggle('border-[#293B80]', act);
+        btn.classList.toggle('border-[#7457E8]', act);
       });
     }
 
@@ -1347,13 +1347,13 @@
 
       // If running inside Android APK with native OTA bridge
       if (manual && global.AndroidBridge && typeof global.AndroidBridge.checkForUpdateNow === 'function') {
-        global.utils.showToast('Checking Updates...', 'Syncing latest PDF Bondhu version from server...', 'info');
+        global.utils.showToast('Checking Updates...', 'Syncing latest ONEORA version from server...', 'info');
         global.AndroidBridge.checkForUpdateNow();
         return;
       }
 
       if (manual) {
-        global.utils.showToast('Checking Updates...', 'Looking for the latest PDF Bondhu release...', 'info');
+        global.utils.showToast('Checking Updates...', 'Looking for the latest ONEORA release...', 'info');
       }
 
       try {
@@ -1372,7 +1372,7 @@
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistration().then((r) => r && r.update().catch(() => {}));
           }
-          global.utils.showToast('You Are Up to Date!', `PDF Bondhu v${CURRENT_VERSION} is the latest version.`);
+          global.utils.showToast('You Are Up to Date!', `ONEORA v${CURRENT_VERSION} is the latest version.`);
         }
       } catch {
         if (manual) {
@@ -1383,7 +1383,7 @@
 
     // Native Android OTA callbacks
     global.onPdfBondhuUpdateReady = () => {
-      showUpdateBanner('New PDF Bondhu update downloaded! Tap Refresh — no new APK needed.');
+      showUpdateBanner('New ONEORA update downloaded! Tap Refresh — no new APK needed.');
     };
     global.onPdfBondhuUpdateStatus = (status, message) => {
       global.utils.showToast(
@@ -1457,8 +1457,8 @@
         typeBtns.forEach((b) => {
           const act = b === btn;
           b.className = act
-            ? 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm'
-            : 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+            ? 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-[#7457E8] text-white shadow-sm'
+            : 'fb-type-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#647087] dark:text-[#A5ADC2]';
         });
       });
     });
@@ -1480,7 +1480,7 @@
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
     function buildFeedbackPayload() {
-      const sender = (nameInput?.value || '').trim() || 'A PDF Bondhu Friend';
+      const sender = (nameInput?.value || '').trim() || 'An ONEORA User';
       const msg = (msgInput?.value || '').trim();
       if (!msg) {
         global.utils.showToast('Write Your Feedback', 'Please type a short message or suggestion first.', 'error');
@@ -1488,7 +1488,7 @@
       }
       const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
       const env = global.AndroidBridge ? 'Android APK' : 'Web / PWA';
-      return `PDF Bondhu v${CURRENT_VERSION} Feedback\nFrom: ${sender}\nRating: ${stars} (${rating}/5)\nTopic: ${fbType}\nPlatform: ${env}\n\nMessage:\n${msg}`;
+      return `ONEORA v${CURRENT_VERSION} Feedback\nFrom: ${sender}\nRating: ${stars} (${rating}/5)\nTopic: ${fbType}\nPlatform: ${env}\n\nMessage:\n${msg}`;
     }
 
     if (waBtn) {
@@ -1505,7 +1505,7 @@
       mailBtn.addEventListener('click', () => {
         const text = buildFeedbackPayload();
         if (!text) return;
-        const subject = encodeURIComponent(`[PDF Bondhu Feedback] ${fbType} (${rating}/5)`);
+        const subject = encodeURIComponent(`[ONEORA Feedback] ${fbType} (${rating}/5)`);
         const body = encodeURIComponent(text);
         window.location.href = `mailto:suman.pba@gmail.com?subject=${subject}&body=${body}`;
         closeModal();

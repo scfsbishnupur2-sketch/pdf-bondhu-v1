@@ -186,44 +186,59 @@
     if (plannerEl && plannerSummary) {
       const topEvents = plannerSummary.todayEvents.slice(0, 2);
       plannerEl.innerHTML = `
-        <div class="flex items-center justify-between w-full">
-          <span class="text-xs font-bold text-[#7457E8] dark:text-[#B4A5FF]">Today's Planner</span>
-          <span class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2] tabular-nums">${plannerSummary.todayEvents.length} items</span>
+        <div class="flex items-center justify-between gap-2 w-full">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </span>
+            <span class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Planner</span>
+          </div>
+          <span class="text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2] tabular-nums shrink-0">${plannerSummary.todayEvents.length}</span>
         </div>
-        <div class="mt-2 space-y-1 w-full">
-          ${plannerSummary.todayHoliday ? `<p class="text-xs font-semibold text-amber-600 dark:text-amber-400 truncate">${esc(plannerSummary.todayHoliday)}</p>` : ''}
+        <div class="mt-2.5 space-y-1 w-full">
+          ${plannerSummary.todayHoliday ? `<p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 truncate">${esc(plannerSummary.todayHoliday)}</p>` : ''}
           ${topEvents.length
-            ? topEvents.map((e) => `<p class="text-xs font-semibold text-[#171B2C] dark:text-[#F5F6FC] truncate">${esc(e.title)}</p>`).join('')
-            : '<p class="text-xs text-[#777F91] dark:text-[#A5ADC2]">Open calendar to plan your day</p>'}
+            ? topEvents.map((e) => `<p class="text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] truncate">${esc(e.title)}</p>`).join('')
+            : '<p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] truncate">Plan your day</p>'}
         </div>
-        <p class="text-[11px] font-medium text-emerald-700 dark:text-emerald-400 mt-2 tabular-nums">Water · ${plannerSummary.waterCount}/${plannerSummary.waterGoal} glasses</p>
+        <p class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mt-2.5 tabular-nums truncate">Water · ${plannerSummary.waterCount}/${plannerSummary.waterGoal}</p>
       `;
     }
 
     if (remEl && plannerSummary) {
       const nextRems = plannerSummary.upcomingReminders.slice(0, 2);
       remEl.innerHTML = `
-        <div class="flex items-center justify-between w-full">
-          <span class="text-xs font-bold text-rose-600 dark:text-rose-400">Reminders</span>
-          <span class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2] tabular-nums">${plannerSummary.upcomingReminders.length} active</span>
+        <div class="flex items-center justify-between gap-2 w-full">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            </span>
+            <span class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Reminders</span>
+          </div>
+          <span class="text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2] tabular-nums shrink-0">${plannerSummary.upcomingReminders.length}</span>
         </div>
-        <div class="mt-2 space-y-1 w-full">
+        <div class="mt-2.5 space-y-1 w-full">
           ${nextRems.length
-            ? nextRems.map((r) => `<p class="text-xs font-semibold text-[#171B2C] dark:text-[#F5F6FC] truncate">${esc(r.title)} <span class="text-[#777F91] font-normal tabular-nums">· ${esc(r.timeStr || r.dateKey)}</span></p>`).join('')
-            : '<p class="text-xs text-[#777F91] dark:text-[#A5ADC2]">No upcoming alerts</p>'}
+            ? nextRems.map((r) => `<p class="text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] truncate">${esc(r.title)} <span class="text-[#647087] font-normal tabular-nums">· ${esc(r.timeStr || r.dateKey)}</span></p>`).join('')
+            : '<p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] truncate">No alerts pending</p>'}
         </div>
-        ${expiries.length ? `<p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-2">${expiries.length} document expiry alert(s)</p>` : '<p class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] mt-2">Add bill, medicine or event alert</p>'}
+        ${expiries.length ? `<p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-2.5 truncate">${expiries.length} expiry alert(s)</p>` : '<p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-2.5 truncate">Bills &amp; medicine</p>'}
       `;
     }
 
     if (expEl && moneySummary) {
       expEl.innerHTML = `
-        <div class="flex items-center justify-between w-full">
-          <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">Today's Spend</span>
-          <span class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2]">Money</span>
+        <div class="flex items-center justify-between gap-2 w-full">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+            </span>
+            <span class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Today</span>
+          </div>
+          <span class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">Money</span>
         </div>
-        <p class="text-xl font-extrabold text-[#171B2C] dark:text-[#F5F6FC] tabular-nums mt-2">₹${Number(moneySummary.todayExpense || 0).toLocaleString('en-IN')}</p>
-        <p class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2] mt-1 tabular-nums truncate">Balance ₹${Number(moneySummary.balance || 0).toLocaleString('en-IN')}</p>
+        <p class="text-lg sm:text-xl font-extrabold text-[#14182B] dark:text-[#F5F6FC] tabular-nums mt-2.5 truncate">₹${Number(moneySummary.todayExpense || 0).toLocaleString('en-IN')}</p>
+        <p class="text-[11px] font-medium text-[#647087] dark:text-[#A5ADC2] mt-1 tabular-nums truncate">Bal ₹${Number(moneySummary.balance || 0).toLocaleString('en-IN')}</p>
       `;
     }
 
@@ -233,17 +248,22 @@
       const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
       const barColor = pct >= 90 ? 'bg-rose-500' : pct >= 70 ? 'bg-amber-500' : 'bg-[#7457E8]';
       budgetEl.innerHTML = `
-        <div class="flex items-center justify-between w-full">
-          <span class="text-xs font-bold text-[#252B55] dark:text-[#9FAFFF]">Monthly Budget</span>
-          <span class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2] tabular-nums">${limit > 0 ? pct + '%' : 'Set'}</span>
+        <div class="flex items-center justify-between gap-2 w-full">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-[#EEF2FF] dark:bg-[#1D2540] text-[#252B55] dark:text-[#9FAFFF] flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            </span>
+            <span class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">Budget</span>
+          </div>
+          <span class="text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2] tabular-nums shrink-0">${limit > 0 ? pct + '%' : 'Set'}</span>
         </div>
-        <div class="w-full mt-2">
-          <p class="text-base font-extrabold text-[#171B2C] dark:text-[#F5F6FC] tabular-nums truncate">${limit > 0 ? '₹' + spent.toLocaleString('en-IN') + ' / ₹' + limit.toLocaleString('en-IN') : '₹' + Number(moneySummary.monthExpense || 0).toLocaleString('en-IN') + ' spent'}</p>
-          <div class="w-full h-1.5 rounded-full bg-[#E8EAF2] dark:bg-[#232C4A] mt-2 overflow-hidden">
-            <div class="h-full rounded-full ${barColor}" style="width:${limit > 0 ? pct : 0}%"></div>
+        <div class="w-full mt-2.5">
+          <p class="text-sm sm:text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC] tabular-nums truncate">${limit > 0 ? '₹' + spent.toLocaleString('en-IN') + ' / ₹' + limit.toLocaleString('en-IN') : '₹' + Number(moneySummary.monthExpense || 0).toLocaleString('en-IN')}</p>
+          <div class="w-full h-1.5 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] mt-2 overflow-hidden">
+            <div class="h-full rounded-full ${barColor} transition-all" style="width:${limit > 0 ? pct : 0}%"></div>
           </div>
         </div>
-        <p class="text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2] mt-1.5">${limit > 0 ? 'Tap to adjust category budgets' : 'Tap to set monthly budget'}</p>
+        <p class="text-[11px] font-medium text-[#647087] dark:text-[#A5ADC2] mt-1.5 truncate">${limit > 0 ? 'Tap to adjust' : 'Tap to set limit'}</p>
       `;
     }
 
@@ -272,25 +292,25 @@
 
       plannerSummary.upcomingReminders.slice(0, 8).forEach((r) => {
         rows.push(`
-          <div class="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900">
-            <p class="text-xs font-extrabold text-slate-900 dark:text-white">${esc(r.title)}</p>
-            <p class="text-[11px] font-semibold text-rose-600 dark:text-rose-300 mt-0.5 tabular-nums">Reminder · ${esc(r.dateKey)} ${esc(r.timeStr || '')}</p>
+          <div class="p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#1D2540]/70 border border-[#E6E9F2] dark:border-[#232C4A]">
+            <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC]">${esc(r.title)}</p>
+            <p class="text-[11px] font-semibold text-rose-600 dark:text-rose-400 mt-0.5 tabular-nums">Reminder · ${esc(r.dateKey)} ${esc(r.timeStr || '')}</p>
           </div>
         `);
       });
 
       expiries.forEach((ex) => {
         rows.push(`
-          <div class="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-900">
-            <p class="text-xs font-extrabold text-slate-900 dark:text-white">${esc(ex.name)}</p>
-            <p class="text-[11px] font-semibold text-amber-700 dark:text-amber-300 mt-0.5 tabular-nums">Document Expiry · ${esc(ex.date)}</p>
+          <div class="p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#1D2540]/70 border border-[#E6E9F2] dark:border-[#232C4A]">
+            <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC]">${esc(ex.name)}</p>
+            <p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-0.5 tabular-nums">Document Expiry · ${esc(ex.date)}</p>
           </div>
         `);
       });
 
       listEl.innerHTML = rows.length
         ? rows.join('')
-        : '<p class="text-xs text-slate-500 dark:text-slate-400 text-center py-6">No pending reminders or expiring documents right now.</p>';
+        : '<div class="oneora-empty-state my-2"><p class="text-xs font-semibold text-[#647087] dark:text-[#A5ADC2]">No pending reminders or expiring documents right now.</p></div>';
 
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -341,18 +361,18 @@
       setTimeout(() => {
         if (panel.classList.contains('hidden')) panel.classList.remove('hidden');
         const container = document.createElement('div');
-        container.className = 'border-t border-indigo-100 dark:border-slate-700 bg-indigo-50/40 dark:bg-[#141B30]';
+        container.className = 'border-t border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#151B2F]';
         extraMatches.slice(0, 6).forEach((item) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'w-full text-left px-4 py-2.5 hover:bg-indigo-100/70 dark:hover:bg-slate-800 flex items-center justify-between gap-2 border-b last:border-b-0 border-indigo-100/60 dark:border-slate-800';
+          btn.className = 'w-full text-left px-4 py-2.5 hover:bg-[#F3F0FF] dark:hover:bg-[#1D2540] flex items-center justify-between gap-2 border-b last:border-b-0 border-[#E6E9F2] dark:border-[#232C4A] transition';
           const left = document.createElement('div');
           left.className = 'min-w-0';
           const t = document.createElement('div');
-          t.className = 'text-xs font-extrabold text-[#151B2B] dark:text-white truncate';
+          t.className = 'text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate';
           t.textContent = item.title;
           const s = document.createElement('div');
-          s.className = 'text-[11px] text-indigo-600 dark:text-cyan-400 truncate';
+          s.className = 'text-[11px] font-medium text-[#7457E8] dark:text-[#B4A5FF] truncate';
           s.textContent = item.subtitle;
           left.appendChild(t);
           left.appendChild(s);

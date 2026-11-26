@@ -48,7 +48,13 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Prepare Release Signing Keystore (Fixed Secret or Fallback)
+      - name: Restore Cached Fallback Signing Keystore (when Secrets not set)
+        uses: actions/cache@v4
+        with:
+          path: android/keystore/oneora-fallback.jks
+          key: oneora-fallback-keystore-v1
+
+      - name: Prepare Release Signing Keystore (Fixed Secret or Persistent Fallback)
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           SECRET_STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -56,8 +62,8 @@ jobs:
           SECRET_KEY_PASS: ${{ secrets.KEY_PASSWORD }}
         run: |
           mkdir -p android/keystore
-          KEYSTORE_FILE="${{ github.workspace }}/android/keystore/oneora-release.jks"
           if [ -n "$KEYSTORE_BASE64" ]; then
+            KEYSTORE_FILE="${{ github.workspace }}/android/keystore/oneora-release.jks"
             echo "Using permanent signing keystore from GitHub Secrets (seamless upgrades enabled)."
             printf "%s" "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_FILE"
             echo "KEYSTORE_PATH=$KEYSTORE_FILE" >> "$GITHUB_ENV"
@@ -65,14 +71,19 @@ jobs:
             echo "KEY_ALIAS=${SECRET_KEY_ALIAS}" >> "$GITHUB_ENV"
             echo "KEY_PASSWORD=${SECRET_KEY_PASS}" >> "$GITHUB_ENV"
           else
-            echo "::warning::KEYSTORE_BASE64 secret not configured. Generating temporary test keystore. Add KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD secrets for permanent Play Store & in-place APK upgrades."
-            keytool -genkeypair -v \
-              -keystore "$KEYSTORE_FILE" \
-              -keyalg RSA -keysize 2048 -validity 10000 \
-              -alias pdfbondhu \
-              -storepass pdfbondhu123 \
-              -keypass pdfbondhu123 \
-              -dname "CN=ONEORA, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
+            KEYSTORE_FILE="${{ github.workspace }}/android/keystore/oneora-fallback.jks"
+            if [ ! -f "$KEYSTORE_FILE" ]; then
+              echo "::warning::KEYSTORE_BASE64 secret not configured. Creating persistent cached fallback keystore."
+              keytool -genkeypair -v \
+                -keystore "$KEYSTORE_FILE" \
+                -keyalg RSA -keysize 2048 -validity 10000 \
+                -alias pdfbondhu \
+                -storepass pdfbondhu123 \
+                -keypass pdfbondhu123 \
+                -dname "CN=ONEORA, OU=Mobile, O=Nayak, L=Kolkata, ST=WB, C=IN"
+            else
+              echo "Reusing cached fallback signing keystore for consistent APK upgrades."
+            fi
             echo "KEYSTORE_PATH=$KEYSTORE_FILE" >> "$GITHUB_ENV"
             echo "KEYSTORE_PASSWORD=pdfbondhu123" >> "$GITHUB_ENV"
             echo "KEY_ALIAS=pdfbondhu" >> "$GITHUB_ENV"
@@ -104,11 +115,15 @@ jobs:
             gradle assembleRelease bundleRelease -PGITHUB_REPO="${{ github.repository }}" --no-daemon
           fi
 
-      - name: Prepare Release Artifacts
+      - name: Verify APK Signature & Prepare Release Artifacts
         run: |
           mkdir -p apk-output
           cp android/app/build/outputs/apk/release/app-release.apk apk-output/ONEORA-3.0.apk
           cp android/app/build/outputs/bundle/release/app-release.aab apk-output/ONEORA-3.0.aab
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -n 1 || true)
+          if [ -n "$APKSIGNER" ]; then
+            "$APKSIGNER" verify --verbose apk-output/ONEORA-3.0.apk
+          fi
           ls -lh apk-output
 
       - name: Upload APK & Play Store AAB Artifacts

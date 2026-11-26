@@ -414,13 +414,13 @@
 
   function renderRedactPanel() {
     return `
-      <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
+      <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Permanent PDF Redaction &amp; Flattening</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Draw black boxes over sensitive Aadhaar, phone, or bank info. Pages are raster-flattened so hidden text is permanently destroyed.</p>
+            <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Permanent PDF Redaction &amp; Flattening</h3>
+            <p class="text-xs text-[#647087] dark:text-[#A5ADC2] mt-0.5">Draw black boxes over sensitive Aadhaar, phone, or bank info. Pages are raster-flattened so hidden text is permanently destroyed.</p>
           </div>
-          <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-[#293B80] text-white text-xs font-extrabold min-h-[42px] inline-flex items-center">
+          <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[42px] inline-flex items-center transition">
             Select PDF
             <input type="file" id="redactPdfInput" accept="application/pdf" class="hidden" />
           </label>
@@ -429,16 +429,16 @@
         <div id="redactWorkspace" class="${redactPdfDoc ? '' : 'hidden'} space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
             <div class="flex items-center gap-1.5">
-              <button type="button" id="redactPrevPage" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] font-bold">‹ Prev</button>
+              <button type="button" id="redactPrevPage" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] font-bold">‹ Prev</button>
               <span id="redactPageLabel" class="font-extrabold tabular-nums">Page ${redactPageNum}</span>
-              <button type="button" id="redactNextPage" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] font-bold">Next ›</button>
+              <button type="button" id="redactNextPage" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] font-bold">Next ›</button>
             </div>
             <div class="flex items-center gap-2">
               <button type="button" id="redactUndoBtn" class="px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 font-bold">Undo Box</button>
-              <button type="button" id="redactExportBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold">Export Permanently Redacted PDF</button>
+              <button type="button" id="redactExportBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Export Permanently Redacted PDF</button>
             </div>
           </div>
-          <div class="overflow-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-[#0F1526] p-3 flex justify-center">
+          <div class="overflow-auto rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] p-3 flex justify-center">
             <canvas id="redactCanvas" class="max-w-full shadow-lg cursor-crosshair touch-none rounded"></canvas>
           </div>
         </div>
@@ -450,36 +450,36 @@
     return `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Photo Collage Maker -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-3">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Offline Photo Collage Maker</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Pick 2 to 4 photos to build a crisp HD grid collage locally.</p>
-          <input type="file" id="collageFilesInput" accept="image/*" multiple class="block w-full text-xs text-slate-600 dark:text-slate-300" />
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Offline Photo Collage Maker</h3>
+          <p class="text-xs text-[#647087] dark:text-[#A5ADC2]">Pick 2 to 4 photos to build a crisp HD grid collage locally.</p>
+          <input type="file" id="collageFilesInput" accept="image/*" multiple class="block w-full text-xs text-[#647087] dark:text-[#A5ADC2]" />
           <div class="flex items-center gap-2">
-            <select id="collageLayoutSelect" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold min-h-[40px]">
+            <select id="collageLayoutSelect" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold min-h-[40px]">
               <option value="2h">2 Photos Side-by-Side</option>
               <option value="2v">2 Photos Vertical</option>
               <option value="4g">4 Photos 2×2 Grid</option>
             </select>
-            <button type="button" id="collageBuildBtn" class="px-4 py-2 rounded-xl bg-[#293B80] text-white text-xs font-extrabold min-h-[40px]">Build &amp; Download Collage</button>
+            <button type="button" id="collageBuildBtn" class="px-4 py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[40px]">Build &amp; Download Collage</button>
           </div>
-          <canvas id="collagePreviewCanvas" class="hidden w-full rounded-xl border border-slate-200 dark:border-slate-700"></canvas>
+          <canvas id="collagePreviewCanvas" class="hidden w-full rounded-xl border border-[#E6E9F2] dark:border-[#232C4A]"></canvas>
         </div>
 
         <!-- Image Watermark, BG Color & Metadata -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-3">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Image Watermark, BG Fill &amp; Metadata</h3>
-          <input type="file" id="imgWmFileInput" accept="image/*" class="block w-full text-xs text-slate-600 dark:text-slate-300" />
-          <div id="imgMetaInfo" class="text-[11px] font-semibold text-indigo-600 dark:text-cyan-400"></div>
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Image Watermark, BG Fill &amp; Metadata</h3>
+          <input type="file" id="imgWmFileInput" accept="image/*" class="block w-full text-xs text-[#647087] dark:text-[#A5ADC2]" />
+          <div id="imgMetaInfo" class="text-[11px] font-semibold text-[#7457E8] dark:text-[#C4B5FD]"></div>
           <div class="grid grid-cols-2 gap-2">
-            <input type="text" id="imgWmTextInput" value="ONEORA" placeholder="Watermark text" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold min-h-[40px]" />
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B]">
+            <input type="text" id="imgWmTextInput" value="ONEORA" placeholder="Watermark text" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold min-h-[40px]" />
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020]">
               <span class="text-[11px] font-bold">BG Color</span>
               <input type="color" id="imgBgColorInput" value="#ffffff" class="w-7 h-7 rounded border-0 cursor-pointer" />
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button type="button" id="imgApplyWmBtn" class="px-4 py-2 rounded-xl bg-violet-600 text-white text-xs font-extrabold min-h-[40px]">Apply Watermark &amp; Save</button>
-            <button type="button" id="imgApplyBgBtn" class="px-4 py-2 rounded-xl bg-sky-600 text-white text-xs font-extrabold min-h-[40px]">Fill Transparent BG &amp; Save</button>
+            <button type="button" id="imgApplyWmBtn" class="px-4 py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[40px]">Apply Watermark &amp; Save</button>
+            <button type="button" id="imgApplyBgBtn" class="px-4 py-2 rounded-xl bg-[#10152A] dark:bg-[#1D2540] text-white text-xs font-bold min-h-[40px]">Fill Transparent BG &amp; Save</button>
           </div>
         </div>
       </div>
@@ -491,56 +491,56 @@
     return `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Password Generator + Device Shortcuts -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Strong Password Generator</h3>
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Strong Password Generator</h3>
           <div class="flex items-center gap-2">
-            <input type="text" id="pwGenOutput" readonly placeholder="Click Generate..." class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] font-mono text-sm font-bold text-slate-900 dark:text-white min-h-[44px]" />
-            <button type="button" id="pwGenBtn" class="px-4 py-2.5 rounded-xl bg-[#293B80] text-white text-xs font-extrabold min-h-[44px]">Generate</button>
-            <button type="button" id="pwCopyBtn" class="px-3 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold min-h-[44px]">Copy</button>
+            <input type="text" id="pwGenOutput" readonly placeholder="Click Generate..." class="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] font-mono text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
+            <button type="button" id="pwGenBtn" class="px-4 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px]">Generate</button>
+            <button type="button" id="pwCopyBtn" class="px-3 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold min-h-[44px]">Copy</button>
           </div>
-          <div class="flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-slate-300">
-            <label>Length: <input type="number" id="pwLenInput" value="16" min="8" max="48" class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] ml-1" /></label>
-            <label class="flex items-center gap-1"><input type="checkbox" id="pwSymbolsCheck" checked /> Symbols</label>
+          <div class="flex items-center gap-3 text-xs font-bold text-[#647087] dark:text-[#A5ADC2]">
+            <label>Length: <input type="number" id="pwLenInput" value="16" min="8" max="48" class="w-16 px-2 py-1 rounded-lg border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] ml-1" /></label>
+            <label class="flex items-center gap-1"><input type="checkbox" id="pwSymbolsCheck" checked class="accent-[#7457E8]" /> Symbols</label>
           </div>
 
           <!-- World Clock -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-            <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">World Clock</h4>
+          <div class="pt-3 border-t border-[#E6E9F2] dark:border-[#232C4A] space-y-2">
+            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">World Clock</h4>
             <div id="worldClockGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs"></div>
           </div>
 
           <!-- Android Hardware Shortcuts -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
+          <div class="pt-3 border-t border-[#E6E9F2] dark:border-[#232C4A] flex flex-wrap gap-2">
             <button type="button" id="androidFlashBtn" class="px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold min-h-[40px]">Flashlight Toggle</button>
-            <button type="button" id="androidAlarmBtn" class="px-3.5 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold min-h-[40px]">Open System Alarm</button>
+            <button type="button" id="androidAlarmBtn" class="px-3.5 py-2 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] border border-[#7457E8]/25 text-xs font-bold min-h-[40px]">Open System Alarm</button>
           </div>
         </div>
 
         <!-- Text Formatter / Word Counter + Link Saver -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Text Formatter, Case &amp; Word Counter</h3>
-          <textarea id="txtFmtInput" rows="4" placeholder="Paste or type text here to count words, clean spaces, or change case..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs text-slate-900 dark:text-white"></textarea>
-          <div id="txtFmtStats" class="text-[11px] font-bold text-indigo-600 dark:text-cyan-400 tabular-nums">0 words · 0 characters · 0 lines</div>
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Text Formatter, Case &amp; Word Counter</h3>
+          <textarea id="txtFmtInput" rows="4" placeholder="Paste or type text here to count words, clean spaces, or change case..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC]"></textarea>
+          <div id="txtFmtStats" class="text-[11px] font-bold text-[#7457E8] dark:text-[#C4B5FD] tabular-nums">0 words · 0 characters · 0 lines</div>
           <div class="flex flex-wrap gap-1.5">
-            <button type="button" data-txt-op="upper" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] text-xs font-bold">UPPER</button>
-            <button type="button" data-txt-op="lower" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] text-xs font-bold">lower</button>
-            <button type="button" data-txt-op="title" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] text-xs font-bold">Title Case</button>
-            <button type="button" data-txt-op="clean" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#151B2B] text-xs font-bold">Clean Spaces</button>
+            <button type="button" data-txt-op="upper" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold">UPPER</button>
+            <button type="button" data-txt-op="lower" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold">lower</button>
+            <button type="button" data-txt-op="title" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold">Title Case</button>
+            <button type="button" data-txt-op="clean" class="px-3 py-1.5 rounded-lg bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold">Clean Spaces</button>
             <button type="button" data-txt-op="copy" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold">Copy</button>
           </div>
 
           <!-- Link Saver -->
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-            <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">Saved Links &amp; Bookmarks</h4>
+          <div class="pt-3 border-t border-[#E6E9F2] dark:border-[#232C4A] space-y-2">
+            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Saved Links &amp; Bookmarks</h4>
             <form id="linkSaverForm" class="flex gap-2">
-              <input type="text" id="linkTitleInp" required placeholder="Label" class="w-1/3 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs" />
-              <input type="url" id="linkUrlInp" required placeholder="https://..." class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs" />
-              <button type="submit" class="px-3 py-2 rounded-xl bg-[#293B80] text-white text-xs font-bold">Save</button>
+              <input type="text" id="linkTitleInp" required placeholder="Label" class="w-1/3 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs" />
+              <input type="url" id="linkUrlInp" required placeholder="https://..." class="flex-1 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs" />
+              <button type="submit" class="px-3 py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold">Save</button>
             </form>
             <div class="space-y-1.5 max-h-36 overflow-y-auto">
               ${links.map((l, idx) => `
-                <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#151B2B] text-xs">
-                  <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-600 dark:text-cyan-400 hover:underline truncate">${esc(l.title)}</a>
+                <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-[#F6F7FB] dark:bg-[#0C1020] text-xs">
+                  <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" class="font-bold text-[#7457E8] dark:text-[#C4B5FD] hover:underline truncate">${esc(l.title)}</a>
                   <button type="button" data-link-del="${idx}" class="text-rose-500 font-bold">✕</button>
                 </div>
               `).join('')}
@@ -575,48 +575,48 @@
     return `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Document Expiry Tracker -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Document Vault Expiry Tracker</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Track Passport, Driving License, Vehicle Insurance, PUC, or Policy renewal dates.</p>
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Document Vault Expiry Tracker</h3>
+          <p class="text-xs text-[#647087] dark:text-[#A5ADC2]">Track Passport, Driving License, Vehicle Insurance, PUC, or Policy renewal dates.</p>
           <form id="docExpiryForm" class="grid grid-cols-12 gap-2">
-            <input type="text" id="expDocName" required placeholder="Document (e.g. Car Insurance)" class="col-span-6 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-semibold min-h-[40px]" />
-            <input type="date" id="expDocDate" required class="col-span-4 px-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#151B2B] text-xs font-bold min-h-[40px]" />
-            <button type="submit" class="col-span-2 rounded-xl bg-[#293B80] text-white text-xs font-bold min-h-[40px]">Add</button>
+            <input type="text" id="expDocName" required placeholder="Document (e.g. Car Insurance)" class="col-span-6 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold min-h-[40px]" />
+            <input type="date" id="expDocDate" required class="col-span-4 px-2 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold min-h-[40px]" />
+            <button type="submit" class="col-span-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[40px]">Add</button>
           </form>
           <div class="space-y-2">
             ${expiries.length ? expiries.map((ex, idx) => {
               const daysLeft = Math.ceil((new Date(`${ex.date}T00:00:00`).getTime() - Date.now()) / 86_400_000);
               const badgeCls = daysLeft < 0 ? 'text-rose-600' : daysLeft <= 30 ? 'text-amber-600' : 'text-emerald-600';
               return `
-                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-[#151B2B] border border-slate-200 dark:border-slate-800 text-xs">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] text-xs">
                   <div>
-                    <p class="font-extrabold text-slate-900 dark:text-white">${esc(ex.name)}</p>
+                    <p class="font-bold text-[#14182B] dark:text-[#F5F6FC]">${esc(ex.name)}</p>
                     <p class="text-[11px] font-bold ${badgeCls} tabular-nums">Expires ${esc(ex.date)} (${daysLeft < 0 ? 'Expired' : `${daysLeft} days left`})</p>
                   </div>
                   <button type="button" data-exp-del="${idx}" class="text-rose-500 font-bold px-2">✕</button>
                 </div>
               `;
-            }).join('') : '<p class="text-xs text-slate-400 text-center py-4">No document expiry alerts added yet.</p>'}
+            }).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">No document expiry alerts added yet.</p>'}
           </div>
         </div>
 
         <!-- India Emergency Numbers & Official Portals -->
-        <div class="bg-white dark:bg-[#1A2138] rounded-3xl border border-indigo-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">India Emergency Numbers (Offline)</h3>
+        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">India Emergency Numbers (Offline)</h3>
           <div class="grid grid-cols-2 gap-2">
             ${emergency.map(([num, label]) => `
               <a href="tel:${esc(num.split('/')[0].trim())}" class="p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900 flex flex-col">
                 <span class="text-sm font-black text-rose-700 dark:text-rose-300 tabular-nums">${esc(num)}</span>
-                <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${esc(label)}</span>
+                <span class="text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2]">${esc(label)}</span>
               </a>
             `).join('')}
           </div>
 
-          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-            <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">Verified Official Portals</h4>
+          <div class="pt-3 border-t border-[#E6E9F2] dark:border-[#232C4A] space-y-2">
+            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Verified Official Portals</h4>
             <div class="grid grid-cols-2 gap-2">
               ${portals.map(([name, url]) => `
-                <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="px-3 py-2.5 rounded-xl bg-indigo-50/80 dark:bg-[#151B2B] border border-indigo-200/70 dark:border-slate-700 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:border-indigo-500 truncate">${esc(name)} ↗</a>
+                <a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="px-3 py-2.5 rounded-xl bg-[#F3F0FF]/70 dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD] hover:border-[#7457E8] truncate transition">${esc(name)} ↗</a>
               `).join('')}
             </div>
           </div>
