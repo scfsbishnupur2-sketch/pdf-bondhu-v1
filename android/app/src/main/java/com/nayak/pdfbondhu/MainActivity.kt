@@ -85,8 +85,6 @@ class MainActivity : AppCompatActivity() {
     @Volatile private var pendingExternalMultiDocsJson: String? = null
     @Volatile private var pendingShortcutTool: String? = null
     private var isFlashlightOn = false
-    private val adManager: OneoraAdManager by lazy { OneoraAdManager(this) }
-    private val billingManager: OneoraBillingManager by lazy { OneoraBillingManager(this) }
 
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ -> }

@@ -79,14 +79,14 @@ jobs:
             echo "KEY_PASSWORD=pdfbondhu123" >> "$GITHUB_ENV"
           fi
 
-      - name: Set up Node.js 20
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Build ONEORA Web Bundle & Offline Libraries
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm run build
           rm -rf android/app/src/main/assets/www
           mkdir -p android/app/src/main/assets/www
