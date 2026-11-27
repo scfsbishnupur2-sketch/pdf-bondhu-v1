@@ -50,6 +50,17 @@ async function createServer() {
     next();
   });
 
+  // Serve /favicon.ico cleanly so browsers never log a 404 console error
+  app.get('/favicon.ico', (_req: Request, res: Response) => {
+    const iconSvg = path.resolve(__dirname, isProduction ? 'dist' : 'public', 'icon.svg');
+    if (fs.existsSync(iconSvg)) {
+      res.type('image/svg+xml');
+      res.sendFile(iconSvg);
+      return;
+    }
+    res.status(204).end();
+  });
+
   // 1. Health check endpoint
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({
@@ -61,6 +72,40 @@ async function createServer() {
       timestamp: new Date().toISOString(),
     });
   });
+
+  // 1B. Lightweight Real Speed Test Endpoints (Ping, Download, Upload — zero cache, size-capped)
+  const speedTestBuffer = Buffer.alloc(1024 * 1024);
+  for (let i = 0; i < speedTestBuffer.length; i += 1) {
+    speedTestBuffer[i] = (i * 73 + 19) & 0xff;
+  }
+
+  app.get('/api/speedtest/ping', (_req: Request, res: Response) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.json({ ok: true, ts: Date.now() });
+  });
+
+  app.get('/api/speedtest/download', (req: Request, res: Response) => {
+    const requested = Number(req.query.bytes) || 1024 * 1024;
+    const safeBytes = Math.max(64 * 1024, Math.min(2 * 1024 * 1024, Math.floor(requested)));
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Length', String(safeBytes));
+    if (safeBytes <= speedTestBuffer.length) {
+      res.send(speedTestBuffer.subarray(0, safeBytes));
+    } else {
+      res.send(Buffer.concat([speedTestBuffer, speedTestBuffer.subarray(0, safeBytes - speedTestBuffer.length)]));
+    }
+  });
+
+  app.post(
+    '/api/speedtest/upload',
+    express.raw({ type: 'application/octet-stream', limit: '2mb' }),
+    (req: Request, res: Response) => {
+      const receivedBytes = Buffer.isBuffer(req.body) ? req.body.length : 0;
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.json({ ok: true, receivedBytes, ts: Date.now() });
+    }
+  );
 
   // 2. Central Monetization & Feature Configuration (Safe Public View — Zero Secrets)
   const appEnv = process.env.APP_ENV || (isProduction ? 'production' : 'development');

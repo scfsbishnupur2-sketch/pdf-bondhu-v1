@@ -1353,3 +1353,461 @@ html.dark summary:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   FIXES · INLINE PRIMARY HIDE, CATEGORY COLOUR UNIFICATION & PASTEL PROFILE
+   ========================================================================== */
+
+/* Hide duplicate inline primary CTA when sticky bottom bar is active */
+.pastel-inline-primary-hidden {
+  display: none !important;
+}
+
+/* Per-category high-contrast solid CTA tokens (WCAG AA >= 4.5:1) */
+[data-pastel-cat="pdf"]       { --cat-btn-bg: #B42348; --cat-btn-hover: #961A3A; --cat-btn-fg: #FFFFFF; }
+[data-pastel-cat="image"]     { --cat-btn-bg: #1D54B5; --cat-btn-hover: #174494; --cat-btn-fg: #FFFFFF; }
+[data-pastel-cat="office"]    { --cat-btn-bg: #0F6A4A; --cat-btn-hover: #0B553B; --cat-btn-fg: #FFFFFF; }
+[data-pastel-cat="lifemoney"] { --cat-btn-bg: #9A4D06; --cat-btn-hover: #7D3E04; --cat-btn-fg: #FFFFFF; }
+[data-pastel-cat="india"]     { --cat-btn-bg: #855A00; --cat-btn-hover: #6B4800; --cat-btn-fg: #FFFFFF; }
+[data-pastel-cat="vault"]     { --cat-btn-bg: #5B3FD0; --cat-btn-hover: #4A30B8; --cat-btn-fg: #FFFFFF; }
+
+html.dark [data-pastel-cat="pdf"]       { --cat-btn-bg: #E04F76; --cat-btn-hover: #F06288; --cat-btn-fg: #FFFFFF; }
+html.dark [data-pastel-cat="image"]     { --cat-btn-bg: #3B82F6; --cat-btn-hover: #60A5FA; --cat-btn-fg: #FFFFFF; }
+html.dark [data-pastel-cat="office"]    { --cat-btn-bg: #10B981; --cat-btn-hover: #34D399; --cat-btn-fg: #0A241B; }
+html.dark [data-pastel-cat="lifemoney"] { --cat-btn-bg: #D97706; --cat-btn-hover: #F59E0B; --cat-btn-fg: #1C1306; }
+html.dark [data-pastel-cat="india"]     { --cat-btn-bg: #CA8A04; --cat-btn-hover: #EAB308; --cat-btn-fg: #1C1605; }
+html.dark [data-pastel-cat="vault"]     { --cat-btn-bg: #7C5DF2; --cat-btn-hover: #9074FF; --cat-btn-fg: #FFFFFF; }
+
+/* Sticky bottom primary CTA always matches active tool category colour */
+#pastelStickyActionBar .pastel-sticky-primary-btn {
+  background-color: var(--cat-btn-bg, #5B3FD0) !important;
+  color: var(--cat-btn-fg, #FFFFFF) !important;
+  box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--cat-btn-bg, #5B3FD0) 58%, transparent);
+}
+#pastelStickyActionBar .pastel-sticky-primary-btn:hover:not(:disabled) {
+  background-color: var(--cat-btn-hover, #4A30B8) !important;
+}
+
+/* Unify all internal tool accents (buttons, upload icons, active tabs, pills) to category colour */
+.pastel-tool-screen .pastel-white-tile {
+  color: var(--cat-accent, #5B3FD0) !important;
+}
+
+.pastel-tool-screen .pastel-upload-zone > span.rounded-xl,
+.pastel-tool-screen .pastel-upload-zone > span.rounded-full,
+.pastel-tool-screen .border-dashed > span.text-white,
+.pastel-tool-screen .border-dashed .text-white.font-bold,
+.pastel-tool-screen label.cursor-pointer.text-white,
+.pastel-tool-screen button.bg-gradient-to-r,
+.pastel-tool-screen button[class*="bg-[#293B80]"],
+.pastel-tool-screen button[class*="bg-[#20A779]"],
+.pastel-tool-screen button[class*="bg-[#7666D8]"],
+.pastel-tool-screen button[class*="bg-[#7457E8]"],
+.pastel-tool-screen button[class*="bg-blue-600"],
+.pastel-tool-screen button[class*="bg-indigo-600"],
+.pastel-tool-screen button[class*="bg-violet-600"],
+.pastel-tool-screen button[class*="bg-emerald-600"],
+.pastel-tool-screen button[class*="bg-teal-600"],
+.pastel-tool-screen button[class*="bg-rose-600"],
+.pastel-tool-screen button[class*="bg-red-600"],
+.pastel-tool-screen button[class*="bg-pink-600"],
+.pastel-tool-screen button[class*="bg-cyan-600"],
+.pastel-tool-screen button[class*="bg-amber-600"],
+.pastel-tool-screen button[class*="bg-orange-600"],
+.pastel-tool-screen button[class*="bg-fuchsia-600"],
+.pastel-tool-screen button[class*="bg-sky-600"],
+.pastel-tool-screen .oneora-btn-primary {
+  background-image: none !important;
+  background-color: var(--cat-btn-bg, #5B3FD0) !important;
+  color: var(--cat-btn-fg, #FFFFFF) !important;
+  border-color: transparent !important;
+  border-radius: 9999px;
+}
+
+/* Keep destructive/cancel buttons muted in category neutral tint rather than clashing */
+.pastel-tool-screen button[data-action="delete"],
+.pastel-tool-screen button[id*="Clear"],
+.pastel-tool-screen button[id*="Reset"],
+.pastel-tool-screen button[id*="Cancel"] {
+  background-image: none !important;
+  background-color: var(--oneora-elevated) !important;
+  color: var(--oneora-text) !important;
+  border: 1px solid var(--oneora-border) !important;
+}
+
+/* Unify tinted icon wells & badges inside tool screens */
+.pastel-tool-screen .border-dashed > div.rounded-2xl,
+.pastel-tool-screen .border-dashed > div.rounded-xl,
+.pastel-tool-screen .pastel-upload-zone .pastel-white-tile {
+  background-color: var(--oneora-surface) !important;
+  color: var(--cat-accent, #5B3FD0) !important;
+}
+
+.pastel-tool-screen [class*="text-emerald-600"],
+.pastel-tool-screen [class*="text-blue-600"],
+.pastel-tool-screen [class*="text-indigo-600"],
+.pastel-tool-screen [class*="text-violet-600"],
+.pastel-tool-screen [class*="text-pink-600"],
+.pastel-tool-screen [class*="text-rose-600"],
+.pastel-tool-screen [class*="text-teal-600"],
+.pastel-tool-screen [class*="text-cyan-600"],
+.pastel-tool-screen [class*="text-[#293B80]"],
+.pastel-tool-screen [class*="text-[#20A779]"],
+.pastel-tool-screen [class*="text-[#7666D8]"] {
+  color: var(--cat-accent, #5B3FD0) !important;
+}
+
+/* Profile Star Rating & Feedback Thank-You Spring Animations */
+.oneora-rate-star {
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  line-height: 1;
+  color: #C7BDD4;
+  background: var(--oneora-bg);
+  border: 1.5px solid var(--oneora-border);
+  transition: transform 240ms var(--oneora-spring), color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+html.dark .oneora-rate-star {
+  color: #5C506B;
+}
+
+.oneora-rate-star.is-lit {
+  color: #D97706;
+  background: #FFF1A8;
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+html.dark .oneora-rate-star.is-lit {
+  color: #FBBF24;
+  background: #3A3219;
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.oneora-rate-star.is-pop {
+  animation: oneoraStarPop 340ms var(--oneora-spring);
+}
+
+@keyframes oneoraStarPop {
+  0%   { transform: scale(0.84); }
+  55%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+.oneora-profile-row {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  background: var(--oneora-surface);
+  border: 1px solid var(--oneora-border);
+  transition: transform 200ms var(--oneora-spring), background-color 160ms ease, border-color 160ms ease;
+}
+
+.oneora-profile-row:hover {
+  border-color: color-mix(in srgb, var(--oneora-violet) 32%, var(--oneora-border));
+}
+
+.oneora-profile-row:active {
+  transform: scale(0.98);
+}
+
+.oneora-fb-chip {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--oneora-bg);
+  color: var(--oneora-text-secondary);
+  border: 1.5px solid var(--oneora-border);
+  transition: transform 200ms var(--oneora-spring), background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.oneora-fb-chip.is-selected {
+  background: #5B3FD0;
+  color: #FFFFFF;
+  border-color: #5B3FD0;
+  box-shadow: 0 8px 18px -10px rgba(91, 63, 208, 0.55);
+}
+
+.oneora-thanks-pop {
+  animation: pastelSuccessPop 420ms var(--oneora-spring) both;
+}
+
+/* ==========================================================================
+   UNIVERSAL READER + EDITOR (DESIGN A · PASTEL) & ANDROID 7–9 COMPATIBILITY
+   ========================================================================== */
+
+/* Safe full viewport height fallback for Chrome < 108 Android WebViews */
+.oneora-full-vh {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Solid fallbacks when backdrop-filter is unsupported (Android 7-9 WebViews) */
+@supports not ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px))) {
+  .ur-topbar,
+  .ur-bottombar,
+  .ur-subbar,
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-xs {
+    background-color: var(--oneora-surface, #FFFFFF) !important;
+  }
+  html.dark .ur-topbar,
+  html.dark .ur-bottombar,
+  html.dark .ur-subbar,
+  html.dark .backdrop-blur-sm,
+  html.dark .backdrop-blur-md,
+  html.dark .backdrop-blur-xs {
+    background-color: #221C2E !important;
+  }
+}
+
+/* 4 Pastel Reading Themes: Paper (Cream), White, Sepia, Night */
+.ur-overlay {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.ur-theme-paper {
+  background-color: #FFF7EE;
+  color: #2B2236;
+}
+.ur-theme-paper .ur-topbar,
+.ur-theme-paper .ur-bottombar,
+.ur-theme-paper .ur-subbar {
+  background-color: rgba(255, 247, 238, 0.96);
+  color: #2B2236;
+  border-color: rgba(43, 34, 54, 0.1);
+}
+.ur-theme-paper .ur-stage {
+  background-color: #F6ECE0;
+}
+.ur-theme-paper .ur-word-paper {
+  background-color: #FFFDF9;
+  color: #2B2236;
+}
+.ur-theme-paper .ur-icon-btn {
+  background-color: #FFFFFF;
+  color: #2B2236;
+  border: 1px solid rgba(43, 34, 54, 0.08);
+}
+
+.ur-theme-white {
+  background-color: #FFFFFF;
+  color: #1B1824;
+}
+.ur-theme-white .ur-topbar,
+.ur-theme-white .ur-bottombar,
+.ur-theme-white .ur-subbar {
+  background-color: rgba(255, 255, 255, 0.97);
+  color: #1B1824;
+  border-color: rgba(27, 24, 36, 0.1);
+}
+.ur-theme-white .ur-stage {
+  background-color: #F2F2F7;
+}
+.ur-theme-white .ur-word-paper {
+  background-color: #FFFFFF;
+  color: #1B1824;
+}
+.ur-theme-white .ur-icon-btn {
+  background-color: #F4F1FA;
+  color: #1B1824;
+}
+
+.ur-theme-sepia {
+  background-color: #F4E7CE;
+  color: #3F2F1D;
+}
+.ur-theme-sepia .ur-topbar,
+.ur-theme-sepia .ur-bottombar,
+.ur-theme-sepia .ur-subbar {
+  background-color: rgba(244, 231, 206, 0.97);
+  color: #3F2F1D;
+  border-color: rgba(63, 47, 29, 0.14);
+}
+.ur-theme-sepia .ur-stage {
+  background-color: #EBD9B7;
+}
+.ur-theme-sepia .ur-word-paper {
+  background-color: #FAF1DF;
+  color: #3F2F1D;
+}
+.ur-theme-sepia .ur-icon-btn {
+  background-color: #FAF1DF;
+  color: #3F2F1D;
+}
+
+.ur-theme-night {
+  background-color: #17131F;
+  color: #F5EEFF;
+}
+.ur-theme-night .ur-topbar,
+.ur-theme-night .ur-bottombar,
+.ur-theme-night .ur-subbar {
+  background-color: rgba(23, 19, 31, 0.97);
+  color: #F5EEFF;
+  border-color: rgba(245, 238, 255, 0.12);
+}
+.ur-theme-night .ur-stage {
+  background-color: #120E19;
+}
+.ur-theme-night .ur-word-paper {
+  background-color: #221C2E;
+  color: #F5EEFF;
+}
+.ur-theme-night .ur-icon-btn {
+  background-color: #2B233A;
+  color: #F5EEFF;
+}
+
+.ur-topbar {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.ur-bottombar {
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+.ur-subbar {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+/* Word Reader & Rich Editor Typography */
+.ur-word-paper {
+  font-size: 15px;
+  line-height: 1.7;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.ur-word-paper h1 { font-size: 1.65em; font-weight: 800; margin: 0.7em 0 0.4em; line-height: 1.25; }
+.ur-word-paper h2 { font-size: 1.35em; font-weight: 800; margin: 0.65em 0 0.35em; line-height: 1.3; }
+.ur-word-paper h3 { font-size: 1.15em; font-weight: 700; margin: 0.55em 0 0.3em; }
+.ur-word-paper p { margin: 0.5em 0; }
+.ur-word-paper ul { list-style-type: disc; padding-left: 1.5em; margin: 0.5em 0; }
+.ur-word-paper ol { list-style-type: decimal; padding-left: 1.5em; margin: 0.5em 0; }
+.ur-word-paper table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.92em; display: block; overflow-x: auto; }
+.ur-word-paper th,
+.ur-word-paper td { border: 1px solid rgba(91, 63, 208, 0.2); padding: 6px 10px; text-align: left; }
+.ur-word-paper th { background-color: rgba(203, 187, 255, 0.25); font-weight: 700; }
+.ur-word-paper img { max-width: 100%; height: auto; border-radius: 12px; margin: 0.6em 0; }
+.ur-word-paper[contenteditable="true"] {
+  outline: 2px solid #5B3FD0;
+  outline-offset: 2px;
+}
+
+/* Excel Scrollable Sticky Grid */
+.ur-excel-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+}
+.ur-excel-table th,
+.ur-excel-table td {
+  border-right: 1px solid rgba(43, 34, 54, 0.1);
+  border-bottom: 1px solid rgba(43, 34, 54, 0.1);
+  padding: 7px 10px;
+  min-width: 82px;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ur-theme-night .ur-excel-table th,
+.ur-theme-night .ur-excel-table td {
+  border-color: rgba(245, 238, 255, 0.12);
+}
+.ur-excel-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background-color: #CFF3E2;
+  color: #115E42;
+  font-weight: 800;
+  text-align: center;
+}
+.ur-theme-night .ur-excel-table thead th {
+  background-color: #1B362E;
+  color: #A7F3D0;
+}
+.ur-excel-table tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  min-width: 42px;
+  max-width: 52px;
+  background-color: #F4F0FA;
+  color: #5C506B;
+  font-weight: 800;
+  text-align: center;
+}
+.ur-theme-night .ur-excel-table tbody th {
+  background-color: #262033;
+  color: #C5B9DA;
+}
+.ur-excel-table thead th:first-child {
+  left: 0;
+  z-index: 6;
+}
+.ur-excel-table td.ur-xl-selected {
+  outline: 2px solid #5B3FD0;
+  outline-offset: -2px;
+  background-color: rgba(203, 187, 255, 0.25);
+}
+
+/* Skeleton Loader Shimmer */
+.ur-skel {
+  background: linear-gradient(90deg, rgba(91, 63, 208, 0.08) 25%, rgba(91, 63, 208, 0.16) 50%, rgba(91, 63, 208, 0.08) 75%);
+  background-size: 200% 100%;
+  animation: urShimmer 1.3s ease-in-out infinite;
+}
+@keyframes urShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Small Screen (320px - 360px) & Large Font Scaling Safety Guards */
+@media (max-width: 360px) {
+  body {
+    overflow-x: hidden;
+  }
+  .pastel-category-card {
+    padding: 14px !important;
+    border-radius: 24px !important;
+  }
+  .pastel-hero-card {
+    padding: 16px !important;
+    border-radius: 26px !important;
+  }
+  #toolContextTitle {
+    font-size: 15px !important;
+  }
+  .ur-topbar {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+html[data-font-scale="large"] button,
+html[data-font-scale="xl"] button {
+  overflow-wrap: break-word;
+}
+
+

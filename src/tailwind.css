@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@source "../index.html";
+@source "../public/*.js";
+
+/* Local bundled Plus Jakarta Sans (100% offline, zero Google Fonts CDN) */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-800.woff2') format('woff2');
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Noto Sans Bengali", "Noto Sans Devanagari", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-cream: #FFF7EE;
+  --color-ink: #2B2236;
+  --color-violetPrimary: #5B3FD0;
+  --color-heroLavender: #CBBBFF;
+  --color-darkWarm: #17131F;
+  --color-darkCard: #221C2E;
+  --color-navy: #2B2236;
+  --color-brand: #5B3FD0;
+  --color-violetSoft: #5B3FD0;
+  --color-softBlue: #3B73E6;
+  --color-surfaceLight: #FFF7EE;
+  --color-surfaceDark: #17131F;
+  --color-cardDark: #221C2E;
+  --color-elevatedDark: #2B243A;
+  --color-success: #13734C;
+  --color-pdf: #ef4444;
+  --color-excel: #10b981;
+  --color-p2e: #5B3FD0;
+  --color-imgc: #f97316;
+  --color-i2p: #ec4899;
+  --color-cleane: #f59e0b;
+  --color-split: #e11d48;
+  --color-pdfc: #0284c7;
+  --color-conv: #5B3FD0;
+  --color-watermark: #d946ef;
+  --color-organize: #3B73E6;
+  --color-resize: #14b8a6;
+}

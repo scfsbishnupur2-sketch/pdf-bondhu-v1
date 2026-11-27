@@ -15,33 +15,37 @@
     student: {
       id: 'student',
       label: 'Student',
-      subtitle: 'Notes, PDF merge, scanner & exam photos first',
+      subtitle: 'Reader, PDF notes, Bengali Voice, Bijoy & Offline OCR first',
       pastelCat: 'pdf',
       categoryOrder: ['pdf', 'office', 'image', 'india', 'lifemoney', 'vault'],
+      starterFavs: ['pdfReaderTool', 'oneoraVoiceHelperTool:voice_notes', 'oneoraOfficeProTool:bangla_convert', 'ocrScanner'],
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>'
     },
     shop_owner: {
       id: 'shop_owner',
       label: 'Shop Owner',
-      subtitle: 'Bills, expenses, Udhar & PDF receipts first',
+      subtitle: 'Khata/Udhar, GST, Direct WhatsApp & PDF Scanner first',
       pastelCat: 'lifemoney',
       categoryOrder: ['lifemoney', 'pdf', 'india', 'office', 'image', 'vault'],
+      starterFavs: ['oneoraMoneyTab:khata', 'oneoraFinCalcTool:gst', 'oneoraSocialTool:wa_direct', 'pdfScanner'],
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>'
     },
     job_seeker: {
       id: 'job_seeker',
       label: 'Job Seeker',
-      subtitle: 'Govt exam KB photos, IDs, resumes & Vault first',
+      subtitle: 'Exam KB photos, Application Letters, Resume & Vault first',
       pastelCat: 'india',
       categoryOrder: ['india', 'pdf', 'image', 'office', 'vault', 'lifemoney'],
+      starterFavs: ['passportMaker', 'oneoraVoiceHelperTool:letter_drafts', 'imageCompress', 'documentCenter'],
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'
     },
     general: {
       id: 'general',
       label: 'General',
-      subtitle: 'Balanced access to PDF, Image, Office & Vault',
+      subtitle: 'PDF, Land Area, SIP/Gold Calculators, Password & Vault',
       pastelCat: 'vault',
       categoryOrder: ['pdf', 'image', 'office', 'lifemoney', 'india', 'vault'],
+      starterFavs: ['pdfReaderTool', 'oneoraFinCalcTool:sip', 'oneoraUtilitiesSafetyTool:land_converter', 'oneoraUtilitiesSafetyTool:password_safety'],
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg>'
     }
   };
@@ -371,6 +375,12 @@
         } else {
           setPersona(selectedPersona, true);
           applyFontScale(selectedScale, true);
+          try {
+            const pCfg = PERSONAS[selectedPersona] || PERSONAS.general;
+            if (!localStorage.getItem('pdfBondhuFavs_v2') && Array.isArray(pCfg.starterFavs)) {
+              localStorage.setItem('pdfBondhuFavs_v2', JSON.stringify(pCfg.starterFavs));
+            }
+          } catch (_) {}
           closeOnboarding(true);
           if (global.utils && typeof global.utils.showToast === 'function') {
             const p = PERSONAS[selectedPersona] || PERSONAS.general;

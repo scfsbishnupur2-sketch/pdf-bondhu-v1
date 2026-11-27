@@ -1,3 +1,4 @@
+import './tailwind.css';
 import { initializeApp } from 'firebase/app';
 import {
   getAuth,
@@ -12,7 +13,6 @@ import {
   deleteDoc,
   doc,
   getDoc,
-  getDocFromServer,
   getDocs,
   getFirestore,
   query,
@@ -77,16 +77,10 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   throw new Error(JSON.stringify(errInfo));
 }
 
-async function testConnection(): Promise<void> {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
-    }
-  }
+function isFirebaseConfigured(): boolean {
+  return Boolean(firebaseConfig && firebaseConfig.apiKey && firebaseConfig.projectId);
 }
-void testConnection();
+void isFirebaseConfigured();
 
 function safeId(raw: string, fallbackPrefix: string): string {
   const cleaned = String(raw || '')
