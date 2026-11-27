@@ -75,6 +75,7 @@ jobs:
             if [ ! -f "$KEYSTORE_FILE" ]; then
               echo "::warning::KEYSTORE_BASE64 secret not configured. Creating persistent cached fallback keystore."
               keytool -genkeypair -v \
+                -storetype PKCS12 \
                 -keystore "$KEYSTORE_FILE" \
                 -keyalg RSA -keysize 2048 -validity 10000 \
                 -alias pdfbondhu \
@@ -102,6 +103,7 @@ jobs:
           rm -rf android/app/src/main/assets/www
           mkdir -p android/app/src/main/assets/www
           cp -r dist/* android/app/src/main/assets/www/
+          rm -rf android/app/src/main/assets/www/assets/aistudio
           ls -lh android/app/src/main/assets/www
           ls -lh android/app/src/main/assets/www/vendor
 
@@ -121,8 +123,15 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk apk-output/ONEORA-3.0.apk
           cp android/app/build/outputs/bundle/release/app-release.aab apk-output/ONEORA-3.0.aab
           APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f 2>/dev/null | sort -V | tail -n 1 || true)
-          if [ -n "$APKSIGNER" ]; then
-            "$APKSIGNER" verify --verbose apk-output/ONEORA-3.0.apk
+          if [ -z "$APKSIGNER" ]; then
+            echo "::error::apksigner not found in ANDROID_HOME/build-tools"
+            exit 1
+          fi
+          "$APKSIGNER" verify --verbose --print-certs apk-output/ONEORA-3.0.apk
+          ZIPALIGN=$(find "$ANDROID_HOME/build-tools" -name zipalign -type f 2>/dev/null | sort -V | tail -n 1 || true)
+          if [ -n "$ZIPALIGN" ]; then
+            "$ZIPALIGN" -c -v 4 apk-output/ONEORA-3.0.apk >/dev/null
+            echo "APK 4-byte zipalign check passed."
           fi
           ls -lh apk-output
 
