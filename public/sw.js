@@ -1,5 +1,6 @@
-const APP_SHELL_CACHE = 'oneora-shell-v22';
+const APP_SHELL_CACHE = 'oneora-shell-v27';
 const CDN_CACHE = 'oneora-cdn-v7';
+const SHARE_TARGET_CACHE = 'oneora-share-target-v1';
 
 const APP_SHELL_ASSETS = [
   './',
@@ -12,6 +13,7 @@ const APP_SHELL_ASSETS = [
   './pdf-office-pro.js',
   './daily-utilities.js',
   './india-vault.js',
+  './pastel-tool-template.js',
   './oneora-db.js',
   './admob-service.js',
   './oneora-monetization.js',
@@ -51,7 +53,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  const validCaches = [APP_SHELL_CACHE, CDN_CACHE];
+  const validCaches = [APP_SHELL_CACHE, CDN_CACHE, SHARE_TARGET_CACHE];
   event.waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
@@ -78,10 +80,60 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET') return;
-
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
+
+  // Handle "Open with ONEORA" PWA Share Target POST
+  if (isSameOrigin && request.method === 'POST' && url.searchParams.get('share_target') === '1') {
+    event.respondWith(
+      (async () => {
+        try {
+          const formData = await request.formData();
+          const cache = await caches.open(SHARE_TARGET_CACHE);
+          const existingKeys = await cache.keys();
+          await Promise.all(existingKeys.map((k) => cache.delete(k)));
+
+          const sharedFiles = formData.getAll('shared_files').filter((f) => f && typeof f.arrayBuffer === 'function');
+          const fileMeta = [];
+          for (let i = 0; i < sharedFiles.length; i++) {
+            const file = sharedFiles[i];
+            const key = `./__oneora_shared_file_${i}`;
+            const buf = await file.arrayBuffer();
+            await cache.put(
+              key,
+              new Response(buf, {
+                headers: {
+                  'Content-Type': file.type || 'application/octet-stream',
+                  'X-File-Name': encodeURIComponent(file.name || `shared_${i + 1}`)
+                }
+              })
+            );
+            fileMeta.push({ key, name: file.name || `shared_${i + 1}`, type: file.type || 'application/octet-stream' });
+          }
+
+          await cache.put(
+            './__oneora_shared_meta.json',
+            new Response(
+              JSON.stringify({
+                title: String(formData.get('title') || ''),
+                text: String(formData.get('text') || ''),
+                url: String(formData.get('url') || ''),
+                files: fileMeta,
+                receivedAt: Date.now()
+              }),
+              { headers: { 'Content-Type': 'application/json' } }
+            )
+          );
+        } catch (err) {
+          console.warn('Share target cache error:', err);
+        }
+        return Response.redirect('./?shared=1', 303);
+      })()
+    );
+    return;
+  }
+
+  if (request.method !== 'GET') return;
 
   // Never cache API calls or version.json
   if (isSameOrigin && (url.pathname.startsWith('/api/') || url.pathname.endsWith('version.json'))) {

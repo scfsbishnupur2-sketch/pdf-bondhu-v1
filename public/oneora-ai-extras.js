@@ -181,81 +181,86 @@
     ];
 
     root.innerHTML = `
-      <div class="bg-white dark:bg-[#151B2F] rounded-[24px] border border-[#E8EAF2] dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-        <!-- Header -->
-        <div class="oneora-hero-card !rounded-none !shadow-none p-5 text-white flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3 relative z-10">
-            <img src="./icon.svg" alt="ONEORA" class="w-10 h-10 rounded-xl shadow-md border border-white/15 shrink-0" />
+      <div class="pastel-stage3-card !rounded-[30px] overflow-hidden flex flex-col">
+        <!-- Lavender Pastel Header (#CBBBFF / #2F244D) -->
+        <div class="pastel-hero-card !rounded-none !shadow-none p-5 sm:p-6 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5 relative z-10">
+            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-[#221C2E] p-1.5 shadow-sm flex items-center justify-center shrink-0">
+              <img src="./icon.svg" alt="ONEORA" class="w-full h-full rounded-xl object-contain" />
+            </div>
             <div>
-              <p class="text-[11px] font-semibold text-[#A5ADC2]">Multilingual Assistant · Server-Secured</p>
-              <h2 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">ONEORA AI</h2>
+              <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#432B9F] dark:text-[#DDD0FF]">Multilingual Assistant · EN · বাংলা · हिन्दी</p>
+              <h2 class="text-2xl sm:text-[26px] font-extrabold tracking-tight text-[#2B2236] dark:text-[#F5EEFF] leading-tight">ONEORA AI</h2>
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2 relative z-10">
-            <select id="aiLangSelect" class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-white text-xs font-semibold min-h-[38px]">
-              <option value="en" class="text-[#171B2C]" ${aiLang === 'en' ? 'selected' : ''}>English</option>
-              <option value="bn" class="text-[#171B2C]" ${aiLang === 'bn' ? 'selected' : ''}>বাংলা (Bengali)</option>
-              <option value="hi" class="text-[#171B2C]" ${aiLang === 'hi' ? 'selected' : ''}>हिन्दी (Hindi)</option>
+            <select id="aiLangSelect" aria-label="AI language" class="px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-[#2B2236] dark:text-[#F5EEFF] text-xs font-extrabold min-h-[44px]">
+              <option value="en" ${aiLang === 'en' ? 'selected' : ''}>English</option>
+              <option value="bn" ${aiLang === 'bn' ? 'selected' : ''}>বাংলা (Bengali)</option>
+              <option value="hi" ${aiLang === 'hi' ? 'selected' : ''}>हिन्दी (Hindi)</option>
             </select>
-            <button type="button" id="aiPrivacyToggleBtn" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-semibold min-h-[38px] transition">${saveOn ? 'History: On' : 'Private Mode'}</button>
-            <button type="button" id="aiClearChatBtn" class="px-3 py-1.5 rounded-xl bg-rose-500/80 hover:bg-rose-500 text-xs font-semibold min-h-[38px] transition">Clear</button>
+            <button type="button" id="aiPrivacyToggleBtn" class="px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 hover:bg-white border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-[#2B2236] dark:text-[#F5EEFF] text-xs font-extrabold min-h-[44px] transition">${saveOn ? 'History: On' : 'Private Mode'}</button>
+            <button type="button" id="aiClearChatBtn" class="px-3.5 py-2 rounded-full bg-[#FFD6D6] dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold min-h-[44px] transition">Clear</button>
           </div>
         </div>
 
-        <!-- 1-Tap Templates -->
-        <div class="px-4 py-3 border-b border-[#E8EAF2] dark:border-slate-800 bg-[#F6F7FB] dark:bg-[#0C1020] flex items-center gap-2 overflow-x-auto hide-scrollbar">
+        <!-- 1-Tap Template Pills -->
+        <div class="px-4 py-3 border-b border-[#2B2236]/8 dark:border-[#F5EEFF]/10 bg-[#FFF7EE] dark:bg-[#17131F] flex items-center gap-2 overflow-x-auto hide-scrollbar">
           ${templates.map((t, i) => `
-            <button type="button" data-ai-tpl="${i}" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-slate-800 text-[#171B2C] dark:text-[#F5F6FC] text-[11px] font-semibold whitespace-nowrap hover:border-[#7457E8] hover:text-[#7457E8] dark:hover:text-[#648BFF] min-h-[36px] transition">${esc(t.label)}</button>
+            <button type="button" data-ai-tpl="${i}" class="px-4 py-2 rounded-full bg-white dark:bg-[#221C2E] border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-[#2B2236] dark:text-[#F5EEFF] text-xs font-bold whitespace-nowrap hover:border-[#5B3FD0] hover:text-[#5B3FD0] dark:hover:text-[#CBBBFF] min-h-[44px] shadow-xs transition">${esc(t.label)}</button>
           `).join('')}
         </div>
 
         <!-- Active Context Bar -->
         ${(aiDocName || aiImageName) ? `
-          <div class="px-4 py-2.5 bg-emerald-50/80 dark:bg-emerald-950/35 border-b border-emerald-200/80 dark:border-emerald-900 flex items-center justify-between gap-2 text-xs">
-            <span class="font-semibold text-emerald-800 dark:text-emerald-300 truncate">Attached Context: ${esc(aiDocName || aiImageName)}</span>
-            <button type="button" id="aiClearContextBtn" class="text-rose-600 dark:text-rose-400 font-bold shrink-0">Remove ✕</button>
+          <div class="px-4 py-2.5 bg-[#CFF3E2] dark:bg-[#1B362E] border-b border-[#115E42]/15 flex items-center justify-between gap-2 text-xs">
+            <span class="font-extrabold text-[#115E42] dark:text-[#A7F3D0] truncate">Attached: ${esc(aiDocName || aiImageName)}</span>
+            <button type="button" id="aiClearContextBtn" class="px-3 py-1 rounded-full bg-white/80 dark:bg-[#17131F]/70 text-[#8E1B3B] dark:text-[#FDA4AF] font-extrabold shrink-0 min-h-[36px]">Remove ✕</button>
           </div>
         ` : ''}
 
         <!-- Chat Messages -->
-        <div id="oneoraAiMessages" class="p-4 sm:p-5 space-y-3 min-h-[320px] max-h-[52vh] overflow-y-auto bg-[#F6F7FB] dark:bg-[#0C1020]">
+        <div id="oneoraAiMessages" class="p-4 sm:p-5 space-y-3 min-h-[320px] max-h-[52vh] overflow-y-auto bg-[#FFF7EE] dark:bg-[#17131F]">
           ${memHistory.length ? memHistory.map((m, idx) => `
             <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
-              <div class="max-w-[88%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
+              <div class="max-w-[88%] px-4 py-3.5 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === 'user'
-                  ? 'bg-[#7457E8] text-white shadow-sm'
+                  ? 'rounded-[24px] rounded-br-md bg-[#5B3FD0] text-white shadow-sm'
                   : m.role === 'error'
-                    ? 'bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-200'
-                    : 'bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-slate-800 text-[#171B2C] dark:text-[#F5F6FC] shadow-sm'
+                    ? 'rounded-[24px] rounded-bl-md bg-[#FFD6D6] dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] font-semibold'
+                    : 'rounded-[24px] rounded-bl-md bg-white dark:bg-[#221C2E] border border-[#2B2236]/8 dark:border-[#F5EEFF]/10 text-[#2B2236] dark:text-[#F5EEFF] shadow-xs'
               }">
                 <div>${esc(m.text)}</div>
-                <div class="flex items-center justify-between gap-3 mt-1.5 text-[10px] opacity-75">
+                <div class="flex items-center justify-between gap-3 mt-2 text-[11px] opacity-80">
                   <span class="tabular-nums">${esc(m.at || '')}</span>
-                  ${m.role === 'assistant' ? `<div class="flex items-center gap-2.5"><button type="button" data-ai-copy="${idx}" class="font-semibold hover:underline">Copy</button><button type="button" data-ai-speak="${idx}" class="font-semibold hover:underline">Speak</button></div>` : ''}
+                  ${m.role === 'assistant' ? `<div class="flex items-center gap-2"><button type="button" data-ai-copy="${idx}" class="px-2.5 py-1 rounded-full bg-[#E4D9FF]/60 dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] font-extrabold">Copy</button><button type="button" data-ai-speak="${idx}" class="px-2.5 py-1 rounded-full bg-[#CFF3E2]/70 dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] font-extrabold">Speak</button></div>` : ''}
                 </div>
               </div>
             </div>
           `).join('') : `
-            <div class="text-center py-10 space-y-2 max-w-md mx-auto">
-              <p class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Ask ONEORA AI anything</p>
-              <p class="text-xs text-[#777F91] dark:text-[#A5ADC2]">Attach a PDF, Word file, or photo to summarize, extract text, translate between Bengali, English &amp; Hindi, analyze your monthly spending, or draft formal letters.</p>
+            <div class="pastel-empty-state my-4 max-w-md mx-auto">
+              <div class="w-16 h-16 rounded-[22px] bg-[#CBBBFF] dark:bg-[#2F244D] text-[#3E26A0] dark:text-[#E4D9FF] flex items-center justify-center shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              </div>
+              <p class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Ask ONEORA AI anything</p>
+              <p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Attach a PDF, Word doc, or photo to summarize, translate between বাংলা, English &amp; हिन्दी, analyze monthly spending, or draft formal letters.</p>
             </div>
           `}
-          ${aiSending ? '<div class="flex justify-start"><div class="px-4 py-2.5 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-slate-800 text-xs font-semibold text-[#7457E8] dark:text-[#648BFF]">ONEORA AI is thinking...</div></div>' : ''}
+          ${aiSending ? '<div class="flex justify-start"><div class="px-4 py-2.5 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold animate-pulse">ONEORA AI is thinking…</div></div>' : ''}
         </div>
 
-        <!-- Composer -->
-        <form id="oneoraAiForm" class="p-3 sm:p-4 bg-white dark:bg-[#151B2F] border-t border-[#E8EAF2] dark:border-slate-800 flex flex-col gap-2">
+        <!-- Pill Composer -->
+        <form id="oneoraAiForm" class="p-3 sm:p-4 bg-white dark:bg-[#221C2E] border-t border-[#2B2236]/8 dark:border-[#F5EEFF]/10 flex flex-col gap-2">
           <div class="flex items-center gap-2">
-            <label class="cursor-pointer w-11 h-11 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-slate-700 hover:border-[#7457E8] text-[#171B2C] dark:text-[#F5F6FC] flex items-center justify-center shrink-0 transition" title="Attach PDF, DOCX, TXT, or Image">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            <label class="cursor-pointer w-11 h-11 rounded-full bg-[#FFF7EE] dark:bg-[#17131F] border border-[#2B2236]/12 dark:border-[#F5EEFF]/12 hover:border-[#5B3FD0] text-[#2B2236] dark:text-[#F5EEFF] flex items-center justify-center shrink-0 transition" title="Attach PDF, DOCX, TXT, or Image">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
               <input type="file" id="aiAttachFileInput" accept=".pdf,.docx,.txt,.csv,image/*" class="hidden" />
             </label>
-            <button type="button" id="aiVoiceInputBtn" class="w-11 h-11 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-slate-700 hover:border-[#7457E8] text-[#171B2C] dark:text-[#F5F6FC] flex items-center justify-center shrink-0 transition" title="Voice Input">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            <button type="button" id="aiVoiceInputBtn" class="w-11 h-11 rounded-full bg-[#FFF7EE] dark:bg-[#17131F] border border-[#2B2236]/12 dark:border-[#F5EEFF]/12 hover:border-[#5B3FD0] text-[#2B2236] dark:text-[#F5EEFF] flex items-center justify-center shrink-0 transition" title="Voice Input">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
             </button>
-            <input type="text" id="aiPromptInput" autocomplete="off" maxlength="4000" placeholder="Ask in English, বাংলা, or हिन्दी..." class="flex-1 min-w-0 px-4 py-2.5 rounded-xl border border-[#E8EAF2] dark:border-slate-700 bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-medium text-[#171B2C] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8] min-h-[44px]" />
-            <button type="submit" ${aiSending ? 'disabled' : ''} class="px-5 h-11 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold shrink-0 disabled:opacity-50 transition">Send</button>
+            <input type="text" id="aiPromptInput" autocomplete="off" maxlength="4000" placeholder="Ask in English, বাংলা, or हिन्दी..." class="pastel-pill-input !rounded-full flex-1 min-w-0 text-sm font-medium" />
+            <button type="submit" ${aiSending ? 'disabled' : ''} class="px-5 h-11 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold shrink-0 disabled:opacity-50 shadow-sm transition">Send</button>
           </div>
         </form>
       </div>

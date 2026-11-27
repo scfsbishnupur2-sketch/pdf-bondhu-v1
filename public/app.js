@@ -67,14 +67,15 @@ const utils = {
       overlay.classList.remove('flex');
     }, 200);
   },
-  showToast(title, message, type = 'success') {
+  showToast(title, message, type = 'success', duration = 2000) {
     const toast = document.getElementById('toast');
     const icon = document.getElementById('toastIcon');
+    if (!toast || !icon) return;
     document.getElementById('toastTitle').textContent = title;
     document.getElementById('toastMsg').textContent = message;
-    
-    toast.className = `fixed top-20 right-4 lg:right-8 z-50 transform transition-all duration-300 translate-x-0 opacity-100 bg-white dark:bg-slate-900 shadow-2xl rounded-xl p-4 flex items-start gap-3 max-w-sm border`;
-    
+
+    toast.className = 'fixed bottom-[88px] lg:bottom-6 left-1/2 -translate-x-1/2 z-[70] w-[calc(100%-2rem)] max-w-sm transform transition-all duration-200 translate-y-0 opacity-100 pointer-events-auto bg-white dark:bg-[#221C2E] shadow-2xl rounded-2xl p-3.5 flex items-start gap-3 border';
+
     if (type === 'success') {
       toast.classList.add('border-emerald-300', 'dark:border-emerald-700');
       icon.innerHTML = `<div class="bg-emerald-100 dark:bg-emerald-500/20 p-1.5 rounded-full"><svg class="text-emerald-600 dark:text-emerald-400 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -88,9 +89,9 @@ const utils = {
 
     clearTimeout(utils._toastTimer);
     utils._toastTimer = setTimeout(() => {
-      toast.classList.remove('translate-x-0', 'opacity-100');
-      toast.classList.add('translate-x-full', 'opacity-0');
-    }, 4000);
+      toast.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+      toast.classList.add('translate-y-4', 'opacity-0', 'pointer-events-none');
+    }, Math.max(1200, Number(duration) || 2000));
   },
   recordProcessedFile() {
     try {
@@ -4089,7 +4090,7 @@ function initTheme() {
       toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
     }
     if (metaTheme) {
-      metaTheme.setAttribute('content', isDark ? '#151B2B' : '#293B80');
+      metaTheme.setAttribute('content', isDark ? '#17131F' : '#FFF7EE');
     }
     if (persist) {
       try {
@@ -4104,14 +4105,15 @@ function initTheme() {
 
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
+      if (typeof window.oneoraHaptic === 'function') window.oneoraHaptic(12);
       const nextDark = !document.documentElement.classList.contains('dark');
       applyTheme(nextDark, true);
       const nextMode = nextDark ? 'dark' : 'light';
       document.querySelectorAll('[data-theme-mode]').forEach((b) => {
         const act = b.getAttribute('data-theme-mode') === nextMode;
-        b.classList.toggle('bg-[#293B80]', act);
+        b.classList.toggle('bg-[#5B3FD0]', act);
         b.classList.toggle('text-white', act);
-        b.classList.toggle('border-[#293B80]', act);
+        b.classList.toggle('border-[#5B3FD0]', act);
       });
       utils.showToast(
         nextDark ? 'Dark Mode Enabled' : 'Light Mode Enabled',

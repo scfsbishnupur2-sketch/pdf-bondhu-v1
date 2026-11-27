@@ -1,15 +1,15 @@
 {
   "id": "./",
-  "name": "ONEORA — One App, More Possibilities",
+  "name": "ONEORA — Everyday Documents, Money & Life",
   "short_name": "ONEORA",
-  "description": "One App, More Possibilities. Offline-first All-in-One Productivity, PDF Studio, Image Studio, Office Suite, Daily Planner, Money Manager, Encrypted Vault & ONEORA AI.",
+  "description": "Offline-first PDF Studio, All-Document Reader, Image Tools, India ID Helpers, Finance, Planner & Encrypted Vault.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#151B2B",
-  "theme_color": "#293B80",
-  "categories": ["productivity", "finance", "utilities"],
+  "orientation": "portrait-primary",
+  "background_color": "#FFF7EE",
+  "theme_color": "#5B3FD0",
+  "categories": ["productivity", "utilities", "finance"],
   "icons": [
     {
       "src": "./pwa-192x192.png",
@@ -24,57 +24,96 @@
       "purpose": "any"
     },
     {
-      "src": "./pwa-maskable-512x512.png",
+      "src": "./pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
+  "share_target": {
+    "action": "./?share_target=1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "shared_files",
+          "accept": [
+            "application/pdf",
+            ".pdf",
+            "image/*",
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+            ".doc",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xlsx",
+            ".xls",
+            "text/csv",
+            ".csv",
+            "text/plain",
+            ".txt"
+          ]
+        }
+      ]
+    }
+  },
   "file_handlers": [
     {
       "action": "./?open=doc",
       "accept": {
         "application/pdf": [".pdf"],
-        "application/msword": [".doc"],
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-        "application/rtf": [".rtf"],
-        "application/vnd.ms-excel": [".xls"],
+        "application/msword": [".doc"],
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-        "text/csv": [".csv"],
-        "application/vnd.ms-powerpoint": [".ppt"],
+        "application/vnd.ms-excel": [".xls"],
         "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
-        "text/plain": [".txt"],
-        "application/zip": [".zip"],
-        "image/jpeg": [".jpg", ".jpeg"],
-        "image/png": [".png"],
-        "image/webp": [".webp"],
-        "image/gif": [".gif"]
+        "application/vnd.ms-powerpoint": [".ppt"],
+        "text/csv": [".csv"],
+        "application/rtf": [".rtf"],
+        "text/plain": [".txt"]
       }
     }
   ],
   "shortcuts": [
     {
+      "name": "Scan Document",
+      "short_name": "Scan",
+      "description": "Scan documents, bills & notes to PDF in one tap",
+      "url": "./?shortcut=pdfScanner",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Merge PDF",
+      "short_name": "Merge PDF",
+      "description": "Combine multiple PDFs cleanly offline",
+      "url": "./?shortcut=pdfMerge",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Add Expense",
+      "short_name": "Add Expense",
+      "description": "Record an expense or income in ONEORA Money",
+      "url": "./?shortcut=oneoraMoneyTab&action=add_expense",
+      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "All-Document Reader",
       "short_name": "Read Docs",
+      "description": "Open PDF, Word, Excel & PowerPoint offline",
       "url": "./?shortcut=pdfReaderTool",
-      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Daily Planner & Reminders",
-      "short_name": "Planner",
-      "url": "./?shortcut=oneoraPlannerTab",
-      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Money & Expenses",
-      "short_name": "Money",
-      "url": "./?shortcut=oneoraMoneyTab",
-      "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Scan Document to PDF",
-      "short_name": "Scan PDF",
-      "url": "./?shortcut=pdfScanner",
       "icons": [{ "src": "./pwa-192x192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]

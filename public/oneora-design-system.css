@@ -1,75 +1,128 @@
 /* ==========================================================================
-   ONEORA — World-Class Luxury Minimalist Design System (v3.1)
-   Brand Identity: Midnight Navy · Royal Violet · Electric Blue · Soft Lavender
-   Light Canvas: #F6F7FB / #FFFFFF · Dark Canvas: #0C1020 / #151B2F / #1D2540
+   ONEORA — Design "A · Pastel" Design System (Stage 1)
+   Light: Warm Cream #FFF7EE · Ink #2B2236 · Primary Violet #5B3FD0 · Hero #CBBBFF
+   Dark:  Warm Dark #17131F  · Surface #221C2E · Text #F5EEFF · Deep Pastels
    ========================================================================== */
 
 :root {
-  /* Brand Palette */
-  --oneora-navy: #10152A;
-  --oneora-indigo: #252B55;
-  --oneora-violet: #7457E8;
-  --oneora-violet-hover: #5E42D4;
-  --oneora-blue: #648BFF;
-  --oneora-lavender: #F3F0FF;
-
-  /* Light Neutrals (60-30-10 Discipline) */
-  --oneora-bg: #F6F7FB;
+  /* Core Brand & Canvas Tokens */
+  --oneora-bg: #FFF7EE;
   --oneora-surface: #FFFFFF;
-  --oneora-elevated: #F1F3FA;
-  --oneora-surface-elevated: #F1F3FA;
-  --oneora-text: #14182B;
-  --oneora-text-secondary: #647087;
-  --oneora-text-muted: #647087;
-  --oneora-border: #E6E9F2;
-  --oneora-border-strong: #D3D8E8;
+  --oneora-elevated: #FAF0E4;
+  --oneora-surface-elevated: #FAF0E4;
+  --oneora-ink: #2B2236;
+  --oneora-text: #2B2236;
+  --oneora-text-secondary: #5C506B;
+  --oneora-text-muted: #5C506B;
+  --oneora-border: rgba(43, 34, 54, 0.08);
+  --oneora-border-strong: rgba(43, 34, 54, 0.16);
+
+  /* Brand Accents */
+  --oneora-navy: #2B2236;
+  --oneora-indigo: #462FA8;
+  --oneora-violet: #5B3FD0;
+  --oneora-violet-hover: #4A30B8;
+  --oneora-violet-soft: #EFEAFF;
+  --oneora-blue: #3B73E6;
+  --oneora-lavender: #CBBBFF;
+  --oneora-hero-bg: #CBBBFF;
+  --oneora-hero-ink: #2B2236;
+  --oneora-hero-sub: #42335C;
+
+  /* Category Pastels (Light Mode — WCAG AA/AAA verified with #2B2236 ink) */
+  --pastel-pdf: #FFD6D6;
+  --pastel-pdf-accent: #A11F31;
+  --pastel-image: #D6E8FF;
+  --pastel-image-accent: #1B4E9B;
+  --pastel-office: #CFF3E2;
+  --pastel-office-accent: #136143;
+  --pastel-lifemoney: #FFE7C2;
+  --pastel-lifemoney-accent: #824709;
+  --pastel-india: #FFF1A8;
+  --pastel-india-accent: #6E5000;
+  --pastel-vault: #E4D9FF;
+  --pastel-vault-accent: #4B2FB8;
+
+  /* White Icon Tile Inside Pastel Cards */
+  --pastel-tile-bg: #FFFFFF;
+  --pastel-tile-shadow: 0 6px 16px -6px rgba(43, 34, 54, 0.12);
 
   /* Semantic Status (Never Hue-Only) */
-  --oneora-success: #059669;
-  --oneora-warning: #B45309;
-  --oneora-error: #DC2626;
-  --oneora-info: #2563EB;
-  --oneora-income: #059669;
-  --oneora-expense: #E11D48;
+  --oneora-success: #13734C;
+  --oneora-warning: #9A5508;
+  --oneora-error: #C81E35;
+  --oneora-info: #255AC7;
+  --oneora-income: #13734C;
+  --oneora-expense: #C81E35;
 
-  /* Elevation — Single-Level Architectural Depth */
-  --oneora-shadow-xs: 0 1px 2px rgba(16, 21, 42, 0.035);
-  --oneora-shadow-sm: 0 8px 24px -10px rgba(16, 21, 42, 0.08);
-  --oneora-shadow-md: 0 18px 40px -16px rgba(16, 21, 42, 0.14);
-  --oneora-shadow-brand: 0 20px 44px -18px rgba(16, 21, 42, 0.36);
+  /* Soft Warm Elevation */
+  --oneora-shadow-xs: 0 2px 8px -2px rgba(43, 34, 54, 0.05);
+  --oneora-shadow-sm: 0 10px 26px -12px rgba(43, 34, 54, 0.11);
+  --oneora-shadow-md: 0 18px 42px -16px rgba(43, 34, 54, 0.16);
+  --oneora-shadow-nav: 0 -10px 32px -8px rgba(43, 34, 54, 0.09);
+  --oneora-shadow-brand: 0 16px 34px -14px rgba(91, 63, 208, 0.28);
 
-  /* Spacing & Geometry Scale */
-  --oneora-radius-xs: 8px;
-  --oneora-radius-sm: 12px;
-  --oneora-radius-md: 16px;
-  --oneora-radius-lg: 20px;
-  --oneora-radius-xl: 24px;
+  /* Friendly Geometry & Spring Physics */
+  --oneora-radius-xs: 10px;
+  --oneora-radius-sm: 14px;
+  --oneora-radius-md: 20px;
+  --oneora-radius-lg: 24px;
+  --oneora-radius-xl: 30px;
+  --oneora-radius-2xl: 32px;
   --oneora-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --oneora-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Matching Warm Dark Mode (Deep Versions of the Same Pastels) */
 html.dark {
-  --oneora-bg: #0C1020;
-  --oneora-surface: #151B2F;
-  --oneora-elevated: #1D2540;
-  --oneora-surface-elevated: #1D2540;
-  --oneora-text: #F5F6FC;
-  --oneora-text-secondary: #9EA8C0;
-  --oneora-text-muted: #9EA8C0;
-  --oneora-border: #232C4A;
-  --oneora-border-strong: #323F66;
-  --oneora-lavender: rgba(116, 87, 232, 0.16);
+  --oneora-bg: #17131F;
+  --oneora-surface: #221C2E;
+  --oneora-elevated: #2B243A;
+  --oneora-surface-elevated: #2B243A;
+  --oneora-ink: #F5EEFF;
+  --oneora-text: #F5EEFF;
+  --oneora-text-secondary: #C5B9DA;
+  --oneora-text-muted: #C5B9DA;
+  --oneora-border: rgba(245, 238, 255, 0.09);
+  --oneora-border-strong: rgba(245, 238, 255, 0.18);
 
-  --oneora-success: #34D399;
-  --oneora-warning: #FBBF24;
-  --oneora-error: #F87171;
-  --oneora-info: #648BFF;
-  --oneora-income: #34D399;
-  --oneora-expense: #FB7185;
+  --oneora-violet: #8D74FF;
+  --oneora-violet-hover: #7B5FF5;
+  --oneora-violet-soft: rgba(141, 116, 255, 0.18);
+  --oneora-lavender: #312552;
+  --oneora-hero-bg: #2F244D;
+  --oneora-hero-ink: #F5EEFF;
+  --oneora-hero-sub: #D6CAF0;
 
-  --oneora-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --oneora-shadow-sm: 0 10px 26px -10px rgba(0, 0, 0, 0.45);
-  --oneora-shadow-md: 0 22px 48px -16px rgba(0, 0, 0, 0.62);
-  --oneora-shadow-brand: 0 22px 50px -16px rgba(116, 87, 232, 0.28);
+  /* Deep Pastels (Dark Mode — AA/AAA contrast with #F5EEFF text) */
+  --pastel-pdf: #3D212B;
+  --pastel-pdf-accent: #FFA3AF;
+  --pastel-image: #1F2E44;
+  --pastel-image-accent: #9BC7FF;
+  --pastel-office: #1B362E;
+  --pastel-office-accent: #7CE8BE;
+  --pastel-lifemoney: #3D2E1D;
+  --pastel-lifemoney-accent: #FFD294;
+  --pastel-india: #3A3219;
+  --pastel-india-accent: #FFE88E;
+  --pastel-vault: #2D2347;
+  --pastel-vault-accent: #CFC1FF;
+
+  --pastel-tile-bg: #17131F;
+  --pastel-tile-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.45);
+
+  --oneora-success: #5EEAD4;
+  --oneora-warning: #FCD34D;
+  --oneora-error: #FDA4AF;
+  --oneora-info: #93C5FD;
+  --oneora-income: #5EEAD4;
+  --oneora-expense: #FDA4AF;
+
+  --oneora-shadow-xs: 0 2px 8px rgba(0, 0, 0, 0.24);
+  --oneora-shadow-sm: 0 12px 28px -10px rgba(0, 0, 0, 0.44);
+  --oneora-shadow-md: 0 20px 48px -14px rgba(0, 0, 0, 0.62);
+  --oneora-shadow-nav: 0 -10px 32px rgba(0, 0, 0, 0.48);
+  --oneora-shadow-brand: 0 18px 40px -14px rgba(0, 0, 0, 0.56);
 }
 
 /* ==========================================================================
@@ -96,7 +149,15 @@ html.dark body.oneora-app-body {
 
 h1, h2, h3 {
   text-wrap: balance;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+}
+
+.oneora-pastel-heading {
+  font-size: 28px;
+  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--oneora-text);
 }
 
 .tabular-nums {
@@ -108,47 +169,78 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--oneora-violet);
+  outline: 2.5px solid var(--oneora-violet);
   outline-offset: 2px;
 }
 
 /* ==========================================================================
-   TOP APP BAR & NAVIGATION CHROME (15% Mobile Sticky Budget Respected)
+   TOP APP BAR & WHITE ROUNDED-TOP BOTTOM NAVIGATION
    ========================================================================== */
 .oneora-header {
-  background: rgba(246, 247, 251, 0.88);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: rgba(255, 247, 238, 0.90);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border-bottom: 1px solid var(--oneora-border);
 }
 
 html.dark .oneora-header {
-  background: rgba(12, 16, 32, 0.88);
+  background: rgba(23, 19, 31, 0.90);
   border-bottom-color: var(--oneora-border);
 }
 
+.oneora-icon-btn {
+  background: var(--oneora-surface);
+  color: var(--oneora-text);
+  border: 1px solid var(--oneora-border);
+  box-shadow: var(--oneora-shadow-xs);
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms var(--oneora-spring), background-color 160ms var(--oneora-ease), border-color 160ms var(--oneora-ease);
+}
+
+.oneora-icon-btn:hover {
+  border-color: var(--oneora-violet);
+}
+
+/* White Bottom Nav with Rounded Top (Mobile) + Warm Rail (Desktop) */
 .pb-nav-surface {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-color: var(--oneora-border);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #FFFFFF;
+  border-top: 1px solid var(--oneora-border);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  box-shadow: var(--oneora-shadow-nav);
+  padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
 }
 
 html.dark .pb-nav-surface {
-  background: rgba(17, 22, 41, 0.94);
-  border-color: var(--oneora-border);
+  background: #221C2E;
+  border-top-color: var(--oneora-border);
+}
+
+@media (min-width: 1024px) {
+  .pb-nav-surface {
+    border-radius: 0;
+    border-top: 0;
+    border-right: 1px solid var(--oneora-border);
+    box-shadow: none;
+    background: var(--oneora-surface);
+  }
 }
 
 .pb-nav-btn {
   color: var(--oneora-text-secondary);
-  font-weight: 600;
-  transition: color 160ms var(--oneora-ease), transform 140ms var(--oneora-ease), background-color 160ms var(--oneora-ease);
+  font-weight: 700;
+  min-height: 48px;
+  border-radius: 18px;
+  transition: color 160ms var(--oneora-ease), transform 220ms var(--oneora-spring), background-color 160ms var(--oneora-ease);
 }
 
 .pb-nav-btn:hover {
   color: var(--oneora-text);
-  background-color: var(--oneora-elevated);
 }
 
 .pb-nav-btn:active {
@@ -157,32 +249,36 @@ html.dark .pb-nav-surface {
 
 .pb-nav-btn.pb-nav-active {
   color: var(--oneora-violet);
-  font-weight: 700;
-}
-
-html.dark .pb-nav-btn.pb-nav-active {
-  color: #B9ACFF;
 }
 
 .pb-nav-btn.pb-nav-active .pb-nav-icon-wrap {
-  background: linear-gradient(135deg, var(--oneora-violet) 0%, var(--oneora-blue) 100%);
-  color: #FFFFFF;
-  box-shadow: 0 6px 16px -4px rgba(116, 87, 232, 0.45);
+  background: var(--oneora-violet-soft);
+  color: var(--oneora-violet);
 }
 
-/* Desktop Sidebar Studio Links */
+html.dark .pb-nav-btn.pb-nav-active {
+  color: #CBBBFF;
+}
+
+html.dark .pb-nav-btn.pb-nav-active .pb-nav-icon-wrap {
+  background: rgba(203, 187, 255, 0.16);
+  color: #CBBBFF;
+}
+
+/* Desktop Sidebar Category Links */
 .oneora-rail-link {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
   text-align: left;
-  padding: 9px 12px;
-  border-radius: 12px;
-  font-size: 12.5px;
-  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--oneora-text-secondary);
-  transition: background-color 150ms var(--oneora-ease), color 150ms var(--oneora-ease);
+  min-height: 44px;
+  transition: transform 200ms var(--oneora-spring), background-color 150ms var(--oneora-ease), color 150ms var(--oneora-ease);
 }
 
 .oneora-rail-link:hover {
@@ -190,31 +286,302 @@ html.dark .pb-nav-btn.pb-nav-active {
   color: var(--oneora-text);
 }
 
-.oneora-rail-link.is-accent {
-  background-color: var(--oneora-lavender);
-  color: var(--oneora-violet);
-  font-weight: 700;
-}
-
-html.dark .oneora-rail-link.is-accent {
-  color: #C4B5FD;
+.oneora-rail-link:active {
+  transform: scale(0.96);
 }
 
 /* ==========================================================================
-   ARCHITECTURAL HERO SURFACE (Selective Brand Signature Gradient)
+   PASTEL HOME — PILL SEARCH, LAVENDER HERO & 2-COLUMN CATEGORY CARDS
    ========================================================================== */
-.pb-hero-mesh,
-.oneora-hero-card {
-  background:
-    radial-gradient(110% 100% at 95% 5%, rgba(116, 87, 232, 0.34) 0%, rgba(116, 87, 232, 0) 56%),
-    radial-gradient(85% 90% at 6% 96%, rgba(100, 139, 255, 0.22) 0%, rgba(100, 139, 255, 0) 55%),
-    linear-gradient(135deg, #10152A 0%, #192042 54%, #252B55 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--oneora-shadow-brand);
+.pastel-search-pill {
+  background: var(--oneora-surface);
+  color: var(--oneora-text);
+  border: 1.5px solid var(--oneora-border);
+  border-radius: 9999px;
+  min-height: 54px;
+  box-shadow: var(--oneora-shadow-sm);
+  transition: border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease);
+}
+
+.pastel-search-pill::placeholder {
+  color: var(--oneora-text-secondary);
+  opacity: 0.82;
+}
+
+.pastel-search-pill:focus {
+  border-color: var(--oneora-violet);
+  box-shadow: 0 0 0 4px rgba(91, 63, 208, 0.14), var(--oneora-shadow-sm);
+}
+
+.pastel-hero-card {
+  background-color: var(--oneora-hero-bg);
+  color: var(--oneora-hero-ink);
+  border-radius: 32px;
+  box-shadow: var(--oneora-shadow-sm);
+  border: 1px solid rgba(91, 63, 208, 0.12);
+  transition: transform 240ms var(--oneora-spring), box-shadow 180ms var(--oneora-ease);
+}
+
+html.dark .pastel-hero-card {
+  border-color: rgba(203, 187, 255, 0.18);
+}
+
+.pastel-hero-card:hover {
+  box-shadow: var(--oneora-shadow-md);
+}
+
+.pastel-hero-card:active {
+  transform: scale(0.96);
+}
+
+.pastel-hero-cta {
+  background-color: #5B3FD0;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  min-height: 46px;
+  padding: 0 20px;
+  font-weight: 800;
+  box-shadow: 0 10px 22px -10px rgba(91, 63, 208, 0.55);
+  transition: transform 220ms var(--oneora-spring), background-color 160ms var(--oneora-ease);
+}
+
+.pastel-hero-cta:hover {
+  background-color: #4A30B8;
+}
+
+.pastel-hero-cta:active {
+  transform: scale(0.96);
+}
+
+/* Pastel Category Theme Binding (Propagates Everywhere) */
+[data-pastel-cat="pdf"]       { --cat-bg: var(--pastel-pdf);       --cat-accent: var(--pastel-pdf-accent); }
+[data-pastel-cat="image"]     { --cat-bg: var(--pastel-image);     --cat-accent: var(--pastel-image-accent); }
+[data-pastel-cat="office"]    { --cat-bg: var(--pastel-office);    --cat-accent: var(--pastel-office-accent); }
+[data-pastel-cat="lifemoney"] { --cat-bg: var(--pastel-lifemoney); --cat-accent: var(--pastel-lifemoney-accent); }
+[data-pastel-cat="india"]     { --cat-bg: var(--pastel-india);     --cat-accent: var(--pastel-india-accent); }
+[data-pastel-cat="vault"]     { --cat-bg: var(--pastel-vault);     --cat-accent: var(--pastel-vault-accent); }
+
+.pastel-cat-card {
+  background-color: var(--cat-bg, var(--oneora-surface));
+  color: var(--oneora-text);
+  border-radius: 30px;
+  padding: 18px;
+  min-height: 148px;
+  box-shadow: var(--oneora-shadow-xs);
+  border: 1px solid rgba(43, 34, 54, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: transform 240ms var(--oneora-spring), box-shadow 180ms var(--oneora-ease);
+}
+
+html.dark .pastel-cat-card {
+  border-color: rgba(245, 238, 255, 0.08);
+}
+
+.pastel-cat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--oneora-shadow-sm);
+}
+
+.pastel-cat-card:active {
+  transform: scale(0.96);
+}
+
+.pastel-white-tile {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background-color: var(--pastel-tile-bg);
+  color: var(--cat-accent, var(--oneora-violet));
+  box-shadow: var(--pastel-tile-shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pastel-cat-sub {
+  color: var(--oneora-text-secondary);
+  font-weight: 600;
 }
 
 /* ==========================================================================
-   UNIFIED CARDS, TILES & LUXURY PRIMITIVES
+   CATEGORY SCREEN HEADER, TOOL LIST ROWS & BOTTOM SHEET
+   ========================================================================== */
+.pastel-cat-header {
+  background-color: var(--cat-bg, var(--oneora-hero-bg));
+  color: var(--oneora-text);
+  border-radius: 32px;
+  padding: 20px;
+  box-shadow: var(--oneora-shadow-sm);
+  border: 1px solid rgba(43, 34, 54, 0.06);
+}
+
+html.dark .pastel-cat-header {
+  border-color: rgba(245, 238, 255, 0.09);
+}
+
+.pastel-back-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background-color: var(--pastel-tile-bg);
+  color: var(--oneora-text);
+  box-shadow: var(--pastel-tile-shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 220ms var(--oneora-spring);
+}
+
+.pastel-back-circle:active {
+  transform: scale(0.96);
+}
+
+.pastel-tool-row {
+  background-color: var(--oneora-surface);
+  color: var(--oneora-text);
+  border: 1px solid var(--oneora-border);
+  border-radius: 24px;
+  padding: 12px 14px;
+  min-height: 70px;
+  box-shadow: var(--oneora-shadow-xs);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 220ms var(--oneora-spring), box-shadow 180ms var(--oneora-ease), border-color 160ms var(--oneora-ease);
+}
+
+.pastel-tool-row:hover {
+  border-color: var(--cat-accent, var(--oneora-violet));
+  box-shadow: var(--oneora-shadow-sm);
+}
+
+.pastel-tool-row:active {
+  transform: scale(0.96);
+}
+
+.pastel-tool-row-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background-color: var(--cat-bg, var(--oneora-violet-soft));
+  color: var(--cat-accent, var(--oneora-violet));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pastel-list-in-cat .pastel-tool-row {
+  background-color: color-mix(in srgb, var(--cat-bg) 48%, #FFFFFF);
+  border-color: color-mix(in srgb, var(--cat-accent) 16%, transparent);
+}
+
+html.dark .pastel-list-in-cat .pastel-tool-row {
+  background-color: color-mix(in srgb, var(--cat-bg) 72%, #221C2E);
+  border-color: rgba(245, 238, 255, 0.08);
+}
+
+.pastel-list-in-cat .pastel-tool-row-icon {
+  background-color: var(--pastel-tile-bg);
+  color: var(--cat-accent);
+  box-shadow: var(--pastel-tile-shadow);
+}
+
+/* Tool Preview Bottom Sheet */
+.pastel-sheet-backdrop {
+  background: rgba(23, 19, 31, 0.56);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.pastel-sheet-panel {
+  background: var(--oneora-surface);
+  color: var(--oneora-text);
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  box-shadow: 0 -20px 50px rgba(23, 19, 31, 0.24);
+  padding-bottom: max(22px, env(safe-area-inset-bottom, 16px));
+  animation: pastelSheetUp 280ms var(--oneora-spring) both;
+}
+
+@media (min-width: 640px) {
+  .pastel-sheet-panel {
+    border-radius: 32px;
+    padding-bottom: 24px;
+  }
+}
+
+.pastel-sheet-banner {
+  background-color: var(--cat-bg, var(--oneora-hero-bg));
+  border-radius: 24px;
+  padding: 16px;
+}
+
+/* ==========================================================================
+   MOTION — STAGGERED FADE-IN, SLIDE TRANSITIONS, SKELETON & SUCCESS
+   ========================================================================== */
+.pastel-stagger {
+  opacity: 0;
+  animation: pastelFadeUp 300ms var(--oneora-ease) both;
+  animation-delay: calc(var(--stagger-i, 0) * 42ms);
+}
+
+.pastel-slide-screen {
+  animation: pastelSlideIn 260ms var(--oneora-ease) both;
+}
+
+@keyframes pastelFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pastelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pastelSheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pastelSuccessPop {
+  0%   { opacity: 0; transform: scale(0.84); }
+  65%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.pastel-success-pop {
+  animation: pastelSuccessPop 360ms var(--oneora-spring) both;
+}
+
+/* ==========================================================================
+   SHARED PRIMITIVES & CROSS-SCREEN HARMONIZATION (PRESERVES ALL TOOLS)
    ========================================================================== */
 .pb-tool-tile,
 .oneora-card,
@@ -222,7 +589,7 @@ html.dark .oneora-rail-link.is-accent {
   background-color: var(--oneora-surface);
   border: 1px solid var(--oneora-border);
   box-shadow: var(--oneora-shadow-xs);
-  transition: transform 180ms var(--oneora-ease), border-color 180ms var(--oneora-ease), box-shadow 180ms var(--oneora-ease), background-color 180ms var(--oneora-ease);
+  transition: transform 220ms var(--oneora-spring), border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease);
 }
 
 .oneora-surface {
@@ -231,128 +598,54 @@ html.dark .oneora-rail-link.is-accent {
 
 .pb-tool-tile:hover,
 button.oneora-card:hover {
-  border-color: rgba(116, 87, 232, 0.42);
+  border-color: var(--oneora-violet);
   box-shadow: var(--oneora-shadow-sm);
-  transform: translateY(-1px);
 }
 
 .pb-tool-tile:active,
 button.oneora-card:active {
-  transform: scale(0.985);
+  transform: scale(0.96);
 }
 
-/* Quick Action Tile */
-.oneora-qa-tile {
-  background-color: var(--oneora-surface);
-  border: 1px solid var(--oneora-border);
-  color: var(--oneora-text);
-  box-shadow: var(--oneora-shadow-xs);
-  min-height: 84px;
-  transition: transform 160ms var(--oneora-ease), border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
-}
-
-.oneora-qa-tile:hover {
-  border-color: rgba(116, 87, 232, 0.45);
-  box-shadow: var(--oneora-shadow-sm);
-  transform: translateY(-1px);
-}
-
-.oneora-qa-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Soft-Tinted Luxury Icon Wells */
 .oneora-icon-well {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: #EEF1FA;
-  color: #252B55;
+  background: var(--pastel-vault);
+  color: var(--pastel-vault-accent);
 }
 
-html.dark .oneora-icon-well {
-  background: #1D2540;
-  color: #B9ACFF;
-}
+.oneora-icon-well.tone-rose    { background: var(--pastel-pdf);       color: var(--pastel-pdf-accent); }
+.oneora-icon-well.tone-blue    { background: var(--pastel-image);     color: var(--pastel-image-accent); }
+.oneora-icon-well.tone-emerald { background: var(--pastel-office);    color: var(--pastel-office-accent); }
+.oneora-icon-well.tone-amber   { background: var(--pastel-lifemoney); color: var(--pastel-lifemoney-accent); }
+.oneora-icon-well.tone-violet  { background: var(--pastel-vault);     color: var(--pastel-vault-accent); }
 
-.oneora-icon-well.tone-violet {
-  background: #F3F0FF;
-  color: #6B4CE6;
-}
-html.dark .oneora-icon-well.tone-violet {
-  background: rgba(116, 87, 232, 0.18);
-  color: #C4B5FD;
-}
-
-.oneora-icon-well.tone-blue {
-  background: #EFF5FF;
-  color: #2563EB;
-}
-html.dark .oneora-icon-well.tone-blue {
-  background: rgba(100, 139, 255, 0.16);
-  color: #93C5FD;
-}
-
-.oneora-icon-well.tone-emerald {
-  background: #ECFDF5;
-  color: #047857;
-}
-html.dark .oneora-icon-well.tone-emerald {
-  background: rgba(16, 185, 129, 0.15);
-  color: #6EE7B7;
-}
-
-.oneora-icon-well.tone-rose {
-  background: #FFF1F2;
-  color: #BE123C;
-}
-html.dark .oneora-icon-well.tone-rose {
-  background: rgba(244, 63, 94, 0.15);
-  color: #FDA4AF;
-}
-
-.oneora-icon-well.tone-amber {
-  background: #FFFBEB;
-  color: #B45309;
-}
-html.dark .oneora-icon-well.tone-amber {
-  background: rgba(245, 158, 11, 0.16);
-  color: #FCD34D;
-}
-
-/* Reusable Buttons */
 .oneora-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 10px 18px;
-  border-radius: 14px;
-  background: var(--oneora-violet);
+  min-height: 46px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  background: #5B3FD0;
   color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 10px 24px -12px rgba(116, 87, 232, 0.6);
-  transition: background-color 160ms var(--oneora-ease), transform 140ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
+  font-weight: 800;
+  box-shadow: 0 10px 22px -10px rgba(91, 63, 208, 0.52);
+  transition: background-color 160ms var(--oneora-ease), transform 220ms var(--oneora-spring), box-shadow 160ms var(--oneora-ease);
 }
 
 .oneora-btn-primary:hover {
-  background: var(--oneora-violet-hover);
-  box-shadow: 0 14px 28px -12px rgba(116, 87, 232, 0.72);
-  transform: translateY(-1px);
+  background: #4A30B8;
 }
 
 .oneora-btn-primary:active {
-  transform: scale(0.985);
+  transform: scale(0.96);
 }
 
 .oneora-btn-secondary {
@@ -360,29 +653,27 @@ html.dark .oneora-icon-well.tone-amber {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
-  padding: 9px 15px;
-  border-radius: 13px;
+  min-height: 44px;
+  padding: 9px 16px;
+  border-radius: 9999px;
   background: var(--oneora-elevated);
   border: 1px solid var(--oneora-border);
   color: var(--oneora-text);
-  font-weight: 600;
-  transition: border-color 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease), transform 140ms var(--oneora-ease);
+  font-weight: 700;
+  transition: border-color 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease), transform 220ms var(--oneora-spring);
 }
 
-.oneora-btn-secondary:hover {
-  border-color: rgba(116, 87, 232, 0.45);
-  background: var(--oneora-surface);
+.oneora-btn-secondary:active {
+  transform: scale(0.96);
 }
 
-/* Reusable Inputs & Segmented Controls */
 .oneora-input {
   width: 100%;
-  min-height: 44px;
-  padding: 10px 14px;
-  border-radius: 13px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 18px;
   background: var(--oneora-bg);
-  border: 1px solid var(--oneora-border);
+  border: 1.5px solid var(--oneora-border);
   color: var(--oneora-text);
   font-weight: 500;
   outline: none;
@@ -392,56 +683,50 @@ html.dark .oneora-icon-well.tone-amber {
 .oneora-input:focus {
   border-color: var(--oneora-violet);
   background: var(--oneora-surface);
-  box-shadow: 0 0 0 3px rgba(116, 87, 232, 0.14);
+  box-shadow: 0 0 0 3px rgba(91, 63, 208, 0.14);
 }
 
 .oneora-segmented {
-  background: var(--oneora-bg);
+  background: var(--oneora-elevated);
   border: 1px solid var(--oneora-border);
-  border-radius: 15px;
+  border-radius: 9999px;
   padding: 4px;
 }
 
 .oneora-seg-btn {
   min-height: 40px;
-  padding: 8px 13px;
-  border-radius: 11px;
+  padding: 8px 14px;
+  border-radius: 9999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--oneora-text-secondary);
-  transition: background-color 160ms var(--oneora-ease), color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
-}
-
-.oneora-seg-btn:hover {
-  color: var(--oneora-text);
+  transition: background-color 160ms var(--oneora-ease), color 160ms var(--oneora-ease);
 }
 
 .oneora-seg-btn.is-active {
   background: var(--oneora-surface);
   color: var(--oneora-text);
-  font-weight: 700;
   box-shadow: var(--oneora-shadow-xs);
 }
 
 html.dark .oneora-seg-btn.is-active {
-  background: var(--oneora-violet);
+  background: #5B3FD0;
   color: #FFFFFF;
 }
 
-/* Empty & Skeleton Loading States */
 .oneora-empty-state {
-  border: 1px dashed var(--oneora-border-strong);
-  border-radius: 18px;
-  padding: 26px 18px;
+  border: 1.5px dashed var(--oneora-border-strong);
+  border-radius: 26px;
+  padding: 28px 20px;
   text-align: center;
-  background: var(--oneora-bg);
+  background: var(--oneora-surface);
 }
 
 .oneora-skeleton {
   background: linear-gradient(90deg, var(--oneora-elevated) 25%, var(--oneora-border) 50%, var(--oneora-elevated) 75%);
   background-size: 200% 100%;
   animation: oneoraShimmer 1.35s ease-in-out infinite;
-  border-radius: 10px;
+  border-radius: 16px;
 }
 
 @keyframes oneoraShimmer {
@@ -450,24 +735,271 @@ html.dark .oneora-seg-btn.is-active {
 }
 
 /* ==========================================================================
-   UNIVERSAL CROSS-SCREEN HARMONIZATION (EVERY INTERNAL TOOL, FORM & MODAL)
-   Ensures all 40+ tool screens share ONEORA's exact cards, borders, inputs,
-   dropzones, and dark surfaces without breaking any tool logic.
+   STAGE 2 · SHARED PASTEL TOOL SCREEN TEMPLATE
+   Pastel Top Bar · Dashed Upload Zone · Collapsible Options · Sticky Button · Result Screen
    ========================================================================== */
+
+/* Pastel Tool Top Bar — Inherits Active Category Pastel Everywhere */
 #toolContextBackBar {
-  background: var(--oneora-surface);
+  background-color: var(--cat-bg, var(--oneora-hero-bg));
+  color: var(--oneora-text);
+  border: 1px solid rgba(43, 34, 54, 0.06);
+  border-radius: 28px;
+  padding: 14px 16px;
+  box-shadow: var(--oneora-shadow-sm);
+  transition: background-color 220ms var(--oneora-ease);
+}
+
+html.dark #toolContextBackBar {
+  border-color: rgba(245, 238, 255, 0.09);
+}
+
+/* Hide redundant legacy heading block inside enhanced Pastel tool screens */
+.pastel-tool-screen > .pastel-legacy-tool-heading {
+  display: none !important;
+}
+
+/* Give tool screens comfortable breathing room above Sticky Primary Bar + Bottom Nav */
+body.has-pastel-sticky-bar .pastel-tool-screen {
+  padding-bottom: 112px;
+}
+
+@media (min-width: 1024px) {
+  body.has-pastel-sticky-bar .pastel-tool-screen {
+    padding-bottom: 96px;
+  }
+}
+
+/* Unified Rounded Tool Cards Inside Pastel Tool Screens */
+.pastel-tool-screen > div.bg-white,
+.pastel-tool-screen .rounded-2xl.bg-white,
+.pastel-tool-screen .rounded-3xl.bg-white {
+  background-color: var(--oneora-surface);
   border: 1px solid var(--oneora-border);
-  border-radius: 16px;
-  padding: 10px 14px;
+  border-radius: 28px !important;
   box-shadow: var(--oneora-shadow-xs);
 }
 
-/* Tool Section Headings */
-main section.tab-content > div:first-child h2 {
-  letter-spacing: -0.025em;
+/* Big Dashed Rounded Upload Zone */
+.pastel-upload-zone,
+.pastel-tool-screen .border-dashed {
+  border: 2px dashed var(--cat-accent, var(--oneora-violet)) !important;
+  border-radius: 28px !important;
+  background-color: color-mix(in srgb, var(--cat-bg, var(--oneora-hero-bg)) 34%, var(--oneora-surface)) !important;
+  transition: transform 220ms var(--oneora-spring), border-color 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
 }
 
-/* Unify All Tool Outer Cards & Surfaces */
+html.dark .pastel-upload-zone,
+html.dark .pastel-tool-screen .border-dashed {
+  background-color: color-mix(in srgb, var(--cat-bg, var(--oneora-hero-bg)) 62%, var(--oneora-surface)) !important;
+}
+
+.pastel-injected-upload {
+  width: 100%;
+  padding: 26px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  min-height: 168px;
+}
+
+.pastel-upload-zone:hover,
+.pastel-upload-zone.is-dragover {
+  background-color: color-mix(in srgb, var(--cat-bg, var(--oneora-hero-bg)) 58%, var(--oneora-surface)) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat-accent, var(--oneora-violet)) 18%, transparent);
+}
+
+.pastel-upload-zone:active {
+  transform: scale(0.985);
+}
+
+.pastel-upload-zone.has-files {
+  border-style: solid !important;
+}
+
+/* Collapsible Options Sections (<details class="pastel-collapsible">) */
+.pastel-collapsible {
+  background-color: var(--oneora-surface);
+  border: 1.5px solid var(--oneora-border);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--oneora-shadow-xs);
+  transition: border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
+}
+
+.pastel-collapsible[open] {
+  border-color: color-mix(in srgb, var(--cat-accent, var(--oneora-violet)) 30%, var(--oneora-border));
+}
+
+.pastel-collapsible-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  min-height: 56px;
+  background-color: color-mix(in srgb, var(--cat-bg, var(--oneora-hero-bg)) 26%, var(--oneora-surface));
+  user-select: none;
+}
+
+html.dark .pastel-collapsible-summary {
+  background-color: color-mix(in srgb, var(--cat-bg, var(--oneora-hero-bg)) 52%, var(--oneora-surface));
+}
+
+.pastel-collapsible-summary::-webkit-details-marker {
+  display: none;
+}
+
+.pastel-collapsible-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background-color: var(--cat-bg, var(--oneora-hero-bg));
+  border: 2.5px solid var(--cat-accent, var(--oneora-violet));
+  flex-shrink: 0;
+}
+
+.pastel-collapsible-chevron {
+  transition: transform 220ms var(--oneora-spring);
+}
+
+.pastel-collapsible[open] > .pastel-collapsible-summary .pastel-collapsible-chevron {
+  transform: rotate(180deg);
+}
+
+.pastel-collapsible-body {
+  padding: 14px 16px 16px;
+}
+
+/* Sticky Bottom Primary Action Bar */
+#pastelStickyActionBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  z-index: 35;
+  padding: 10px 16px;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  #pastelStickyActionBar {
+    left: 256px;
+    bottom: 18px;
+    padding: 0 32px;
+  }
+}
+
+.pastel-sticky-inner {
+  pointer-events: auto;
+  max-width: 760px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid var(--oneora-border);
+  border-radius: 26px;
+  padding: 10px 12px;
+  box-shadow: 0 16px 36px -14px rgba(43, 34, 54, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+html.dark .pastel-sticky-inner {
+  background: rgba(34, 28, 46, 0.94);
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.52);
+}
+
+.pastel-sticky-primary-btn {
+  flex: 1;
+  min-height: 50px;
+  padding: 12px 22px;
+  border-radius: 9999px;
+  background-color: #5B3FD0;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 12px 24px -10px rgba(91, 63, 208, 0.56);
+  transition: transform 220ms var(--oneora-spring), background-color 160ms var(--oneora-ease), opacity 160ms ease;
+}
+
+.pastel-sticky-primary-btn:hover:not(:disabled) {
+  background-color: #4A30B8;
+}
+
+.pastel-sticky-primary-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.pastel-sticky-primary-btn:disabled {
+  opacity: 0.44;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Friendly Result Screen + Soft Success Animation */
+.pastel-result-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 9999px;
+  background-color: var(--cat-bg, var(--pastel-office));
+  color: var(--cat-accent, var(--pastel-office-accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--cat-bg, var(--pastel-office)) 45%, transparent);
+}
+
+.pastel-result-ring.pastel-result-animate {
+  animation: pastelSuccessPop 420ms var(--oneora-spring) both;
+}
+
+.pastel-result-check-path {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 0;
+}
+
+.pastel-result-animate .pastel-result-check-path {
+  animation: pastelCheckDraw 480ms 120ms var(--oneora-ease) both;
+}
+
+@keyframes pastelCheckDraw {
+  from { stroke-dashoffset: 48; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.pastel-result-action {
+  min-height: 52px;
+  border-radius: 22px;
+  font-weight: 800;
+  font-size: 13px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  transition: transform 220ms var(--oneora-spring), background-color 160ms var(--oneora-ease), border-color 160ms var(--oneora-ease);
+}
+
+.pastel-result-action:active {
+  transform: scale(0.96);
+}
+
+/* Harmonize Existing Internal Tool Cards & Dark Surfaces */
 main section.tab-content > div.bg-white,
 main section.tab-content .rounded-2xl.bg-white,
 main section.tab-content .rounded-3xl.bg-white {
@@ -479,116 +1011,41 @@ main section.tab-content .rounded-3xl.bg-white {
 html.dark main section.tab-content > div.bg-white,
 html.dark main section.tab-content .dark\:bg-slate-900,
 html.dark main section.tab-content .dark\:bg-\[\#1C2438\],
-html.dark main section.tab-content .dark\:bg-\[\#1A2138\] {
+html.dark main section.tab-content .dark\:bg-\[\#1A2138\],
+html.dark main section.tab-content .dark\:bg-\[\#151B2F\] {
   background-color: var(--oneora-surface);
   border-color: var(--oneora-border);
 }
 
 html.dark main section.tab-content .dark\:bg-slate-950\/40,
 html.dark main section.tab-content .dark\:bg-slate-950\/30,
-html.dark main section.tab-content .dark\:bg-\[\#151B2B\] {
+html.dark main section.tab-content .dark\:bg-\[\#151B2B\],
+html.dark main section.tab-content .dark\:bg-\[\#0C1020\] {
   background-color: var(--oneora-bg);
   border-color: var(--oneora-border);
 }
 
 html.dark main section.tab-content .dark\:border-slate-800,
-html.dark main section.tab-content .dark\:border-slate-700 {
+html.dark main section.tab-content .dark\:border-slate-700,
+html.dark main section.tab-content .dark\:border-\[\#232C4A\] {
   border-color: var(--oneora-border);
 }
 
-/* Unify Upload Dropzones across PDF, Image, Signature & Office tools */
-main section.tab-content .border-dashed {
-  border-color: var(--oneora-border-strong);
-  background-color: var(--oneora-elevated);
-  border-radius: 18px;
-  transition: border-color 180ms var(--oneora-ease), background-color 180ms var(--oneora-ease), transform 160ms var(--oneora-ease);
-}
-
-main section.tab-content .border-dashed:hover {
-  border-color: var(--oneora-violet);
-  background-color: rgba(116, 87, 232, 0.055);
-}
-
-html.dark main section.tab-content .border-dashed:hover {
-  background-color: rgba(116, 87, 232, 0.12);
-}
-
-/* Harmonized Inputs, Selects & Textareas across all modules */
-main input[type="text"],
-main input[type="number"],
-main input[type="password"],
-main input[type="email"],
-main input[type="date"],
-main input[type="time"],
-main input[type="datetime-local"],
-main input[type="url"],
-main input[type="search"],
-main select,
-main textarea {
-  border-color: var(--oneora-border);
-  transition: border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease), background-color 160ms var(--oneora-ease);
-}
-
-main input:focus,
-main select:focus,
-main textarea:focus {
-  border-color: var(--oneora-violet);
-  box-shadow: 0 0 0 3px rgba(116, 87, 232, 0.14);
-}
-
-/* Crisp Interactive Motion (<= 180ms Compositor-Only) */
 button {
-  transition: transform 140ms var(--oneora-ease), background-color 160ms var(--oneora-ease), border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease), opacity 160ms ease;
+  transition: transform 200ms var(--oneora-spring), background-color 160ms var(--oneora-ease), border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease), opacity 160ms ease;
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.982);
+  transform: scale(0.96);
 }
 
-/* ==========================================================================
-   MODALS, BOTTOM SHEETS, TOASTS & FLOATING AI BUTTON
-   ========================================================================== */
-.oneora-modal-backdrop {
-  background: rgba(12, 16, 32, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.oneora-sheet-enter {
-  animation: oneoraSheetUp 220ms var(--oneora-ease) both;
-}
-
-@keyframes oneoraSheetUp {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Toast Notification Precision */
 #toast {
   background-color: var(--oneora-surface);
   border-color: var(--oneora-border);
   box-shadow: var(--oneora-shadow-md);
+  border-radius: 22px;
 }
 
-/* Floating ONEORA AI Shortcut */
-#oneoraAiFab {
-  background: linear-gradient(135deg, #10152A 0%, #252B55 46%, #7457E8 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 14px 32px -10px rgba(116, 87, 232, 0.52);
-}
-
-#oneoraAiFab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 36px -10px rgba(116, 87, 232, 0.64);
-}
-
-/* Onboarding Full-Screen Overlay */
 .oneora-onboarding-overlay {
   position: fixed;
   inset: 0;
@@ -608,24 +1065,287 @@ button:active:not(:disabled) {
   margin: auto;
 }
 
-.oneora-ob-slide {
-  animation: oneoraSlideIn 240ms var(--oneora-ease) both;
+/* ==========================================================================
+   STAGE 3: VAULT, MONEY, AI & PLANNER (DESIGN A · PASTEL)
+   ========================================================================== */
+
+.pastel-stage3-card {
+  background-color: var(--oneora-surface);
+  border: 1px solid var(--oneora-border);
+  border-radius: 28px;
+  box-shadow: var(--oneora-shadow-xs);
 }
 
-@keyframes oneoraSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.pastel-inset-tile {
+  background-color: var(--oneora-bg);
+  border: 1px solid var(--oneora-border);
+  border-radius: 22px;
+}
+
+.pastel-kpi-tile {
+  background-color: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 34, 54, 0.08);
+  border-radius: 22px;
+  color: var(--oneora-text);
+  box-shadow: 0 4px 14px -8px rgba(43, 34, 54, 0.14);
+}
+
+html.dark .pastel-kpi-tile {
+  background-color: rgba(23, 19, 31, 0.72);
+  border-color: rgba(245, 238, 255, 0.10);
+  color: var(--oneora-text);
+}
+
+.pastel-pill-tab {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.82);
+  color: var(--oneora-text);
+  border: 1px solid rgba(43, 34, 54, 0.08);
+  transition: transform 200ms var(--oneora-spring), background-color 160ms var(--oneora-ease), color 160ms var(--oneora-ease);
+}
+
+html.dark .pastel-pill-tab {
+  background-color: rgba(23, 19, 31, 0.64);
+  color: var(--oneora-text);
+  border-color: rgba(245, 238, 255, 0.12);
+}
+
+.pastel-pill-tab.is-active {
+  background-color: var(--oneora-violet);
+  color: #FFFFFF;
+  border-color: var(--oneora-violet);
+  box-shadow: 0 10px 22px -10px rgba(91, 63, 208, 0.55);
+}
+
+.pastel-pill-input {
+  background-color: var(--oneora-bg);
+  color: var(--oneora-text);
+  border: 1.5px solid var(--oneora-border);
+  border-radius: 18px;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
+}
+
+.pastel-pill-input:focus {
+  border-color: var(--oneora-violet);
+  box-shadow: 0 0 0 3px rgba(91, 63, 208, 0.14);
+}
+
+.pastel-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: #E4D9FF;
+  color: #3E26A0;
+}
+
+html.dark .pastel-tag-chip {
+  background-color: #2D2347;
+  color: #D7C9FF;
+}
+
+.pastel-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  padding: 32px 20px;
+  border-radius: 26px;
+  background-color: var(--oneora-bg);
+  border: 1.5px dashed var(--oneora-border);
 }
 
 /* ==========================================================================
-   REDUCED MOTION ACCESSIBILITY
+   STAGE 4: SWIPE ACTIONS · PASTEL ONBOARDING · PERSONA · ACCESSIBILITY
    ========================================================================== */
+
+/* Recent Files Swipe-Left Action Row */
+.pastel-swipe-row {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  background-color: var(--oneora-bg);
+  border: 1px solid var(--oneora-border);
+  box-shadow: var(--oneora-shadow-xs);
+  touch-action: pan-y;
+}
+
+.pastel-swipe-actions {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px;
+  background: color-mix(in srgb, var(--pastel-vault, #E4D9FF) 55%, var(--oneora-surface));
+}
+
+html.dark .pastel-swipe-actions {
+  background: #271F3A;
+}
+
+.pastel-swipe-btn {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: transform 180ms var(--oneora-spring), opacity 140ms var(--oneora-ease);
+}
+
+.pastel-swipe-btn:active {
+  transform: scale(0.95);
+}
+
+.pastel-swipe-btn.is-open {
+  background-color: #5B3FD0;
+  color: #FFFFFF;
+}
+
+.pastel-swipe-btn.is-share {
+  background-color: #D6E8FF;
+  color: #1B3A6B;
+}
+
+html.dark .pastel-swipe-btn.is-share {
+  background-color: #1F2E44;
+  color: #C7E0FF;
+}
+
+.pastel-swipe-btn.is-delete {
+  background-color: #FFD6D6;
+  color: #8A1C32;
+}
+
+html.dark .pastel-swipe-btn.is-delete {
+  background-color: #4A1F2B;
+  color: #FFC7D1;
+}
+
+.pastel-swipe-card {
+  position: relative;
+  z-index: 2;
+  background-color: var(--oneora-surface);
+  border-radius: 25px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 280ms var(--oneora-spring);
+  will-change: transform;
+}
+
+.pastel-swipe-row.is-dragging .pastel-swipe-card {
+  transition: none;
+}
+
+.pastel-swipe-row.is-open .pastel-swipe-card {
+  transform: translateX(-196px);
+}
+
+/* Pastel Onboarding & Persona Selection Cards */
+.pastel-ob-card {
+  background-color: var(--oneora-surface);
+  border: 1px solid var(--oneora-border);
+  border-radius: 30px;
+  box-shadow: var(--oneora-shadow-md);
+}
+
+.pastel-persona-card {
+  position: relative;
+  text-align: left;
+  border-radius: 26px;
+  padding: 16px;
+  min-height: 118px;
+  border: 2px solid transparent;
+  background-color: var(--cat-bg, var(--oneora-hero-bg));
+  color: var(--oneora-text);
+  transition: transform 220ms var(--oneora-spring), border-color 160ms var(--oneora-ease), box-shadow 160ms var(--oneora-ease);
+}
+
+.pastel-persona-card:active {
+  transform: scale(0.96);
+}
+
+.pastel-persona-card.is-selected {
+  border-color: var(--oneora-violet);
+  box-shadow: 0 12px 26px -12px rgba(91, 63, 208, 0.48);
+}
+
+html.dark .pastel-persona-card.is-selected {
+  border-color: #CBBBFF;
+  box-shadow: 0 12px 26px -12px rgba(203, 187, 255, 0.35);
+}
+
+.pastel-scale-btn {
+  min-height: 44px;
+  border-radius: 18px;
+  padding: 10px 12px;
+  font-weight: 800;
+  border: 1.5px solid var(--oneora-border);
+  background-color: var(--oneora-bg);
+  color: var(--oneora-text);
+  transition: transform 180ms var(--oneora-spring), background-color 150ms var(--oneora-ease), border-color 150ms var(--oneora-ease), color 150ms var(--oneora-ease);
+}
+
+.pastel-scale-btn:active {
+  transform: scale(0.96);
+}
+
+.pastel-scale-btn.is-active {
+  background-color: var(--oneora-violet);
+  border-color: var(--oneora-violet);
+  color: #FFFFFF;
+  box-shadow: 0 10px 22px -10px rgba(91, 63, 208, 0.52);
+}
+
+/* High-Visibility Keyboard Focus Ring (WCAG AA) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2.5px solid var(--oneora-violet);
+  outline-offset: 2px;
+}
+
+html.dark button:focus-visible,
+html.dark a:focus-visible,
+html.dark input:focus-visible,
+html.dark select:focus-visible,
+html.dark textarea:focus-visible,
+html.dark summary:focus-visible {
+  outline-color: #CBBBFF;
+}
+
+/* Reduced Motion Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

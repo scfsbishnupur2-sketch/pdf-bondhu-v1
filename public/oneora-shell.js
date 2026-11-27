@@ -361,18 +361,18 @@
       setTimeout(() => {
         if (panel.classList.contains('hidden')) panel.classList.remove('hidden');
         const container = document.createElement('div');
-        container.className = 'border-t border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#151B2F]';
+        container.className = 'border-t border-[var(--oneora-border)] bg-[#FFF7EE]/85 dark:bg-[#17131F]/80';
         extraMatches.slice(0, 6).forEach((item) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'w-full text-left px-4 py-2.5 hover:bg-[#F3F0FF] dark:hover:bg-[#1D2540] flex items-center justify-between gap-2 border-b last:border-b-0 border-[#E6E9F2] dark:border-[#232C4A] transition';
+          btn.className = 'w-full text-left px-4 py-3 hover:bg-[#EFEAFF] dark:hover:bg-[#2F244D] flex items-center justify-between gap-2 border-b last:border-b-0 border-[var(--oneora-border)] min-h-[48px] transition';
           const left = document.createElement('div');
           left.className = 'min-w-0';
           const t = document.createElement('div');
-          t.className = 'text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] truncate';
+          t.className = 'text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate';
           t.textContent = item.title;
           const s = document.createElement('div');
-          s.className = 'text-[11px] font-medium text-[#7457E8] dark:text-[#B4A5FF] truncate';
+          s.className = 'text-[11px] font-semibold text-[#5B3FD0] dark:text-[#CBBBFF] truncate mt-0.5';
           s.textContent = item.subtitle;
           left.appendChild(t);
           left.appendChild(s);

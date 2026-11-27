@@ -28,7 +28,7 @@
     </script>
 
     <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" id="metaThemeColor" content="#10152A" />
+    <meta name="theme-color" id="metaThemeColor" content="#FFF7EE" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -46,7 +46,7 @@
           var isDark = mode === 'dark' ? true : mode === 'light' ? false : mode === 'system' ? prefersDark : (saved ? saved === 'dark' : prefersDark);
           document.documentElement.classList.toggle('dark', isDark);
           var meta = document.getElementById('metaThemeColor');
-          if (meta) meta.setAttribute('content', isDark ? '#0C1020' : '#10152A');
+          if (meta) meta.setAttribute('content', isDark ? '#17131F' : '#FFF7EE');
         } catch (e) {}
       })();
     </script>
@@ -82,26 +82,32 @@
               sans: ['"Plus Jakarta Sans"', '"Noto Sans Bengali"', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
             },
             colors: {
-              navy: '#10152A',
-              brand: '#252B55',
-              violetSoft: '#7457E8',
-              softBlue: '#648BFF',
-              surfaceLight: '#F6F7FB',
-              surfaceDark: '#0C1020',
-              cardDark: '#151B2F',
-              elevatedDark: '#1D2540',
-              success: '#15803D',
+              cream: '#FFF7EE',
+              ink: '#2B2236',
+              violetPrimary: '#5B3FD0',
+              heroLavender: '#CBBBFF',
+              darkWarm: '#17131F',
+              darkCard: '#221C2E',
+              navy: '#2B2236',
+              brand: '#5B3FD0',
+              violetSoft: '#5B3FD0',
+              softBlue: '#3B73E6',
+              surfaceLight: '#FFF7EE',
+              surfaceDark: '#17131F',
+              cardDark: '#221C2E',
+              elevatedDark: '#2B243A',
+              success: '#13734C',
               pdf: '#ef4444',
               excel: '#10b981',
-              p2e: '#7457E8',
+              p2e: '#5B3FD0',
               imgc: '#f97316',
               i2p: '#ec4899',
               cleane: '#f59e0b',
               split: '#e11d48',
               pdfc: '#0284c7',
-              conv: '#7457E8',
+              conv: '#5B3FD0',
               watermark: '#d946ef',
-              organize: '#648BFF',
+              organize: '#3B73E6',
               resize: '#14b8a6',
             }
           }
@@ -120,6 +126,7 @@
     <script src="./pdf-office-pro.js" defer></script>
     <script src="./daily-utilities.js" defer></script>
     <script src="./india-vault.js" defer></script>
+    <script src="./pastel-tool-template.js" defer></script>
     <script src="./oneora-planner.js" defer></script>
     <script src="./oneora-money.js" defer></script>
     <script src="./oneora-ai-extras.js" defer></script>
@@ -228,679 +235,387 @@
       .pb-excel-table tr:first-child td:not(.pb-excel-rownum) { background: #ecfdf5; font-weight: 700; color: #064e3b; }
     </style>
   </head>
-  <body class="oneora-app-body bg-[#F6F7FB] dark:bg-[#0C1020] text-[#171B2C] dark:text-[#F5F6FC] min-h-screen pb-20 lg:pb-0 flex flex-col transition-colors duration-200">
-    <!-- ONEORA Top Header -->
+  <body class="oneora-app-body bg-[#FFF7EE] dark:bg-[#17131F] text-[#2B2236] dark:text-[#F5EEFF] min-h-screen pb-24 lg:pb-0 flex flex-col transition-colors duration-200">
+    <!-- ONEORA Clean Pastel Top Bar -->
     <header class="oneora-header sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
-        <!-- Zone 1: ONEORA Geometric Brand Identity -->
-        <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('homeDashboard')" class="flex items-center gap-2.5 text-left shrink-0 focus:outline-none rounded-xl">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shadow-sm shrink-0 overflow-hidden">
+        <!-- Brand Mark -->
+        <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('homeDashboard')" class="flex items-center gap-2.5 text-left shrink-0 focus:outline-none rounded-full min-h-[44px] pr-2">
+          <div class="w-9 h-9 rounded-2xl shadow-sm shrink-0 overflow-hidden bg-white dark:bg-[#221C2E]">
             <img src="./icon.svg" alt="ONEORA Logo" class="w-full h-full object-cover" />
           </div>
-          <span class="text-base sm:text-lg font-extrabold tracking-tight text-[#10152A] dark:text-[#F5F6FC] whitespace-nowrap">ONEORA</span>
+          <span class="text-lg font-extrabold tracking-tight text-[#2B2236] dark:text-[#F5EEFF] whitespace-nowrap">ONEORA</span>
         </button>
 
-        <!-- Zone 2: Live Date & Time (Desktop / Tablet) -->
-        <div class="hidden md:flex items-center gap-2.5 text-xs text-[#777F91] dark:text-[#A5ADC2]">
-          <svg class="w-3.5 h-3.5 text-[#7457E8] shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span id="liveDateTimeDisplay" class="font-semibold text-[#171B2C] dark:text-[#F5F6FC] tabular-nums whitespace-nowrap">Loading...</span>
+        <!-- Quiet Live Date (Desktop) -->
+        <div class="hidden md:flex items-center gap-2 text-xs text-[#5C506B] dark:text-[#C5B9DA]">
+          <span id="liveDateTimeDisplay" class="font-semibold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums whitespace-nowrap">Loading...</span>
           <span aria-hidden="true">·</span>
-          <span id="appEnvLabel" class="font-medium text-emerald-700 dark:text-emerald-400 whitespace-nowrap truncate">Offline-First</span>
+          <span id="appEnvLabel" class="font-semibold text-[#5B3FD0] dark:text-[#CBBBFF] whitespace-nowrap truncate">Offline-First</span>
+          <span id="liveDateTimeMobile" class="hidden"></span>
         </div>
 
-        <!-- Zone 3: Precision Utility Actions -->
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button type="button" id="headerSearchFocusBtn" aria-label="Search ONEORA" title="Universal Search" class="bg-white hover:bg-[#F1F3FA] dark:bg-[#151B2F] dark:hover:bg-[#1D2540] text-[#171B2C] dark:text-[#F5F6FC] border border-[#E8EAF2] dark:border-[#232C4A] rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center transition shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <!-- Compact Header Actions (44px Touch Targets) -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Preserved hidden triggers so existing shell hooks remain wired -->
+          <button type="button" id="headerSearchFocusBtn" aria-label="Search ONEORA" class="hidden"></button>
+          <button type="button" id="headerRefreshUpdateBtn" aria-label="Check for updates" title="Check for Update" class="hidden sm:inline-flex oneora-icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
           </button>
 
-          <button type="button" id="headerNotificationBtn" aria-label="Reminders and Alerts" title="Notification Centre" class="relative bg-white hover:bg-[#F1F3FA] dark:bg-[#151B2F] dark:hover:bg-[#1D2540] text-[#171B2C] dark:text-[#F5F6FC] border border-[#E8EAF2] dark:border-[#232C4A] rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center transition shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-            <span id="headerNotifCount" class="hidden absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center tabular-nums">0</span>
+          <button type="button" id="headerNotificationBtn" aria-label="Reminders and Alerts" title="Notifications" class="relative oneora-icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span id="headerNotifCount" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#5B3FD0] text-white text-[10px] font-bold flex items-center justify-center tabular-nums">0</span>
           </button>
 
-          <button type="button" id="headerRefreshUpdateBtn" aria-label="Check for app updates" title="Check for Update" class="bg-white hover:bg-[#F1F3FA] dark:bg-[#151B2F] dark:hover:bg-[#1D2540] text-[#171B2C] dark:text-[#F5F6FC] border border-[#E8EAF2] dark:border-[#232C4A] rounded-xl min-h-[40px] min-w-[40px] px-2.5 flex items-center justify-center gap-1.5 transition text-xs font-semibold whitespace-nowrap shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
-            <span class="hidden xl:inline">Update</span>
+          <button type="button" id="themeToggleBtn" aria-label="Switch to Dark Mode" aria-pressed="false" title="Toggle Light / Dark Mode" class="oneora-icon-btn">
+            <svg id="themeIconSun" class="hidden w-[18px] h-[18px] text-amber-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg id="themeIconMoon" class="w-[18px] h-[18px] text-[#5B3FD0]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span id="themeToggleLabel" class="sr-only">Dark</span>
           </button>
 
-          <button type="button" id="themeToggleBtn" aria-label="Switch to Dark Mode" aria-pressed="false" title="Toggle Light / Dark Mode" class="bg-white hover:bg-[#F1F3FA] dark:bg-[#151B2F] dark:hover:bg-[#1D2540] text-[#171B2C] dark:text-[#F5F6FC] border border-[#E8EAF2] dark:border-[#232C4A] rounded-xl min-h-[40px] min-w-[40px] px-2.5 flex items-center justify-center gap-1.5 transition text-xs font-semibold whitespace-nowrap shrink-0">
-            <svg id="themeIconSun" class="hidden w-4 h-4 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-            <svg id="themeIconMoon" class="w-4 h-4 text-[#7457E8]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-            <span id="themeToggleLabel" class="hidden xl:inline">Dark</span>
-          </button>
+          <button type="button" id="installAppBtn" class="hidden px-4 py-2 rounded-full bg-[#5B3FD0] text-white text-xs font-extrabold whitespace-nowrap min-h-[44px]">Install</button>
+          <button type="button" id="openAppHubBtn" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#EFEAFF] dark:bg-[#2F244D] text-[#5B3FD0] dark:text-[#CBBBFF] text-xs font-extrabold whitespace-nowrap min-h-[44px]">APK</button>
 
-          <button type="button" id="installAppBtn" class="hidden bg-[#10152A] dark:bg-[#7457E8] text-white px-3.5 py-2 rounded-xl transition text-xs font-bold whitespace-nowrap shrink-0 min-h-[40px]">Install</button>
-
-          <button type="button" id="openAppHubBtn" class="bg-[#10152A] hover:bg-[#252B55] dark:bg-[#7457E8] dark:hover:bg-[#648BFF] text-white px-3 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shrink-0 min-h-[40px]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-            <span class="hidden sm:inline">App &amp; APK</span>
-            <span class="sm:hidden">APK</span>
-          </button>
-
-          <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('profileSettingsTab')" aria-label="Open Profile and Settings" class="w-[40px] h-[40px] rounded-xl bg-gradient-to-br from-[#252B55] to-[#7457E8] text-white font-bold text-xs flex items-center justify-center hover:opacity-95 transition shrink-0">
+          <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('profileSettingsTab')" aria-label="Open Profile and Settings" title="Profile &amp; Settings" class="w-[44px] h-[44px] rounded-full bg-[#5B3FD0] text-white font-extrabold text-xs flex items-center justify-center shadow-sm hover:opacity-95 transition shrink-0">
             <span class="pb-user-initials">ON</span>
           </button>
         </div>
       </div>
-
-      <!-- Compact Live Date & Time Strip on Mobile -->
-      <div class="md:hidden border-t border-[#E8EAF2]/80 dark:border-[#232C4A] px-4 py-1 flex items-center justify-between text-[11px] font-medium text-[#777F91] dark:text-[#A5ADC2]">
-        <span class="flex items-center gap-1.5 tabular-nums">
-          <svg class="w-3 h-3 text-[#7457E8] shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span id="liveDateTimeMobile">Loading...</span>
-        </span>
-        <a href="/website" class="text-[#7457E8] dark:text-[#9FAFFF] text-[11px] font-semibold hover:underline">Website ↗</a>
-      </div>
     </header>
 
     <!-- Instant Live OTA Update Ready Banner -->
-    <div id="liveUpdateBanner" class="hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white px-4 py-2.5 items-center justify-between gap-3 shadow-md">
+    <div id="liveUpdateBanner" class="hidden bg-[#5B3FD0] text-white px-4 py-2.5 items-center justify-between gap-3 shadow-md">
       <div class="flex items-center gap-2 text-xs font-bold min-w-0">
         <svg class="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
         <span id="liveUpdateBannerText" class="truncate">New ONEORA update is ready! Refresh instantly — no new APK needed.</span>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
-        <button type="button" id="liveUpdateApplyBtn" class="px-3.5 py-1.5 rounded-lg bg-white text-teal-800 font-extrabold text-xs hover:bg-teal-50 transition">Refresh Now</button>
-        <button type="button" id="liveUpdateDismissBtn" aria-label="Dismiss update banner" class="p-1 rounded-lg text-white/80 hover:text-white text-xs font-bold">✕</button>
+        <button type="button" id="liveUpdateApplyBtn" class="px-3.5 py-1.5 rounded-full bg-white text-[#5B3FD0] font-extrabold text-xs hover:bg-[#EFEAFF] transition">Refresh Now</button>
+        <button type="button" id="liveUpdateDismissBtn" aria-label="Dismiss update banner" class="p-1.5 rounded-full text-white/80 hover:text-white text-xs font-bold">✕</button>
       </div>
     </div>
 
     <!-- Offline Mode Banner (visible only when disconnected) -->
-    <div id="offlineBanner" data-i18n="offlineNotice" class="hidden bg-indigo-900 text-white text-xs font-medium px-4 py-2 text-center">
+    <div id="offlineBanner" data-i18n="offlineNotice" class="hidden bg-[#2B2236] text-[#FFF7EE] text-xs font-semibold px-4 py-2 text-center">
       Offline Mode — Running locally. All core PDF, Image, Office, Planner, Money &amp; Vault tools continue working.
     </div>
 
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row w-full flex-1 relative">
-      <!-- ONEORA 5-Destination Fixed Bottom Navigation Bar (Mobile) + Left Rail (Desktop) -->
-      <nav aria-label="Primary Navigation" class="fixed bottom-0 left-0 right-0 pb-nav-surface border-t border-[#E6E9F2] dark:border-[#232C4A] z-30 shadow-[0_-6px_24px_rgba(16,21,42,0.06)] lg:shadow-none lg:static lg:w-60 lg:border-t-0 lg:border-r lg:bg-white/95 dark:lg:bg-[#111629] lg:min-h-[calc(100vh-4rem)] lg:backdrop-filter-none transition-colors">
-        <div class="lg:sticky lg:top-16 px-2 py-1.5 lg:p-4">
-          <ul class="grid grid-cols-5 lg:flex lg:flex-col gap-1 lg:gap-1.5" id="navTabs">
+      <!-- ONEORA White Rounded-Top Bottom Navigation (4 Tabs: Home, Tools, AI, Vault) + Desktop Sidebar Rail -->
+      <nav aria-label="Primary Navigation" class="fixed bottom-0 left-0 right-0 pb-nav-surface z-30 lg:static lg:w-64 lg:min-h-[calc(100vh-4rem)] transition-colors">
+        <div class="lg:sticky lg:top-16 px-3 pt-2 pb-1.5 lg:p-5">
+          <ul class="grid grid-cols-4 lg:flex lg:flex-col gap-1 lg:gap-1.5" id="navTabs">
             <li>
-              <button type="button" data-nav-target="homeDashboard" aria-current="page" class="pb-nav-btn pb-nav-active w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
-                <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <button type="button" data-nav-target="homeDashboard" aria-current="page" class="pb-nav-btn pb-nav-active w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5">
+                <span class="pb-nav-icon-wrap w-11 h-7 lg:w-9 lg:h-9 rounded-full lg:rounded-2xl flex items-center justify-center transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </span>
                 <span data-i18n="navHome" class="text-[11px] lg:text-sm whitespace-nowrap">Home</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="oneoraPlannerTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
-                <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <button type="button" data-nav-target="allToolsHub" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5">
+                <span class="pb-nav-icon-wrap w-11 h-7 lg:w-9 lg:h-9 rounded-full lg:rounded-2xl flex items-center justify-center transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="2"/><rect width="7" height="7" x="14" y="3" rx="2"/><rect width="7" height="7" x="14" y="14" rx="2"/><rect width="7" height="7" x="3" y="14" rx="2"/></svg>
                 </span>
-                <span class="text-[11px] lg:text-sm whitespace-nowrap">Planner</span>
+                <span data-i18n="nav_tools" class="text-[11px] lg:text-sm whitespace-nowrap">Tools</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="oneoraMoneyTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
-                <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+              <button type="button" data-nav-target="oneoraAiTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5">
+                <span class="pb-nav-icon-wrap w-11 h-7 lg:w-9 lg:h-9 rounded-full lg:rounded-2xl flex items-center justify-center transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
                 </span>
-                <span class="text-[11px] lg:text-sm whitespace-nowrap">Money</span>
+                <span class="text-[11px] lg:text-sm whitespace-nowrap">AI</span>
               </button>
             </li>
             <li>
-              <button type="button" data-nav-target="allToolsHub" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
-                <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+              <button type="button" data-nav-target="documentCenter" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5">
+                <span class="pb-nav-icon-wrap w-11 h-7 lg:w-9 lg:h-9 rounded-full lg:rounded-2xl flex items-center justify-center transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
                 </span>
-                <span class="text-[11px] lg:text-sm whitespace-nowrap">Tools</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" data-nav-target="profileSettingsTab" class="pb-nav-btn w-full flex flex-col lg:flex-row items-center lg:justify-start gap-1 lg:gap-3 px-2 py-1.5 lg:px-3.5 lg:py-2.5 rounded-xl min-h-[48px]">
-                <span class="pb-nav-icon-wrap w-9 h-7 lg:w-8 lg:h-8 rounded-full lg:rounded-lg flex items-center justify-center transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-                </span>
-                <span data-i18n="navProfile" class="text-[11px] lg:text-sm whitespace-nowrap">Profile</span>
+                <span class="text-[11px] lg:text-sm whitespace-nowrap">Vault</span>
               </button>
             </li>
           </ul>
 
-          <!-- Desktop Clean Studio & AI Shortcuts in Rail -->
-          <div class="hidden lg:block mt-6 pt-5 border-t border-[#E6E9F2] dark:border-[#232C4A] space-y-1">
-            <div class="px-3 mb-2 text-[11px] font-bold tracking-wide text-[#647087] dark:text-[#9EA8C0]">Studios &amp; AI</div>
-            <button type="button" data-open-tool="oneoraAiTab" class="oneora-rail-link is-accent">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-              <span>ONEORA AI</span>
+          <!-- Desktop Pastel Category Rail -->
+          <div class="hidden lg:block mt-6 pt-5 border-t border-[var(--oneora-border)] space-y-1">
+            <div class="px-3 mb-2 text-[11px] font-bold tracking-wide text-[#5C506B] dark:text-[#C5B9DA]">Categories</div>
+            <button type="button" data-open-pastel-cat="pdf" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-pdf);border:1px solid var(--pastel-pdf-accent);"></span>
+              <span>PDF</span>
             </button>
-            <button type="button" data-open-cat="pdf" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <span>PDF Studio</span>
+            <button type="button" data-open-pastel-cat="image" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-image);border:1px solid var(--pastel-image-accent);"></span>
+              <span>Image</span>
             </button>
-            <button type="button" data-open-cat="image" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-              <span>Image Studio</span>
+            <button type="button" data-open-pastel-cat="office" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-office);border:1px solid var(--pastel-office-accent);"></span>
+              <span>Office</span>
             </button>
-            <button type="button" data-open-cat="office" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-              <span>Office Studio</span>
+            <button type="button" data-open-pastel-cat="lifemoney" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-lifemoney);border:1px solid var(--pastel-lifemoney-accent);"></span>
+              <span>Life &amp; Money</span>
             </button>
-            <button type="button" data-open-tool="documentCenter" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span>Document Vault</span>
+            <button type="button" data-open-pastel-cat="india" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-india);border:1px solid var(--pastel-india-accent);"></span>
+              <span>India</span>
             </button>
-            <button type="button" data-open-tool="dailyUtilitiesHub" data-open-sub="dailyPanelCalc" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/></svg>
-              <span>Daily Utilities</span>
+            <button type="button" data-open-pastel-cat="vault" class="oneora-rail-link">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--pastel-vault);border:1px solid var(--pastel-vault-accent);"></span>
+              <span>Vault</span>
             </button>
-            <button type="button" data-open-tool="indiaEssentials" class="oneora-rail-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/></svg>
-              <span>India Essentials</span>
-            </button>
-            <a href="/website" class="oneora-rail-link text-[#7457E8] dark:text-[#9FAFFF]">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              <span>ONEORA Website ↗</span>
-            </a>
+            <div class="pt-3 mt-3 border-t border-[var(--oneora-border)] space-y-1">
+              <button type="button" data-open-tool="profileSettingsTab" class="oneora-rail-link">
+                <span>Profile &amp; Settings</span>
+              </button>
+              <a href="/website" class="oneora-rail-link text-[#5B3FD0] dark:text-[#CBBBFF]">
+                <span>ONEORA Website ↗</span>
+              </a>
+            </div>
           </div>
         </div>
       </nav>
 
-      <!-- Main Panel -->
-      <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 w-full overflow-x-hidden transition-colors">
+      <!-- Main Workspace -->
+      <main class="flex-1 min-w-0 px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:py-8 w-full overflow-x-hidden transition-colors">
 
-        <!-- Global Loading Overlay -->
-        <div id="loadingOverlay" class="fixed inset-0 bg-white/85 dark:bg-[#0F1526]/85 z-50 hidden flex-col items-center justify-center backdrop-blur-md transition-opacity">
-          <div id="loadingSpinner" class="loader-ring border-4 border-indigo-200 dark:border-slate-700 rounded-full w-12 h-12 mb-4 text-indigo-600 dark:text-violet-400"></div>
-          <p id="loadingText" class="text-base font-bold text-[#151B2B] dark:text-slate-100 tracking-tight">Processing securely...</p>
-        </div>
-
-        <!-- Global Toast -->
-        <div id="toast" class="fixed top-20 right-4 lg:right-8 z-50 transform transition-all duration-300 translate-x-full opacity-0 bg-white dark:bg-[#1C2438] shadow-2xl rounded-2xl p-4 flex items-start gap-3 max-w-sm border border-indigo-100 dark:border-slate-700">
-          <div id="toastIcon" class="mt-0.5 shrink-0"></div>
-          <div>
-            <h4 id="toastTitle" class="font-bold text-sm text-[#151B2B] dark:text-white"></h4>
-            <p id="toastMsg" class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed"></p>
+        <!-- Global Loading Overlay (Pastel Skeleton Card + Ring) -->
+        <div id="loadingOverlay" class="fixed inset-0 bg-[#FFF7EE]/85 dark:bg-[#17131F]/85 z-50 hidden flex-col items-center justify-center backdrop-blur-md transition-opacity p-4">
+          <div class="w-full max-w-xs bg-white dark:bg-[#221C2E] border border-[var(--oneora-border)] rounded-[30px] p-6 shadow-2xl flex flex-col items-center text-center space-y-3">
+            <div id="loadingSpinner" class="loader-ring border-4 border-[#E4D9FF] dark:border-[#2F244D] rounded-full w-12 h-12 text-[#5B3FD0] dark:text-[#CBBBFF]"></div>
+            <p id="loadingText" class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight">Processing securely...</p>
+            <div class="w-full space-y-2 pt-1" aria-hidden="true">
+              <div class="oneora-skeleton h-2.5 w-3/4 mx-auto"></div>
+              <div class="oneora-skeleton h-2.5 w-1/2 mx-auto"></div>
+            </div>
           </div>
         </div>
 
-        <!-- Contextual Back Bar (Automatically visible when inside any individual tool) -->
-        <div id="toolContextBackBar" class="hidden max-w-5xl mx-auto mb-5 flex items-center justify-between gap-3">
-          <button type="button" id="toolContextBackBtn" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-[#232C4A] hover:border-[#7457E8] text-xs font-bold text-[#171B2C] dark:text-[#F5F6FC] transition min-h-[40px]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            <span data-i18n="backHome">Back</span>
+        <!-- Global Toast (Bottom above nav, auto-hides in 2s) -->
+        <div id="toast" class="fixed bottom-[88px] lg:bottom-6 left-1/2 -translate-x-1/2 z-[70] w-[calc(100%-2rem)] max-w-sm transform transition-all duration-200 translate-y-4 opacity-0 pointer-events-none bg-white dark:bg-[#221C2E] shadow-2xl rounded-2xl p-3.5 flex items-start gap-3 border border-[var(--oneora-border)]">
+          <div id="toastIcon" class="mt-0.5 shrink-0"></div>
+          <div class="min-w-0">
+            <h4 id="toastTitle" class="font-bold text-sm text-[#2B2236] dark:text-[#F5EEFF]"></h4>
+            <p id="toastMsg" class="text-xs text-[#5C506B] dark:text-[#C5B9DA] mt-0.5 leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- Stage 2: Shared Pastel Tool Top Bar (Inherits Category Pastel Inside Any Tool) -->
+        <div id="toolContextBackBar" data-pastel-cat="pdf" class="hidden max-w-4xl mx-auto mb-5 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <button type="button" id="toolContextBackBtn" aria-label="Go Back" class="pastel-back-circle shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              <span id="toolContextBackLabel" data-i18n="backHome" class="sr-only">Back</span>
+            </button>
+            <span id="toolContextIconTile" class="pastel-white-tile !w-11 !h-11 !rounded-[16px] hidden sm:inline-flex"></span>
+            <div class="min-w-0 flex-1">
+              <h2 id="toolContextTitle" class="text-base sm:text-xl font-extrabold text-[#2B2236] dark:text-[#F5EEFF] leading-tight truncate">ONEORA</h2>
+              <p id="toolContextSub" class="text-xs font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] truncate mt-0.5">Offline · Private on device</p>
+            </div>
+          </div>
+          <button type="button" id="toolContextPinBtn" aria-label="Pin tool to favourites" title="Pin to Favourites" class="pastel-back-circle shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </button>
-          <span id="toolContextTitle" class="text-xs font-bold text-[#7457E8] dark:text-[#B4A5FF] truncate">ONEORA</span>
         </div>
 
         <!-- ================================================================
-             TAB 1: HOME DASHBOARD (ONEORA Ultra-Premium Edition)
+             STAGE 1 · HOME (Design A · Pastel — Clean, Calm, Zero Clutter)
+             Greeting + Heading · Pill Search · Lavender Scan Card · 2-Col Pastels
              ================================================================ -->
-        <section id="homeDashboard" class="tab-content animate-fade-in flex flex-col max-w-5xl mx-auto space-y-6">
+        <section id="homeDashboard" class="tab-content animate-fade-in flex flex-col max-w-3xl lg:max-w-4xl mx-auto space-y-5 sm:space-y-6">
 
-          <!-- 1. ONEORA Architectural Hero Card + Greeting + Dancing Horse -->
-          <div class="oneora-hero-card relative overflow-hidden rounded-3xl p-5 sm:p-7 text-white">
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-              <div class="space-y-2.5 max-w-xl">
-                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#A5ADC2]">
-                  <span id="homeGreetingText" class="text-[#C7D2FE] font-bold">Good Morning</span>
-                  <span aria-hidden="true">·</span>
-                  <span>One App, More Possibilities</span>
-                </div>
-                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
-                  Your life, organised in ONEORA.
-                </h1>
-                <p class="text-xs sm:text-sm text-[#C9D1E8] leading-relaxed">
-                  Everything you need, beautifully organised in one place. Offline documents, daily planning, personal finance, and intelligent assistance.
-                </p>
-
-                <div class="flex flex-wrap items-center gap-2.5 pt-1.5">
-                  <button type="button" data-open-tool="pdfReaderTool" class="px-4 py-2.5 rounded-xl bg-white hover:bg-[#F1F3FA] text-[#10152A] text-xs font-extrabold shadow-sm transition min-h-[42px] flex items-center gap-2 whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    Read Any Doc
-                  </button>
-                  <button type="button" data-open-tool="oneoraAiTab" class="px-4 py-2.5 rounded-xl bg-white/12 hover:bg-white/20 border border-white/15 text-white text-xs font-bold transition min-h-[42px] whitespace-nowrap">
-                    Ask ONEORA AI
-                  </button>
-                  <!-- Preserved Dancing Horse Companion -->
-                  <button type="button" id="dancingHorseBtn" class="horse-dancing bg-white/10 hover:bg-white/18 border border-white/15 rounded-xl px-3 py-1.5 transition flex items-center gap-2 min-h-[42px]" title="Toggle Dancing Horse">
-                    <svg class="w-8 h-7 shrink-0 overflow-visible" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <g class="horse-note-1" opacity="0">
-                        <path d="M78 18v-8l7-2v7" stroke="#FDE047" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="76.5" cy="18.5" r="2.3" fill="#FDE047"/>
-                      </g>
-                      <g class="horse-note-2" opacity="0">
-                        <path d="M18 22v-7l6-1.5v6" stroke="#648BFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="16.5" cy="22.5" r="2.1" fill="#648BFF"/>
-                      </g>
-                      <ellipse cx="50" cy="82" rx="22" ry="3.5" fill="rgba(15,23,42,0.3)"/>
-                      <g class="horse-body">
-                        <path class="horse-tail" d="M24 46 C12 44, 10 58, 16 64 C20 60, 21 53, 26 51 Z" fill="#7c2d12"/>
-                        <g class="horse-leg-back">
-                          <path d="M31 56 L27 77" stroke="#9a3412" stroke-width="5.5" stroke-linecap="round"/>
-                          <path d="M38 56 L37 77" stroke="#c2410c" stroke-width="5.5" stroke-linecap="round"/>
-                          <circle cx="27" cy="78" r="2.5" fill="#fff"/>
-                          <circle cx="37" cy="78" r="2.5" fill="#fff"/>
-                        </g>
-                        <g class="horse-leg-front">
-                          <path d="M60 56 L62 77" stroke="#9a3412" stroke-width="5.5" stroke-linecap="round"/>
-                          <path d="M67 55 L72 74" stroke="#c2410c" stroke-width="5.5" stroke-linecap="round"/>
-                          <circle cx="62" cy="78" r="2.5" fill="#fff"/>
-                          <circle cx="72" cy="75" r="2.5" fill="#fff"/>
-                        </g>
-                        <rect x="25" y="38" width="44" height="22" rx="11" fill="#fbbf24"/>
-                        <rect x="38" y="37" width="18" height="10" rx="4" fill="#648BFF"/>
-                        <path d="M58 43 L68 23 L78 26 L71 48 Z" fill="#fbbf24"/>
-                        <path d="M56 38 Q61 27 67 21 Q63 31 61 40 Z" fill="#7c2d12"/>
-                        <rect x="67" y="21" width="21" height="13" rx="6" transform="rotate(14 67 21)" fill="#fde047"/>
-                        <path d="M67 23 L65 14 L72 20 Z" fill="#f59e0b"/>
-                        <circle cx="74" cy="26" r="1.9" fill="#151B2B"/>
-                        <path d="M80 31 Q83 33 85 31" stroke="#7c2d12" stroke-width="1.6" stroke-linecap="round"/>
-                      </g>
-                    </svg>
-                    <div class="text-left leading-tight">
-                      <div class="text-[11px] font-bold text-white whitespace-nowrap">Dancing Horse</div>
-                      <div id="dancingHorseStatus" class="text-[10px] font-medium text-[#A5ADC2] whitespace-nowrap">Active · Tap</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Subtle Architectural ONEORA Prism Mark -->
-              <div class="hidden sm:flex items-center justify-center shrink-0 pr-2">
-                <img src="./icon.svg" alt="ONEORA Brand Emblem" class="w-24 h-24 rounded-3xl shadow-2xl border border-white/15" />
-              </div>
+          <!-- 1. Friendly Greeting + Big Heading (28px, weight 800) -->
+          <div class="flex items-start justify-between gap-3 pt-1">
+            <div class="space-y-1 min-w-0">
+              <p id="homeGreetingText" class="text-sm font-bold text-[#5B3FD0] dark:text-[#CBBBFF]">Good Morning</p>
+              <h1 class="oneora-pastel-heading">What would you like to do today?</h1>
             </div>
+            <!-- Compact Preserved Dancing Horse Companion -->
+            <button type="button" id="dancingHorseBtn" class="horse-dancing shrink-0 bg-white dark:bg-[#221C2E] border border-[var(--oneora-border)] rounded-[22px] px-2.5 py-1.5 shadow-sm flex items-center gap-1.5 min-h-[44px]" title="Tap to toggle Dancing Horse" aria-label="Toggle Dancing Horse">
+              <svg class="w-8 h-7 shrink-0 overflow-visible" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g class="horse-note-1" opacity="0">
+                  <path d="M78 18v-8l7-2v7" stroke="#5B3FD0" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="76.5" cy="18.5" r="2.4" fill="#5B3FD0"/>
+                </g>
+                <g class="horse-note-2" opacity="0">
+                  <path d="M18 22v-7l6-1.5v6" stroke="#E11D48" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="16.5" cy="22.5" r="2.2" fill="#E11D48"/>
+                </g>
+                <ellipse cx="50" cy="82" rx="22" ry="3.5" fill="rgba(43,34,54,0.16)"/>
+                <g class="horse-body">
+                  <path class="horse-tail" d="M24 46 C12 44, 10 58, 16 64 C20 60, 21 53, 26 51 Z" fill="#7c2d12"/>
+                  <g class="horse-leg-back">
+                    <path d="M31 56 L27 77" stroke="#9a3412" stroke-width="5.5" stroke-linecap="round"/>
+                    <path d="M38 56 L37 77" stroke="#c2410c" stroke-width="5.5" stroke-linecap="round"/>
+                    <circle cx="27" cy="78" r="2.5" fill="#fff"/>
+                    <circle cx="37" cy="78" r="2.5" fill="#fff"/>
+                  </g>
+                  <g class="horse-leg-front">
+                    <path d="M60 56 L62 77" stroke="#9a3412" stroke-width="5.5" stroke-linecap="round"/>
+                    <path d="M67 55 L72 74" stroke="#c2410c" stroke-width="5.5" stroke-linecap="round"/>
+                    <circle cx="62" cy="78" r="2.5" fill="#fff"/>
+                    <circle cx="72" cy="75" r="2.5" fill="#fff"/>
+                  </g>
+                  <rect x="25" y="38" width="44" height="22" rx="11" fill="#f59e0b"/>
+                  <rect x="38" y="37" width="18" height="10" rx="4" fill="#5B3FD0"/>
+                  <path d="M58 43 L68 23 L78 26 L71 48 Z" fill="#f59e0b"/>
+                  <path d="M56 38 Q61 27 67 21 Q63 31 61 40 Z" fill="#7c2d12"/>
+                  <rect x="67" y="21" width="21" height="13" rx="6" transform="rotate(14 67 21)" fill="#fbbf24"/>
+                  <path d="M67 23 L65 14 L72 20 Z" fill="#d97706"/>
+                  <circle cx="74" cy="26" r="1.9" fill="#2B2236"/>
+                  <path d="M80 31 Q83 33 85 31" stroke="#7c2d12" stroke-width="1.6" stroke-linecap="round"/>
+                </g>
+              </svg>
+              <span id="dancingHorseStatus" class="sr-only">Active</span>
+            </button>
           </div>
 
-          <!-- 2. Universal Smart Search Bar -->
+          <!-- 2. Pill Global Search Bar -->
           <div class="relative">
             <div class="relative">
-              <svg class="w-5 h-5 text-[#777F91] dark:text-[#A5ADC2] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="search" id="smartSearchInput" data-i18n-placeholder="searchPlaceholder" placeholder="What do you want to do today?" autocomplete="off" class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-sm font-medium text-[#171B2C] dark:text-[#F5F6FC] placeholder:text-[#777F91] outline-none shadow-[0_2px_10px_rgba(16,21,42,0.04)] transition min-h-[52px]" />
+              <svg class="w-5 h-5 text-[#5C506B] dark:text-[#C5B9DA] absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="smartSearchInput" data-i18n-placeholder="searchPlaceholder" placeholder="Search tools or ask AI" autocomplete="off" class="pastel-search-pill w-full pl-13 pr-5 py-3.5 text-sm font-semibold outline-none" style="padding-left: 3.1rem;" />
             </div>
 
             <!-- Instant Search Results Dropdown -->
-            <div id="smartSearchDropdown" class="hidden absolute left-0 right-0 top-[58px] z-30 bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] rounded-2xl shadow-2xl overflow-hidden">
+            <div id="smartSearchDropdown" class="hidden absolute left-0 right-0 top-[62px] z-30 bg-white dark:bg-[#221C2E] border border-[var(--oneora-border)] rounded-[28px] shadow-2xl overflow-hidden">
               <div id="smartSearchResults" class="max-h-80 overflow-y-auto"></div>
             </div>
-
-            <!-- Clean Interactive Search Suggestions -->
-            <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
-              <span data-i18n="popularSearchesLabel" class="font-medium text-[#777F91] dark:text-[#A5ADC2] mr-1">Suggested:</span>
-              <button type="button" data-q="compress pdf" class="smart-popular-chip px-3 py-1.5 rounded-lg bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] font-medium transition">Compress PDF</button>
-              <button type="button" data-q="passport photo" class="smart-popular-chip px-3 py-1.5 rounded-lg bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] font-medium transition">Passport Photo</button>
-              <button type="button" data-q="add expense" class="smart-popular-chip px-3 py-1.5 rounded-lg bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] font-medium transition">Add Expense</button>
-              <button type="button" data-q="create qr code" class="smart-popular-chip px-3 py-1.5 rounded-lg bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] font-medium transition">QR Code</button>
-              <button type="button" data-q="merge pdf" class="smart-popular-chip px-3 py-1.5 rounded-lg bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] font-medium transition">Merge PDF</button>
-              <div id="smartRecentSearches" class="inline-flex flex-wrap items-center gap-1.5 ml-1"></div>
-            </div>
           </div>
 
-          <!-- 3. Customisable Quick Actions -->
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h2 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Quick Actions</h2>
-              <button type="button" id="customizeQuickActionsBtn" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline min-h-[32px] px-1">Customize</button>
-            </div>
-            <div id="oneoraQuickActionsGrid" class="grid grid-cols-4 gap-2.5 sm:gap-3"></div>
-          </div>
-
-          <!-- 3B. Live Daily Life & Fintech Bento Grid (2x2 Mobile · 4-Col Desktop) -->
-          <div id="homeLiveWidgetsBlock" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <button type="button" data-open-tool="oneoraPlannerTab" id="homeTodayPlannerCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
-            <button type="button" onclick="window.OneoraPlanner && window.OneoraPlanner.openSubTab('reminders')" id="homeUpcomingRemindersCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
-            <button type="button" data-open-tool="oneoraMoneyTab" id="homeTodayExpensesCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
-            <button type="button" onclick="window.OneoraMoney && window.OneoraMoney.openSubTab('budgets')" id="homeMonthlyBudgetCard" class="pb-tool-tile text-left rounded-2xl p-4 flex flex-col justify-between min-h-[132px]"></button>
-          </div>
-
-          <!-- 3C. ONEORA Smart Hub (Cross-Module Suggestions · Explicit User Confirmation Only) -->
-          <div id="homeSmartHubContainer"></div>
-
-          <!-- 4. PDF Studio Showcase -->
-          <div id="homePdfShowcaseBlock">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-base sm:text-lg font-bold text-[#171B2C] dark:text-[#F5F6FC]" data-i18n="catPdfStudio">PDF Studio</h2>
-              <button type="button" data-open-cat="pdf" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">All Tools →</button>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              <button type="button" data-open-tool="pdfReaderTool" class="pb-tool-tile rounded-2xl p-4 flex items-center justify-between gap-3 text-left col-span-2 lg:col-span-3">
-                <div class="flex items-center gap-3.5 min-w-0">
-                  <span class="w-11 h-11 rounded-xl bg-[#10152A] dark:bg-[#7457E8] text-white flex items-center justify-center shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Universal Document Reader</div>
-                    <div class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">PDF · Word · Excel · PowerPoint · ZIP · 100% Offline &amp; Ad-Free</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-lg shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfCompress" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-rose">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 11v6"/><path d="m9 14 3 3 3-3"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Compress PDF</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Exact KB / MB shrink</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfMerge" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-violet">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Merge PDF</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Combine multiple files</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfSplit" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-amber">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Split PDF</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Extract exact pages</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfOrganize" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-emerald">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Organize Pages</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Reorder, rotate &amp; cut</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfWatermark" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-violet">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Watermark</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Stamp &amp; page numbers</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfScanner" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="6" width="10" height="12" rx="1.5"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Scan to PDF</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">AI crop &amp; Magic Color</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 5. Image & Office Showcase -->
-          <div id="homeImageShowcaseBlock">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-base sm:text-lg font-bold text-[#171B2C] dark:text-[#F5F6FC]">Image &amp; Office</h2>
-              <button type="button" data-open-cat="image" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">All Tools →</button>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              <button type="button" data-open-tool="imageCompress" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-emerald">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Image Compressor</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Exact 20KB / 50KB size</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="imgConvert" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-amber">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Image Converter</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">JPG, PNG &amp; WebP</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="imgToPdf" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-rose">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Images to PDF</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Turn photos into PDF</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="passportMaker" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a5 5 0 0 1 10 0v2"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Passport Photo</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">35×45mm &amp; A4 sheet</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="ocrScanner" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-violet">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 12h8"/><path d="M8 9h5"/><path d="M8 15h6"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">Smart OCR</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Extract Bengali &amp; EN text</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-
-              <button type="button" data-open-tool="pdfToExcel" class="pb-tool-tile rounded-2xl p-3.5 flex items-center justify-between gap-2.5 text-left transition">
-                <div class="flex items-center gap-3 min-w-0">
-                  <span class="oneora-icon-well tone-emerald">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/></svg>
-                  </span>
-                  <div class="min-w-0">
-                    <div class="text-xs sm:text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] leading-snug">PDF to Excel</div>
-                    <div class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] hidden sm:block">Extract tables to .xlsx</div>
-                  </div>
-                </div>
-                <span class="text-[#777F91] font-semibold text-base shrink-0">›</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 6. Everyday Companion Studios, Utilities & Encrypted Vaults -->
-          <div id="homeEverydayShowcaseBlock">
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-base sm:text-lg font-bold text-[#171B2C] dark:text-[#F5F6FC]">Everyday Studios &amp; Vault</h2>
-              <button type="button" onclick="window.openAllToolsCategory && window.openAllToolsCategory('all')" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">Explore All →</button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <button type="button" data-open-tool="oneoraCompanionTab" data-open-sub="doctemplates" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-blue">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Document Templates</h3>
-                  <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Resume, GST Invoice, Receipt &amp; Letter PDF</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="oneoraCompanionTab" data-open-sub="lifeplus" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-violet">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Life+ &amp; Wellness</h3>
-                  <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Shopping, Birthdays, Routine, Sleep &amp; Goals</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="oneoraCompanionTab" data-open-sub="securityplus" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-emerald">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Password Vault</h3>
-                  <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">AES-256 Encrypted Passwords &amp; Secure Notes</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="dailyUtilitiesHub" data-open-sub="dailyPanelCalc" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-amber">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 data-i18n="catDailyUtils" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Daily Utilities</h3>
-                  <p data-i18n="catDailySub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">GST, EMI, Converters, Notes, Expenses, QR</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="indiaEssentials" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-amber">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 data-i18n="catIndiaEss" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">India Essentials</h3>
-                  <p data-i18n="catIndiaSub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Govt Portals, PAN/Aadhaar Checklists</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="documentCenter" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-emerald">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 data-i18n="catDocCenter" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Document Vault</h3>
-                  <p data-i18n="catDocSub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Folders, PIN &amp; AES-256 Local Storage</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="oneoraAiTab" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5">
-                <span class="oneora-icon-well tone-violet">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">ONEORA AI Assistant</h3>
-                  <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Bengali, English &amp; Hindi Chat + PDF Q&amp;A</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-
-              <button type="button" data-open-tool="oneoraExtrasTab" class="pb-tool-tile text-left rounded-2xl p-4 transition flex items-center gap-3.5 sm:col-span-2">
-                <span class="oneora-icon-well">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Pro Offline Extras (PDF Redact, Collage &amp; Expiry)</h3>
-                  <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 truncate">Permanent PDF Redact, Collage, Watermark, World Clock, Emergency Numbers</p>
-                </div>
-                <span class="text-[#777F91] font-semibold">›</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 7. Favourite & Recently Used Strips -->
-          <div id="homeFavRecentBlock" class="space-y-4">
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <h2 data-i18n="favouriteTools" class="text-xs font-bold uppercase tracking-wider text-[#777F91] dark:text-[#A5ADC2]">Favourite Tools</h2>
-                <button type="button" onclick="window.openAllToolsCategory && window.openAllToolsCategory('all')" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">Manage</button>
-              </div>
-              <div id="homeFavToolsRow" class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1"></div>
-            </div>
-
-            <div id="homeRecentToolsSection" class="hidden">
-              <h2 data-i18n="recentTools" class="text-xs font-bold uppercase tracking-wider text-[#777F91] dark:text-[#A5ADC2] mb-2">Recently Used</h2>
-              <div id="homeRecentToolsRow" class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1"></div>
-            </div>
-          </div>
-
-          <!-- 8. Popular Tools (Dynamic Starred Grid) -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-base font-bold text-[#171B2C] dark:text-[#F5F6FC]" data-i18n="popularTools">Popular Tools</h2>
-              <button type="button" onclick="window.openAllToolsCategory && window.openAllToolsCategory('all')" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">Browse All →</button>
-            </div>
-            <div id="homePopularToolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-          </div>
-
-          <!-- 9. Recently Processed Documents -->
-          <div>
-            <div class="flex items-center justify-between mb-2.5">
-              <h2 data-i18n="recentDocsTitle" class="text-xs font-bold uppercase tracking-wider text-[#777F91] dark:text-[#A5ADC2]">Recently Processed Documents</h2>
-              <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('recentActivityTab')" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline">See All</button>
-            </div>
-            <div id="homeRecentDocsList" class="space-y-2.5"></div>
-          </div>
-
-          <!-- 10. Useful Daily Recommendations -->
-          <div>
-            <h2 data-i18n="dailyRecsTitle" class="text-xs font-bold uppercase tracking-wider text-[#777F91] dark:text-[#A5ADC2] mb-3">Useful Daily Recommendations</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <button type="button" data-open-tool="passportMaker" class="pb-tool-tile text-left p-4 rounded-2xl transition">
-                <div data-i18n="rec1Title" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Apply for Govt Exam or PAN?</div>
-                <p data-i18n="rec1Sub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-1 leading-relaxed">Resize photo to exact 20KB–50KB or make a 35×45mm Passport Photo sheet.</p>
-              </button>
-              <button type="button" data-open-tool="pdfSigVerify" class="pb-tool-tile text-left p-4 rounded-2xl transition">
-                <div data-i18n="rec2Title" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Check e-Aadhaar or Certificate</div>
-                <p data-i18n="rec2Sub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-1 leading-relaxed">Verify embedded PDF digital signature &amp; tamper integrity offline.</p>
-              </button>
-              <button type="button" data-open-tool="dailyUtilitiesHub" data-open-sub="dailyPanelCalc" class="pb-tool-tile text-left p-4 rounded-2xl transition">
-                <div data-i18n="rec3Title" class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Calculate GST, EMI &amp; Bills</div>
-                <p data-i18n="rec3Sub" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-1 leading-relaxed">Open Daily Utilities for instant GST, Loan EMI &amp; Electricity Bill calculators.</p>
-              </button>
-            </div>
-          </div>
-
-          <!-- 11. Feedback & Share Trust Banner -->
-          <div class="oneora-hero-card rounded-3xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-              <div class="w-11 h-11 rounded-2xl bg-white/12 border border-white/15 text-white flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <div>
-                <h3 data-i18n="privacyGuaranteeTitle" class="text-sm sm:text-base font-bold">Enjoying ONEORA? Share Your Feedback</h3>
-                <p data-i18n="privacyGuaranteeText" class="text-xs text-[#C9D1E8] mt-0.5 leading-relaxed">100% Free &amp; Offline-First · Tell Suman Nayak what feature you want next.</p>
+          <!-- 3. Big Lavender Hero Card ("Scan a document in one tap") -->
+          <button type="button" data-open-tool="pdfScanner" class="pastel-hero-card w-full p-6 sm:p-7 text-left flex flex-col sm:flex-row sm:items-center justify-between gap-5 focus:outline-none">
+            <div class="flex items-start gap-4 min-w-0">
+              <span class="pastel-white-tile !w-14 !h-14 !rounded-[20px] !text-[#5B3FD0] dark:!text-[#CBBBFF]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="6" width="10" height="12" rx="2"/><path d="M10 10h4"/><path d="M10 14h4"/></svg>
+              </span>
+              <div class="space-y-1 min-w-0">
+                <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight leading-snug text-[#2B2236] dark:text-[#F5EEFF]">
+                  Scan a document in one tap
+                </h2>
+                <p class="text-sm font-medium text-[#42335C] dark:text-[#D6CAF0] leading-relaxed">
+                  Auto-crop pages, enhance clarity &amp; save offline PDF
+                </p>
               </div>
             </div>
-            <div class="flex flex-wrap items-center gap-2 shrink-0">
-              <button type="button" id="homeFeedbackBtn" class="px-4 py-2.5 rounded-xl bg-white text-[#10152A] hover:bg-[#F1F3FA] text-xs font-bold whitespace-nowrap min-h-[40px] shadow-sm transition">Send Feedback</button>
-              <button type="button" id="homeOpenAppHubBtn" class="px-4 py-2.5 rounded-xl bg-white/12 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold whitespace-nowrap min-h-[40px] transition">APK &amp; Share</button>
+            <span class="pastel-hero-cta inline-flex items-center justify-center gap-2 text-sm whitespace-nowrap self-start sm:self-center shrink-0">
+              <span>Scan Now</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </button>
+
+          <!-- 4. 2-Column Pastel Category Cards (PDF · Image · Office · Life & Money · India · Vault) -->
+          <div id="pastelHomeCategoriesGrid" class="grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+            <button type="button" data-open-pastel-cat="pdf" data-pastel-cat="pdf" class="pastel-cat-card pastel-stagger" style="--stagger-i:0">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">PDF</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">18 tools · Reader &amp; Studio</p>
+              </div>
+            </button>
+
+            <button type="button" data-open-pastel-cat="image" data-pastel-cat="image" class="pastel-cat-card pastel-stagger" style="--stagger-i:1">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">Image</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">8 tools · Passport &amp; KB</p>
+              </div>
+            </button>
+
+            <button type="button" data-open-pastel-cat="office" data-pastel-cat="office" class="pastel-cat-card pastel-stagger" style="--stagger-i:2">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">Office</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">5 tools · Excel, CSV &amp; ZIP</p>
+              </div>
+            </button>
+
+            <button type="button" data-open-pastel-cat="lifemoney" data-pastel-cat="lifemoney" class="pastel-cat-card pastel-stagger" style="--stagger-i:3">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">Life &amp; Money</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">8 tools · Planner &amp; Finance</p>
+              </div>
+            </button>
+
+            <button type="button" data-open-pastel-cat="india" data-pastel-cat="india" class="pastel-cat-card pastel-stagger" style="--stagger-i:4">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="m12 2 9 5H3l9-5Z"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">India</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">4 tools · PAN, Aadhaar &amp; ID</p>
+              </div>
+            </button>
+
+            <button type="button" data-open-pastel-cat="vault" data-pastel-cat="vault" class="pastel-cat-card pastel-stagger" style="--stagger-i:5">
+              <div class="flex items-start justify-between w-full">
+                <span class="pastel-white-tile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="3"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <svg class="w-5 h-5 opacity-55 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div class="mt-5">
+                <h3 class="text-lg font-extrabold leading-tight">Vault</h3>
+                <p class="pastel-cat-sub text-xs mt-1 tabular-nums">4 tools · Files &amp; Security</p>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             STAGE 1 · DEDICATED CATEGORY SCREEN (Own Pastel Header + Tool List)
+             ================================================================ -->
+        <section id="pastelCategoryScreen" data-pastel-cat="pdf" class="tab-content hidden pastel-slide-screen flex-col max-w-3xl lg:max-w-4xl mx-auto space-y-5">
+          <div id="pastelCatHeader" class="pastel-cat-header space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <button type="button" id="pastelCatBackBtn" aria-label="Back to Home" class="pastel-back-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <span id="pastelCatCountText" class="text-xs font-extrabold tabular-nums text-[#2B2236]/80 dark:text-[#F5EEFF]/80">0 tools</span>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <span id="pastelCatIconTile" class="pastel-white-tile !w-14 !h-14 !rounded-[20px]"></span>
+              <div class="min-w-0">
+                <h2 id="pastelCatTitle" class="oneora-pastel-heading truncate">PDF</h2>
+                <p id="pastelCatSubtitle" class="text-sm font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-0.5">All offline tools in this category</p>
+              </div>
+            </div>
+
+            <div class="relative pt-1">
+              <svg class="w-4 h-4 text-[#5C506B] dark:text-[#C5B9DA] absolute left-4 top-1/2 -translate-y-1/2 mt-0.5 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="pastelCatSearchInput" placeholder="Filter tools in this category..." autocomplete="off" class="w-full pl-11 pr-4 py-2.5 rounded-full bg-white/95 dark:bg-[#17131F]/85 text-sm font-semibold text-[#2B2236] dark:text-[#F5EEFF] placeholder:text-[#5C506B] dark:placeholder:text-[#C5B9DA] outline-none min-h-[46px] shadow-sm" />
             </div>
           </div>
+
+          <div id="pastelCatToolsList" class="pastel-list-in-cat space-y-2.5"></div>
         </section>
 
         <!-- TAB: PDF Merge -->
@@ -2518,64 +2233,86 @@
         <!-- PDF BONDHU 2.0 — ALL TOOLS, VAULT, RECENT, PROFILE & PRO TOOLS -->
         <!-- =============================================================== -->
 
-        <!-- TAB: All Tools Directory Hub -->
-        <section id="allToolsHub" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
-          <div class="oneora-surface p-5 sm:p-6 space-y-4">
-            <div class="text-center max-w-2xl mx-auto space-y-1.5">
-              <p class="text-[11px] font-bold tracking-wider uppercase text-[#7457E8] dark:text-[#B4A5FF]">8 Pillars · Offline-First Super App</p>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-[#171B2C] dark:text-[#F5F6FC] tracking-tight" data-i18n="nav_tools">All Tools</h2>
-              <p class="text-xs sm:text-sm text-[#777F91] dark:text-[#A5ADC2]">Documents, Life, Money, Wellness, Daily Utilities, India Essentials, ONEORA AI &amp; Encrypted Vaults.</p>
+        <!-- TAB: All Tools Directory Hub (Pastel Style) -->
+        <section id="allToolsHub" class="tab-content hidden animate-fade-in flex-col w-full max-w-4xl mx-auto space-y-5">
+          <div class="space-y-4">
+            <div class="flex items-end justify-between gap-3">
+              <div>
+                <p class="text-xs font-bold text-[#5B3FD0] dark:text-[#CBBBFF]">Offline-First Library</p>
+                <h2 class="oneora-pastel-heading mt-0.5" data-i18n="nav_tools">All Tools</h2>
+              </div>
+              <button type="button" onclick="window.openPdfBondhuTool && window.openPdfBondhuTool('recentActivityTab')" class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] hover:underline min-h-[44px] flex items-center">Recent Files →</button>
             </div>
-            <div class="relative max-w-xl mx-auto w-full">
-              <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777F91] pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="search" id="allToolsSearchInput" placeholder="Search any tool (e.g. Resume, Invoice, Password Vault, Compress, EMI)..." class="oneora-input !pl-11 !pr-4 !rounded-2xl text-sm min-h-[46px]" />
+
+            <!-- Pill Search -->
+            <div class="relative w-full">
+              <svg class="w-5 h-5 text-[#5C506B] dark:text-[#C5B9DA] absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="allToolsSearchInput" placeholder="Search any tool (Resume, Compress, EMI, Vault...)" class="pastel-search-pill w-full pr-5 py-3.5 text-sm font-semibold outline-none" style="padding-left: 3.1rem;" />
             </div>
-            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-              <button type="button" data-cat="all" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#7457E8] text-white whitespace-nowrap min-h-[38px] transition">All Tools</button>
-              <button type="button" data-cat="pdf" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition" data-i18n="cat_pdf">Documents</button>
-              <button type="button" data-cat="image" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition" data-i18n="cat_image">Image Studio</button>
-              <button type="button" data-cat="office" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition" data-i18n="cat_office">Office</button>
-              <button type="button" data-cat="life" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition">Life</button>
-              <button type="button" data-cat="finance" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition">Money</button>
-              <button type="button" data-cat="lifestyle" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition">Lifestyle</button>
-              <button type="button" data-cat="ai" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition">ONEORA AI</button>
-              <button type="button" data-cat="daily" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition" data-i18n="cat_daily">Tools</button>
-              <button type="button" data-cat="india" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition" data-i18n="cat_india">India</button>
-              <button type="button" data-cat="vault" class="alltools-cat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] border border-[#E8EAF2] dark:border-[#232C4A] whitespace-nowrap min-h-[38px] transition">Security</button>
+
+            <!-- Pinned Favourites Row (Accessible without cluttering Home) -->
+            <div id="allToolsFavBlock" class="space-y-2">
+              <div class="flex items-center justify-between px-1">
+                <h3 class="text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA]">Pinned Favourites</h3>
+                <span class="text-[11px] font-medium text-[#5C506B] dark:text-[#C5B9DA]">Long-press any tool to pin</span>
+              </div>
+              <div id="allToolsFavRow" class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1"></div>
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
+              <button type="button" data-cat="all" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-extrabold bg-[#5B3FD0] text-white whitespace-nowrap min-h-[44px] transition">All</button>
+              <button type="button" data-cat="pdf" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition" data-i18n="cat_pdf">PDF</button>
+              <button type="button" data-cat="image" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition" data-i18n="cat_image">Image</button>
+              <button type="button" data-cat="office" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition" data-i18n="cat_office">Office</button>
+              <button type="button" data-cat="lifemoney" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition">Life &amp; Money</button>
+              <button type="button" data-cat="india" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition" data-i18n="cat_india">India</button>
+              <button type="button" data-cat="vault" class="alltools-cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap min-h-[44px] transition">Vault</button>
             </div>
           </div>
 
           <div id="allToolsHubGrid" class="w-full space-y-6"></div>
         </section>
 
-        <!-- TAB: Personal Document Center (Encrypted Local Vault) -->
-        <section id="documentCenter" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="text-xs font-bold tracking-wide uppercase text-[#20A779]">AES-256 Encrypted · 100% On-Device</p>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_files">My Files</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Organize IDs, PDFs, certificates, and receipts locally with optional PIN &amp; Biometric lock.</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span id="vaultPinStatusBadge" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#1C2438] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Unlocked</span>
-              <button type="button" id="vaultLockNowBtn" class="hidden px-3.5 py-2 rounded-xl bg-[#293B80] hover:bg-[#1f2e66] text-white text-xs font-bold min-h-[38px] transition">Lock Vault</button>
+        <!-- TAB: Personal Document Center (Encrypted Local Vault — Design A Pastel) -->
+        <section id="documentCenter" data-pastel-cat="vault" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-5">
+          <!-- Pastel Vault Header -->
+          <div class="pastel-cat-header p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="flex items-start gap-3.5 min-w-0">
+                <div class="pastel-icon-tile !w-12 !h-12 !rounded-2xl shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#432B9F] dark:text-[#D8CAFF]">AES-256 Encrypted · 100% On-Device</p>
+                  <h2 class="text-2xl sm:text-[28px] font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight leading-tight" data-i18n="nav_files">My Vault</h2>
+                  <p class="text-xs sm:text-sm text-[#4B3F5C] dark:text-[#D5CBE8] mt-1">Keep IDs, PDFs, certificates &amp; receipts locked privately with folders, tags, and expiry reminders.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <span id="vaultPinStatusBadge" class="inline-flex items-center gap-1.5 text-xs font-extrabold px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 text-[#2B2236] dark:text-[#F5EEFF] border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 min-h-[44px]">Unlocked</span>
+                <button type="button" id="vaultLockNowBtn" class="hidden px-4 py-2 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition">Lock Vault</button>
+              </div>
             </div>
           </div>
 
-          <!-- PIN / Biometric Lock Gate -->
-          <div id="vaultLockGate" class="hidden oneora-surface p-8 text-center max-w-md mx-auto space-y-4">
-            <div class="oneora-icon-well tone-violet !w-14 !h-14 !rounded-2xl mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <!-- PIN / Fingerprint Lock Gate -->
+          <div id="vaultLockGate" class="hidden pastel-stage3-card p-6 sm:p-8 text-center max-w-md mx-auto space-y-5">
+            <div class="w-20 h-20 rounded-[26px] bg-[#E4D9FF] dark:bg-[#2D2347] mx-auto flex items-center justify-center shadow-sm">
+              <div class="w-12 h-12 rounded-2xl bg-white dark:bg-[#221C2E] text-[#5B3FD0] dark:text-[#CBBBFF] flex items-center justify-center shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
             </div>
             <div>
-              <h3 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Personal Vault Locked</h3>
-              <p class="text-xs text-[#647087] dark:text-[#9EA8C0] mt-1">Enter your 4–8 digit PIN to decrypt and view your local files.</p>
+              <h3 class="text-xl font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Personal Vault Locked</h3>
+              <p class="text-xs sm:text-sm text-[#5C506B] dark:text-[#C5B9DA] mt-1">Enter your 4–8 digit PIN or use Fingerprint to decrypt your local documents.</p>
             </div>
             <div class="flex gap-2">
-              <input type="password" inputmode="numeric" id="vaultUnlockPinInput" maxlength="8" placeholder="Enter PIN" class="oneora-input flex-1 text-center text-base font-bold tracking-widest" />
-              <button type="button" id="vaultUnlockPinBtn" class="oneora-btn-primary text-sm">Unlock</button>
+              <input type="password" inputmode="numeric" id="vaultUnlockPinInput" maxlength="8" placeholder="Enter PIN" class="pastel-pill-input flex-1 text-center text-base font-extrabold tracking-widest !rounded-full" />
+              <button type="button" id="vaultUnlockPinBtn" class="px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-sm font-extrabold min-h-[46px] shadow-sm transition">Unlock</button>
             </div>
-            <button type="button" id="vaultBiometricUnlockBtn" class="hidden w-full py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold min-h-[42px]">
+            <button type="button" id="vaultBiometricUnlockBtn" class="hidden w-full py-3 px-4 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] hover:opacity-95 text-[#114B36] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[48px] inline-flex items-center justify-center gap-2 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></svg>
               Unlock with Fingerprint / Face ID
             </button>
           </div>
@@ -2583,40 +2320,53 @@
           <!-- Main Unlocked Vault Content -->
           <div id="vaultMainContent" class="space-y-4">
             <!-- Storage Overview & Quick Import -->
-            <div class="oneora-surface p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <p class="text-xs font-semibold text-[#647087] dark:text-[#9EA8C0]">Local Encrypted Storage</p>
-                <p id="vaultStorageSummary" class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 tabular-nums">0 files · 0 KB stored locally</p>
+            <div class="pastel-stage3-card p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-[#E4D9FF] dark:bg-[#2D2347] text-[#5B3FD0] dark:text-[#CBBBFF] flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">Local Encrypted Storage</p>
+                  <p id="vaultStorageSummary" class="text-sm sm:text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mt-0.5 tabular-nums">0 files · 0 KB stored locally</p>
+                </div>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <select id="vaultUploadFolderSelect" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
-                  <option value="General">General</option>
+                <select id="vaultUploadFolderSelect" aria-label="Target folder" class="pastel-pill-input !rounded-full text-xs font-bold min-h-[44px]">
+                  <option value="Personal">Personal</option>
                 </select>
-                <label class="cursor-pointer oneora-btn-primary text-xs">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <input type="text" id="vaultImportTagsInput" placeholder="Tags (e.g. ID, Tax)" aria-label="Optional tags for imported files" class="pastel-pill-input !rounded-full !w-40 text-xs font-semibold min-h-[44px]" />
+                <label class="cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   Import Files
                   <input type="file" id="vaultImportInput" multiple class="hidden" />
                 </label>
               </div>
             </div>
 
-            <!-- Folders Row -->
-            <div class="oneora-surface p-4 space-y-3">
-              <div class="flex flex-wrap items-center justify-between gap-2">
+            <!-- Folders, Tags & Search (Folders/Tags rows auto-hide when empty) -->
+            <div id="vaultFilterCard" class="hidden pastel-stage3-card p-5 space-y-4">
+              <!-- Folders Row -->
+              <div id="vaultFoldersRow" class="hidden flex flex-wrap items-center justify-between gap-2.5">
                 <div id="vaultFoldersBar" class="flex flex-wrap items-center gap-2"></div>
                 <div class="flex items-center gap-1.5">
-                  <input type="text" id="vaultNewFolderInput" placeholder="New folder..." class="oneora-input !w-36 !min-h-[38px] !py-1.5 text-xs" />
-                  <button type="button" id="vaultAddFolderBtn" class="oneora-btn-secondary !min-h-[38px] !py-1.5 text-xs">+ Folder</button>
+                  <input type="text" id="vaultNewFolderInput" placeholder="New folder..." class="pastel-pill-input !rounded-full !w-36 text-xs" />
+                  <button type="button" id="vaultAddFolderBtn" class="px-4 py-2 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold min-h-[44px] transition">+ Folder</button>
                 </div>
               </div>
 
-              <!-- Search, Sort & Inline Rename -->
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-[#E6E9F2] dark:border-[#232C4A]">
+              <!-- Tags Filter Row -->
+              <div id="vaultTagsRow" class="hidden flex items-center gap-2 overflow-x-auto hide-scrollbar pt-2 border-t border-[#2B2236]/8 dark:border-[#F5EEFF]/10">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#5C506B] dark:text-[#C5B9DA] shrink-0">Tags:</span>
+                <div id="vaultTagsBar" class="flex items-center gap-1.5"></div>
+              </div>
+
+              <!-- Search & Sort -->
+              <div id="vaultSearchSortRow" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-2 border-t border-[#2B2236]/8 dark:border-[#F5EEFF]/10">
                 <div class="sm:col-span-8">
-                  <input type="search" id="vaultSearchInput" placeholder="Search files by name or folder..." class="oneora-input !min-h-[40px] text-xs" />
+                  <input type="search" id="vaultSearchInput" placeholder="Search files by name, folder, or #tag..." class="pastel-pill-input !rounded-full w-full text-xs" />
                 </div>
                 <div class="sm:col-span-4">
-                  <select id="vaultSortSelect" class="oneora-input !min-h-[40px] text-xs font-semibold">
+                  <select id="vaultSortSelect" aria-label="Sort vault files" class="pastel-pill-input !rounded-full w-full text-xs font-bold">
                     <option value="date_desc">Newest First</option>
                     <option value="name_asc">Name (A–Z)</option>
                     <option value="size_desc">Largest First</option>
@@ -2625,169 +2375,338 @@
                 </div>
               </div>
 
-              <div id="vaultRenameRow" class="hidden items-center gap-2 p-2.5 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/15 border border-[#7457E8]/25">
-                <input type="text" id="vaultRenameInput" class="oneora-input flex-1 !min-h-[36px] text-xs font-semibold" />
-                <button type="button" id="vaultRenameSaveBtn" class="oneora-btn-primary !min-h-[36px] !py-1.5 text-xs">Save Name</button>
+              <!-- Inline Rename Row -->
+              <div id="vaultRenameRow" class="hidden flex items-center gap-2 p-3 rounded-2xl bg-[#E4D9FF]/50 dark:bg-[#2D2347] border border-[#5B3FD0]/25">
+                <input type="text" id="vaultRenameInput" class="pastel-pill-input flex-1 !rounded-full text-xs font-bold" />
+                <button type="button" id="vaultRenameSaveBtn" class="px-4 py-2 rounded-full bg-[#5B3FD0] text-white text-xs font-extrabold min-h-[44px]">Save Name</button>
+                <button type="button" id="vaultRenameCancelBtn" class="px-3 py-2 rounded-full bg-white dark:bg-[#221C2E] text-[#5C506B] dark:text-[#C5B9DA] text-xs font-bold min-h-[44px]">Cancel</button>
+              </div>
+
+              <!-- Inline Tag Editor Row -->
+              <div id="vaultTagEditRow" class="hidden flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-[#E4D9FF]/50 dark:bg-[#2D2347] border border-[#5B3FD0]/25">
+                <span id="vaultTagEditLabel" class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate max-w-[180px]">Edit tags</span>
+                <input type="text" id="vaultTagEditInput" placeholder="Comma-separated tags: ID, Tax, Urgent" class="pastel-pill-input flex-1 min-w-[180px] !rounded-full text-xs font-semibold" />
+                <button type="button" id="vaultTagEditSaveBtn" class="px-4 py-2 rounded-full bg-[#5B3FD0] text-white text-xs font-extrabold min-h-[44px]">Save Tags</button>
+                <button type="button" id="vaultTagEditCancelBtn" class="px-3 py-2 rounded-full bg-white dark:bg-[#221C2E] text-[#5C506B] dark:text-[#C5B9DA] text-xs font-bold min-h-[44px]">Cancel</button>
               </div>
             </div>
 
             <!-- Files List -->
-            <div id="vaultFilesList" class="space-y-2.5"></div>
+            <div id="vaultFilesList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+            <!-- Document Expiry Reminders (Synced with oneoraDocExpiries_v1) -->
+            <div id="vaultExpirySection" class="pastel-stage3-card p-5 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A] flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M12 14v4"/><path d="M12 18h.01"/></svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Document Expiry Reminders</h3>
+                    <p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Track Passport, Driving Licence, Insurance, PAN/KYC &amp; Warranty dates.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="vaultExpiryCountBadge" class="px-3 py-1.5 rounded-full text-xs font-extrabold bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A] tabular-nums">0 tracked</span>
+                  <button type="button" id="vaultOpenExpirySheetBtn" class="px-4 py-2 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition whitespace-nowrap">+ Add reminder</button>
+                </div>
+              </div>
+
+              <div id="vaultExpiryList" class="space-y-2"></div>
+            </div>
 
             <!-- Vault Security Setup Card -->
-            <div class="oneora-surface p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h4 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC]">Vault PIN &amp; AES-256 Encryption</h4>
-                <p class="text-xs text-[#647087] dark:text-[#9EA8C0] mt-0.5">Set a 4–8 digit PIN to encrypt newly imported documents and lock access. Enter blank to remove PIN.</p>
+            <div class="pastel-stage3-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-start gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div>
+                  <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Vault App Lock · PIN &amp; Fingerprint</h4>
+                  <p class="text-xs text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">Set a 4–8 digit PIN to lock Vault with Fingerprint/PIN and AES-256 encryption. Submit blank to disable App Lock.</p>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <input type="password" inputmode="numeric" id="vaultSetupPinInput" maxlength="8" placeholder="4–8 digit PIN" class="oneora-input !w-36 !min-h-[40px] text-xs font-bold" />
-                <button type="button" id="vaultSetupPinBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold min-h-[40px] whitespace-nowrap">Save PIN</button>
+              <div class="flex items-center gap-2 shrink-0">
+                <input type="password" inputmode="numeric" id="vaultSetupPinInput" maxlength="8" placeholder="4–8 digit PIN" class="pastel-pill-input !rounded-full !w-36 text-xs font-bold text-center tracking-widest" />
+                <button type="button" id="vaultSetupPinBtn" class="px-5 py-2.5 rounded-full bg-[#157A54] hover:bg-[#106344] text-white text-xs font-extrabold min-h-[44px] whitespace-nowrap transition">Save PIN</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Document Expiry "Add reminder" Bottom Sheet -->
+          <div id="vaultExpirySheet" class="hidden fixed inset-0 z-[65] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="vaultExpirySheetTitle">
+            <div id="vaultExpirySheetBackdrop" class="absolute inset-0 bg-[#2B2236]/45 dark:bg-black/65 backdrop-blur-xs"></div>
+            <div class="relative z-10 w-full max-w-md bg-white dark:bg-[#221C2E] rounded-t-[32px] sm:rounded-[32px] border border-[var(--oneora-border)] p-5 sm:p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl space-y-4">
+              <div class="w-10 h-1.5 rounded-full bg-[#2B2236]/15 dark:bg-[#F5EEFF]/20 mx-auto sm:hidden"></div>
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="w-11 h-11 rounded-2xl bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A] inline-flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  </span>
+                  <div>
+                    <h3 id="vaultExpirySheetTitle" class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Add Expiry Reminder</h3>
+                    <p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Saved offline in your Vault</p>
+                  </div>
+                </div>
+                <button type="button" id="vaultExpirySheetCloseBtn" aria-label="Close Add reminder sheet" class="w-11 h-11 rounded-full bg-[var(--oneora-bg)] text-[#2B2236] dark:text-[#F5EEFF] font-extrabold inline-flex items-center justify-center">✕</button>
+              </div>
+
+              <form id="vaultExpiryForm" class="space-y-3.5">
+                <div>
+                  <label for="vaultExpiryTypeSelect" class="block text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Document Type</label>
+                  <select id="vaultExpiryTypeSelect" required class="pastel-pill-input w-full text-sm font-bold">
+                    <option value="" disabled selected>Select document type...</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Driving Licence">Driving Licence</option>
+                    <option value="Insurance">Insurance</option>
+                    <option value="PAN/KYC">PAN/KYC</option>
+                    <option value="Warranty">Warranty</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="vaultExpiryDocInput" class="block text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Custom Label (optional)</label>
+                  <input type="text" id="vaultExpiryDocInput" maxlength="120" placeholder="e.g. Car Insurance, Mom's Passport" class="pastel-pill-input w-full text-sm" />
+                </div>
+
+                <div>
+                  <label for="vaultExpiryDateInput" class="block text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Expiry Date</label>
+                  <input type="date" id="vaultExpiryDateInput" required class="pastel-pill-input w-full text-sm font-bold" />
+                </div>
+
+                <div>
+                  <label for="vaultExpiryNoteInput" class="block text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Note / Policy Number (optional)</label>
+                  <input type="text" id="vaultExpiryNoteInput" maxlength="140" placeholder="e.g. Policy #12345" class="pastel-pill-input w-full text-sm" />
+                </div>
+
+                <button type="submit" class="w-full py-3 px-5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-sm font-extrabold min-h-[48px] shadow-sm transition">Save Reminder</button>
+              </form>
             </div>
           </div>
         </section>
 
-        <!-- TAB: Recent Activity (Tools + Processed Documents) -->
-        <section id="recentActivityTab" class="tab-content hidden animate-fade-in flex-col w-full max-w-5xl mx-auto space-y-6">
-          <div>
-            <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Activity History</p>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_recent">Recent</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Jump back into recently used tools and view documents processed on this device.</p>
+        <!-- TAB: Recent Activity (Design A · Pastel + Swipe Actions) -->
+        <section id="recentActivityTab" class="tab-content hidden animate-fade-in flex-col w-full max-w-4xl mx-auto space-y-5">
+          <!-- Pastel Header Card -->
+          <div class="rounded-[30px] p-5 sm:p-6 bg-[#E4D9FF] dark:bg-[#2D2347] border border-black/5 dark:border-white/10 shadow-sm space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <span class="pastel-white-tile !w-12 !h-12 !rounded-[18px] !text-[#5B3FD0] dark:!text-[#CBBBFF]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </span>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-extrabold tracking-wide uppercase text-[#4B34AD] dark:text-[#D5C7FF]">Activity History</p>
+                  <h2 class="text-2xl sm:text-[28px] font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight leading-tight" data-i18n="nav_recent">Recent</h2>
+                </div>
+              </div>
+              <button type="button" data-open-tool="documentCenter" class="pastel-pill-tab">Open Vault →</button>
+            </div>
+            <p class="text-xs sm:text-sm font-medium text-[#4C3F5E] dark:text-[#D6CAF0]">Jump back into recent tools or swipe left on any processed document to open, share, or remove it.</p>
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200" data-i18n="recent_tools">Recently Used Tools</h3>
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]" data-i18n="recent_tools">Recently Used Tools</h3>
+            </div>
             <div id="recentTabToolsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
           </div>
 
           <div class="space-y-3">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200" data-i18n="recent_docs">Recently Processed Documents</h3>
-            <div id="recentTabDocsList" class="space-y-2.5"></div>
+            <div class="flex items-center justify-between gap-2 px-1">
+              <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]" data-i18n="recent_docs">Recently Processed Documents</h3>
+              <span class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">← Swipe left for actions</span>
+            </div>
+            <div id="recentTabDocsList" class="space-y-3"></div>
           </div>
         </section>
 
-        <!-- TAB: Profile & Settings -->
+        <!-- TAB: Profile & Settings (Design A · Pastel + Persona + Font Scaling + Accessibility) -->
         <section id="profileSettingsTab" class="tab-content hidden animate-fade-in flex-col w-full max-w-3xl mx-auto space-y-5">
-          <div>
-            <p class="text-xs font-bold tracking-wide uppercase text-[#7666D8]">Preferences &amp; Privacy</p>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" data-i18n="nav_profile">Profile &amp; Settings</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Personalize language, theme, default PDF author, and local storage.</p>
-          </div>
-
-          <!-- ONEORA Cloud Account & Offline-First Sync -->
-          <div class="oneora-hero-card rounded-2xl p-5 text-white space-y-3.5">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div class="space-y-1">
-                <p class="text-[11px] font-semibold text-[#C7D2FE]">ONEORA Cloud Backup · Optional</p>
-                <h3 id="cloudAccountStatus" class="text-base font-extrabold">Offline Mode (No account required)</h3>
-                <p id="cloudAccountEmail" class="text-xs text-[#C9D1E8]">Sign in with Google to back up &amp; sync Planner, Notes, Reminders &amp; Money across devices.</p>
-                <p id="cloudLastSyncText" class="text-[11px] text-emerald-300 font-semibold"></p>
+          <!-- Pastel Header Card -->
+          <div class="rounded-[30px] p-5 sm:p-6 bg-[#CBBBFF] dark:bg-[#2F244D] border border-black/5 dark:border-white/10 shadow-sm space-y-1.5">
+            <div class="flex items-center gap-3.5">
+              <span class="pastel-white-tile !w-12 !h-12 !rounded-[18px] !text-[#5B3FD0] dark:!text-[#CBBBFF]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+              </span>
+              <div>
+                <p class="text-[11px] font-extrabold tracking-wide uppercase text-[#432B9E] dark:text-[#D5C7FF]">Preferences &amp; Accessibility</p>
+                <h2 class="text-2xl sm:text-[28px] font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight leading-tight" data-i18n="nav_profile">Profile &amp; Settings</h2>
               </div>
-              <a href="/website" class="px-3.5 py-2 rounded-xl bg-white/12 hover:bg-white/20 border border-white/15 text-white text-xs font-bold whitespace-nowrap">Public Website ↗</a>
             </div>
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-              <button type="button" id="cloudGoogleSignInBtn" class="px-4 py-2.5 rounded-xl bg-white text-[#10152A] hover:bg-[#F1F3FA] text-xs font-extrabold min-h-[42px] shadow-sm transition">Sign in with Google</button>
-              <button type="button" id="cloudSyncNowBtn" class="hidden px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-extrabold min-h-[42px] transition">Sync Now</button>
-              <button type="button" id="cloudSignOutBtn" class="hidden px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold min-h-[42px] transition">Sign Out</button>
-              <button type="button" id="cloudDeleteDataBtn" class="hidden px-3.5 py-2.5 rounded-xl bg-rose-500/80 hover:bg-rose-500 text-white text-xs font-bold min-h-[42px] transition">Delete Cloud Data</button>
+            <p class="text-xs sm:text-sm font-medium text-[#42335C] dark:text-[#D6CAF0] pt-1">Personalise Home, text scaling, theme, language, and offline privacy.</p>
+          </div>
+
+          <!-- Home Personalisation Persona Switcher -->
+          <div class="pastel-stage3-card p-5 space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Personalise Home Layout</h3>
+                <p id="settingsActivePersonaLabel" class="text-xs font-semibold text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">General · Balanced access to PDF, Image, Office &amp; Vault</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button type="button" data-set-persona="student" data-pastel-cat="pdf" class="pastel-persona-card !min-h-[82px] !p-3.5 flex flex-col justify-between">
+                <span class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Student</span>
+                <span class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-1">PDF &amp; Office first</span>
+              </button>
+              <button type="button" data-set-persona="shop_owner" data-pastel-cat="lifemoney" class="pastel-persona-card !min-h-[82px] !p-3.5 flex flex-col justify-between">
+                <span class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Shop Owner</span>
+                <span class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-1">Money &amp; Bills first</span>
+              </button>
+              <button type="button" data-set-persona="job_seeker" data-pastel-cat="india" class="pastel-persona-card !min-h-[82px] !p-3.5 flex flex-col justify-between">
+                <span class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Job Seeker</span>
+                <span class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-1">India &amp; KB first</span>
+              </button>
+              <button type="button" data-set-persona="general" data-pastel-cat="vault" class="pastel-persona-card !min-h-[82px] !p-3.5 flex flex-col justify-between">
+                <span class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">General</span>
+                <span class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-1">Balanced order</span>
+              </button>
             </div>
           </div>
 
-          <!-- Membership, Future Plans & Privacy Controls (Free-First Launch · Server-Verified Architecture) -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E8EAF2] dark:border-[#232C4A] p-5 space-y-3.5 shadow-sm">
+          <!-- Accessibility: Text Size Scaling, Language & Theme -->
+          <div class="pastel-stage3-card p-5 space-y-5">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2.5">
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Text Size &amp; Readability</h3>
+                <span class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">WCAG AA · 44px Targets</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" data-font-scale="normal" class="pastel-scale-btn text-xs">Normal (100%)</button>
+                <button type="button" data-font-scale="large" class="pastel-scale-btn text-sm">Large (112%)</button>
+                <button type="button" data-font-scale="xl" class="pastel-scale-btn text-base">Extra (124%)</button>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--oneora-border)]">
+              <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mb-2.5">App Language</h3>
+              <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" data-set-lang="en" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">English</button>
+                <button type="button" data-set-lang="bn" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">বাংলা</button>
+                <button type="button" data-set-lang="hi" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">हिन्दी</button>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--oneora-border)]">
+              <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mb-2.5">Appearance Theme</h3>
+              <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" data-theme-mode="light" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">Light</button>
+                <button type="button" data-theme-mode="dark" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">Dark</button>
+                <button type="button" data-theme-mode="system" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[44px] transition">System</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Install App & Quick Shortcuts ("Open with ONEORA") -->
+          <div id="settingsPwaInstallCard" class="rounded-[28px] p-5 bg-[#CFF3E2] dark:bg-[#1B362E] border border-black/5 dark:border-white/10 space-y-3.5">
             <div class="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Membership, Plans &amp; Privacy</h3>
-                <p id="profilePlanStatusText" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5">Free Forever Launch · All Core Offline Tools Unlocked</p>
-                <p id="profileNetworkStatusText" class="text-[11px] text-[#777F91] dark:text-[#A5ADC2] mt-1">Checking offline &amp; cloud status...</p>
+                <p class="text-[11px] font-extrabold uppercase tracking-wide text-[#0F5137] dark:text-[#B9F2D9]">App Shortcuts &amp; Share Target</p>
+                <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mt-0.5">Install ONEORA &amp; “Open with ONEORA”</h3>
+                <p id="settingsPwaInstallHint" class="text-xs font-medium text-[#2E4D40] dark:text-[#C5E8D8] mt-1">Install on your home screen for offline Scan, Merge PDF &amp; Add Expense shortcuts, plus opening shared files from WhatsApp or Files.</p>
               </div>
-              <a href="/website#pricing" class="text-xs font-semibold text-[#7457E8] dark:text-[#9FAFFF] hover:underline whitespace-nowrap">Website Pricing ↗</a>
+              <button type="button" id="settingsInstallPwaBtn" class="px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4B2FC0] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition whitespace-nowrap">Install App</button>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button type="button" data-open-tool="pdfScanner" class="pastel-pill-tab">Scan Shortcut</button>
+              <button type="button" data-open-tool="pdfMerge" class="pastel-pill-tab">Merge PDF Shortcut</button>
+              <button type="button" data-open-tool="oneoraMoneyTab" class="pastel-pill-tab">Add Expense Shortcut</button>
+            </div>
+          </div>
+
+          <!-- ONEORA Cloud Account & Offline-First Sync (Pastel Lavender Card) -->
+          <div class="pastel-hero-card rounded-[28px] p-5 space-y-3.5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="space-y-1">
+                <p class="text-[11px] font-extrabold text-[#432B9E] dark:text-[#D5C7FF]">ONEORA Cloud Backup · Optional</p>
+                <h3 id="cloudAccountStatus" class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Offline Mode (No account required)</h3>
+                <p id="cloudAccountEmail" class="text-xs font-medium text-[#42335C] dark:text-[#D6CAF0]">Sign in with Google to back up &amp; sync Planner, Notes, Reminders &amp; Money across devices.</p>
+                <p id="cloudLastSyncText" class="text-[11px] text-[#0F5137] dark:text-[#86EFAC] font-bold"></p>
+              </div>
+              <a href="/website" class="pastel-pill-tab whitespace-nowrap">Public Website ↗</a>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <button type="button" id="cloudGoogleSignInBtn" class="px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4B2FC0] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition">Sign in with Google</button>
+              <button type="button" id="cloudSyncNowBtn" class="hidden px-4 py-2.5 rounded-full bg-[#0F5137] hover:opacity-95 text-white text-xs font-extrabold min-h-[44px] transition">Sync Now</button>
+              <button type="button" id="cloudSignOutBtn" class="hidden px-4 py-2.5 rounded-full bg-white/85 dark:bg-[#17131F]/80 text-[#2B2236] dark:text-[#F5EEFF] text-xs font-bold min-h-[44px] transition">Sign Out</button>
+              <button type="button" id="cloudDeleteDataBtn" class="hidden px-4 py-2.5 rounded-full bg-[#B91C47] text-white text-xs font-bold min-h-[44px] transition">Delete Cloud Data</button>
+            </div>
+          </div>
+
+          <!-- Membership, Future Plans & Privacy Controls -->
+          <div class="pastel-stage3-card p-5 space-y-3.5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Membership, Plans &amp; Privacy</h3>
+                <p id="profilePlanStatusText" class="text-xs font-bold text-[#0F5137] dark:text-[#86EFAC] mt-0.5">Free Forever Launch · All Core Offline Tools Unlocked</p>
+                <p id="profileNetworkStatusText" class="text-[11px] font-medium text-[#5C506B] dark:text-[#C5B9DA] mt-1">Checking offline &amp; cloud status...</p>
+              </div>
+              <a href="/website#pricing" class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] hover:underline whitespace-nowrap min-h-[44px] inline-flex items-center">Website Pricing ↗</a>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-              <button type="button" id="openMembershipModalBtn" class="py-2.5 px-3.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[42px] transition">Compare Free · PLUS · PRO</button>
-              <button type="button" id="openSubscriptionManageBtn" class="py-2.5 px-3.5 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] text-xs font-bold min-h-[42px] transition">Subscription &amp; Restore</button>
-              <button type="button" id="openPrivacyDashboardBtn" class="py-2.5 px-3.5 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] text-xs font-bold min-h-[42px] transition">Privacy &amp; Backup</button>
+              <button type="button" id="openMembershipModalBtn" class="py-2.5 px-3.5 rounded-full bg-[#5B3FD0] hover:bg-[#4B2FC0] text-white text-xs font-extrabold min-h-[44px] transition">Compare Free · PLUS · PRO</button>
+              <button type="button" id="openSubscriptionManageBtn" class="py-2.5 px-3.5 rounded-full bg-[var(--oneora-bg)] border border-[var(--oneora-border)] text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] text-xs font-extrabold min-h-[44px] transition">Subscription &amp; Restore</button>
+              <button type="button" id="openPrivacyDashboardBtn" class="py-2.5 px-3.5 rounded-full bg-[var(--oneora-bg)] border border-[var(--oneora-border)] text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] text-xs font-extrabold min-h-[44px] transition">Privacy &amp; Backup</button>
             </div>
           </div>
 
           <!-- Personal Details -->
-          <div class="oneora-surface p-5 space-y-4">
-            <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC]">Personal Profile</h3>
+          <div class="pastel-stage3-card p-5 space-y-4">
+            <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Personal Profile</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label for="profileUserNameInput" class="block text-xs font-semibold text-[#647087] dark:text-[#9EA8C0] mb-1">Display Name (Greeting)</label>
-                <input type="text" id="profileUserNameInput" placeholder="e.g. Suman" class="oneora-input text-sm font-semibold" />
+                <label for="profileUserNameInput" class="block text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Display Name (Greeting)</label>
+                <input type="text" id="profileUserNameInput" placeholder="e.g. Suman" class="pastel-pill-input w-full text-sm font-semibold" />
               </div>
               <div>
-                <label for="profileDefaultAuthorInput" class="block text-xs font-semibold text-[#647087] dark:text-[#9EA8C0] mb-1">Default PDF Author Metadata</label>
-                <input type="text" id="profileDefaultAuthorInput" placeholder="e.g. Suman Nayak" class="oneora-input text-sm font-semibold" />
+                <label for="profileDefaultAuthorInput" class="block text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">Default PDF Author Metadata</label>
+                <input type="text" id="profileDefaultAuthorInput" placeholder="e.g. Suman Nayak" class="pastel-pill-input w-full text-sm font-semibold" />
               </div>
             </div>
-            <button type="button" id="profileSaveBtn" class="oneora-btn-primary text-xs">Save Profile</button>
+            <button type="button" id="profileSaveBtn" class="oneora-btn-primary text-xs min-h-[44px]">Save Profile</button>
           </div>
 
-          <!-- Language & Theme -->
-          <div class="oneora-surface p-5 space-y-5">
-            <div>
-              <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] mb-2.5">App Language</h3>
-              <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" data-set-lang="en" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">English</button>
-                <button type="button" data-set-lang="bn" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">বাংলা</button>
-                <button type="button" data-set-lang="hi" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">हिन्दी</button>
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-[#E6E9F2] dark:border-[#232C4A]">
-              <h3 class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] mb-2.5">Appearance Theme</h3>
-              <div class="grid grid-cols-3 gap-2.5">
-                <button type="button" data-theme-mode="light" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">Light</button>
-                <button type="button" data-theme-mode="dark" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">Dark</button>
-                <button type="button" data-theme-mode="system" class="py-2.5 px-3 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px] transition">System</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Feedback & Live Auto-Update Cards (Restrained Luxury Surface) -->
+          <!-- Feedback & Live Auto-Update Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div class="oneora-surface p-5 space-y-3">
+            <div class="pastel-stage3-card p-5 space-y-3">
               <div>
-                <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Send Feedback to Developer</h3>
-                <p class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5">Found a bug or want a new tool? Message Suman Nayak directly on WhatsApp or Email.</p>
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Send Feedback to Developer</h3>
+                <p class="text-xs font-medium text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">Found a bug or want a new tool? Message Suman Nayak directly on WhatsApp or Email.</p>
               </div>
-              <button type="button" id="settingsFeedbackBtn" class="w-full oneora-btn-primary text-xs">Write Feedback Now</button>
+              <button type="button" id="settingsFeedbackBtn" class="w-full oneora-btn-primary text-xs min-h-[44px]">Write Feedback Now</button>
             </div>
 
-            <div class="oneora-surface p-5 space-y-3">
+            <div class="pastel-stage3-card p-5 space-y-3">
               <div>
-                <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Instant Live Auto-Update</h3>
-                <p id="settingsAppVersionText" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5">ONEORA v3.0.0 · Auto-Updates Enabled</p>
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Instant Live Auto-Update</h3>
+                <p id="settingsAppVersionText" class="text-xs font-medium text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">ONEORA v3.0.0 · Auto-Updates Enabled</p>
               </div>
-              <button type="button" id="settingsCheckUpdateBtn" class="w-full oneora-btn-secondary text-xs">Check &amp; Refresh App Now</button>
+              <button type="button" id="settingsCheckUpdateBtn" class="w-full oneora-btn-secondary text-xs min-h-[44px]">Check &amp; Refresh App Now</button>
             </div>
           </div>
 
           <!-- Storage & App Actions -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E8EAF2] dark:border-[#232C4A] p-5 space-y-4 shadow-sm">
+          <div class="pastel-stage3-card p-5 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 class="text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC]">Storage &amp; History</h3>
-                <p id="settingsStorageUsageText" class="text-xs text-[#777F91] dark:text-[#A5ADC2] mt-0.5 tabular-nums">Calculating local storage...</p>
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Storage &amp; History</h3>
+                <p id="settingsStorageUsageText" class="text-xs font-medium text-[#5C506B] dark:text-[#C5B9DA] mt-0.5 tabular-nums">Calculating local storage...</p>
               </div>
-              <button type="button" id="settingsClearHistoryBtn" class="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-bold min-h-[40px]">Clear Recent History</button>
+              <button type="button" id="settingsClearHistoryBtn" class="px-4 py-2 rounded-full bg-[#FFD6D6] dark:bg-[#4A1F2B] text-[#8A1C32] dark:text-[#FFC7D1] text-xs font-extrabold min-h-[44px]">Clear Recent History</button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-[#E8EAF2] dark:border-[#232C4A]">
-              <button type="button" id="settingsShareAppBtn" class="py-2.5 px-4 rounded-xl bg-[#10152A] dark:bg-[#7457E8] hover:opacity-95 text-white text-xs font-bold min-h-[44px]">Share ONEORA</button>
-              <button type="button" id="settingsReplayOnboardingBtn" class="py-2.5 px-4 rounded-xl bg-[#F6F7FB] dark:bg-[#1D2540] border border-[#E8EAF2] dark:border-[#232C4A] text-[#171B2C] dark:text-[#F5F6FC] hover:border-[#7457E8] text-xs font-bold min-h-[44px]">Replay Welcome Tour</button>
-              <button type="button" id="settingsRateAppBtn" class="py-2.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold min-h-[44px]">★ Rate &amp; Review</button>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-[var(--oneora-border)]">
+              <button type="button" id="settingsShareAppBtn" class="py-2.5 px-4 rounded-full bg-[#5B3FD0] hover:bg-[#4B2FC0] text-white text-xs font-extrabold min-h-[44px]">Share ONEORA</button>
+              <button type="button" id="settingsReplayOnboardingBtn" class="py-2.5 px-4 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#D7C9FF] text-xs font-extrabold min-h-[44px]">Replay Welcome Tour</button>
+              <button type="button" id="settingsRateAppBtn" class="py-2.5 px-4 rounded-full bg-[#FFE7C2] dark:bg-[#3D2E1D] text-[#6B3E08] dark:text-[#FFE0B2] text-xs font-extrabold min-h-[44px]">★ Rate &amp; Review</button>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
-              <button type="button" data-info-doc="privacy" class="py-2 px-3 rounded-xl border border-[#E8EAF2] dark:border-[#232C4A] text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] hover:border-[#7457E8] min-h-[40px]">Privacy Policy</button>
-              <button type="button" data-info-doc="terms" class="py-2 px-3 rounded-xl border border-[#E8EAF2] dark:border-[#232C4A] text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] hover:border-[#7457E8] min-h-[40px]">Terms of Use</button>
-              <button type="button" data-info-doc="help" class="py-2 px-3 rounded-xl border border-[#E8EAF2] dark:border-[#232C4A] text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] hover:border-[#7457E8] min-h-[40px]">Help &amp; FAQ</button>
-              <button type="button" data-info-doc="about" class="py-2 px-3 rounded-xl border border-[#E8EAF2] dark:border-[#232C4A] text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] hover:border-[#7457E8] min-h-[40px]">About ONEORA</button>
+              <button type="button" data-info-doc="privacy" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-bold text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] min-h-[44px]">Privacy Policy</button>
+              <button type="button" data-info-doc="terms" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-bold text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] min-h-[44px]">Terms of Use</button>
+              <button type="button" data-info-doc="help" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-bold text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] min-h-[44px]">Help &amp; FAQ</button>
+              <button type="button" data-info-doc="about" class="py-2.5 px-3 rounded-[18px] border border-[var(--oneora-border)] bg-[var(--oneora-bg)] text-xs font-bold text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0] min-h-[44px]">About ONEORA</button>
             </div>
           </div>
         </section>
@@ -3679,11 +3598,106 @@
       </main>
     </div>
 
-    <!-- Floating ONEORA AI Assistant Shortcut -->
-    <button type="button" id="oneoraAiFab" aria-label="Open ONEORA AI Assistant" title="Ask ONEORA AI" class="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-30 h-12 px-4 rounded-2xl text-white font-bold text-xs flex items-center gap-2 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-      <span>ONEORA AI</span>
-    </button>
+    <!-- Preserved hidden AI FAB trigger (AI is now a primary Bottom Nav tab) -->
+    <button type="button" id="oneoraAiFab" class="hidden" aria-hidden="true"></button>
+
+    <!-- Stage 1: Pastel Tool Preview Bottom Sheet (Tapping any tool opens sheet -> real tool) -->
+    <div id="pastelToolSheet" data-pastel-cat="pdf" class="hidden fixed inset-0 z-[70] pastel-sheet-backdrop items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="pastelSheetTitle">
+      <div class="pastel-sheet-panel w-full sm:max-w-md px-5 pt-3 space-y-4">
+        <div class="w-11 h-1.5 rounded-full bg-[#2B2236]/15 dark:bg-[#F5EEFF]/20 mx-auto" aria-hidden="true"></div>
+
+        <div class="pastel-sheet-banner flex items-center gap-4">
+          <span id="pastelSheetIcon" class="pastel-white-tile !w-14 !h-14 !rounded-[20px]"></span>
+          <div class="min-w-0 flex-1">
+            <p id="pastelSheetCatLabel" class="text-xs font-extrabold text-[#4C3F5E] dark:text-[#D6CAF0]">PDF</p>
+            <h3 id="pastelSheetTitle" class="text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF] leading-snug">Tool Name</h3>
+          </div>
+          <button type="button" id="pastelSheetCloseBtn" aria-label="Close preview" class="pastel-back-circle !w-10 !h-10 text-sm font-extrabold">✕</button>
+        </div>
+
+        <p id="pastelSheetDesc" class="text-sm text-[#5C506B] dark:text-[#C5B9DA] leading-relaxed px-1"></p>
+        <p class="text-xs font-semibold text-[#5C506B] dark:text-[#C5B9DA] px-1">Works 100% offline · Files stay private on your device</p>
+
+        <div class="flex items-center gap-2.5 pt-1">
+          <button type="button" id="pastelSheetPinBtn" class="oneora-btn-secondary flex-shrink-0 px-4 text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span id="pastelSheetPinText">Pin</span>
+          </button>
+          <button type="button" id="pastelSheetOpenBtn" class="oneora-btn-primary flex-1 text-sm">
+            <span>Open Tool</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Sticky Bottom Primary Action Bar (Synced Live with Active Tool) -->
+    <div id="pastelStickyActionBar" data-pastel-cat="pdf" class="hidden" role="region" aria-label="Tool Primary Action">
+      <div class="pastel-sticky-inner">
+        <div class="hidden sm:flex items-center gap-2.5 pl-2 min-w-0">
+          <span class="w-3 h-3 rounded-full shrink-0" style="background:var(--cat-bg);border:2px solid var(--cat-accent);"></span>
+          <span id="pastelStickyHint" class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA] truncate">100% offline processing</span>
+        </div>
+        <button type="button" id="pastelStickyPrimaryBtn" class="pastel-sticky-primary-btn">
+          <span id="pastelStickyPrimaryLabel">Continue</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage 2: Friendly Pastel Result Screen (Soft Success Animation + Open / Share / Save) -->
+    <div id="pastelResultModal" data-pastel-cat="pdf" class="hidden fixed inset-0 z-[75] pastel-sheet-backdrop items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="pastelResultHeading">
+      <div class="pastel-sheet-panel w-full sm:max-w-md px-5 pt-4 space-y-5">
+        <div class="flex items-center justify-between">
+          <span class="w-10" aria-hidden="true"></span>
+          <div class="w-11 h-1.5 rounded-full bg-[#2B2236]/15 dark:bg-[#F5EEFF]/20" aria-hidden="true"></div>
+          <button type="button" id="pastelResultCloseBtn" aria-label="Close result" class="pastel-back-circle !w-10 !h-10 text-sm font-extrabold">✕</button>
+        </div>
+
+        <div class="text-center space-y-3 pt-1">
+          <div id="pastelResultCheckRing" class="pastel-result-ring pastel-result-animate">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path class="pastel-result-check-path" d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <h3 id="pastelResultHeading" class="text-xl font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight">All done! Your file is ready</h3>
+            <p id="pastelResultFileMeta" class="text-xs font-semibold text-[#5C506B] dark:text-[#C5B9DA] mt-1 tabular-nums">Saved offline on your device</p>
+          </div>
+        </div>
+
+        <!-- Output File Pill Card -->
+        <div class="pastel-sheet-banner flex items-center gap-3.5">
+          <span id="pastelResultFileExt" class="pastel-white-tile !w-12 !h-12 !rounded-[16px] text-xs font-extrabold">PDF</span>
+          <div class="min-w-0 flex-1">
+            <p id="pastelResultFileName" class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate">ONEORA_Document.pdf</p>
+            <p class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-0.5">Processed 100% locally · Zero uploads</p>
+          </div>
+        </div>
+
+        <!-- 3 Friendly Actions: Open / Share / Save -->
+        <div class="grid grid-cols-3 gap-2.5">
+          <button type="button" id="pastelResultOpenBtn" class="pastel-result-action bg-[#5B3FD0] hover:bg-[#4A30B8] text-white shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Open</span>
+          </button>
+          <button type="button" id="pastelResultShareBtn" class="pastel-result-action bg-[#FFF7EE] dark:bg-[#2C243D] border border-[var(--oneora-border)] text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>Share</span>
+          </button>
+          <button type="button" id="pastelResultSaveBtn" class="pastel-result-action bg-[#FFF7EE] dark:bg-[#2C243D] border border-[var(--oneora-border)] text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Save</span>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button type="button" id="pastelResultVaultBtn" class="oneora-btn-secondary flex-1 text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Save to Vault</span>
+          </button>
+          <button type="button" id="pastelResultDoneBtn" class="oneora-btn-secondary px-5 text-xs">Done</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Home Quick Actions & Widgets Customizer Modal -->
     <div id="oneoraQaModal" class="hidden fixed inset-0 bg-[#0C1020]/75 z-50 items-center justify-center p-4 backdrop-blur-sm">

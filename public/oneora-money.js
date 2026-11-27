@@ -271,48 +271,53 @@
       { id: 'transactions', label: 'Transactions' },
       { id: 'budgets', label: 'Budgets & Goals' },
       { id: 'bills', label: 'Bills & Debts' },
-      { id: 'calculators', label: 'Calculators & Export' }
+      { id: 'calculators', label: 'Calculators' }
     ];
 
     root.innerHTML = `
-      <div class="space-y-5">
-        <!-- Financial Summary Banner -->
-        <div class="oneora-hero-card rounded-3xl p-5 sm:p-6 text-white space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="text-xs font-medium text-[#A5ADC2]">Personal Finance · Offline-First</p>
-              <h2 class="text-2xl font-extrabold tracking-tight">ONEORA Money</h2>
+      <div class="space-y-5" data-pastel-cat="lifemoney">
+        <!-- Financial Summary Banner (Life & Money Pastel #FFE7C2 / #3D2E1D) -->
+        <div class="pastel-cat-header p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-start gap-3.5">
+              <div class="pastel-icon-tile !w-12 !h-12 !rounded-2xl shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#804800] dark:text-[#FCD34D]">Life &amp; Money · Offline-First</p>
+                <h2 class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-[#2B2236] dark:text-[#F5EEFF] leading-tight">ONEORA Money</h2>
+              </div>
             </div>
             <div class="flex items-center gap-1.5">
-              <button type="button" id="moneyQuickExportPdf" class="px-3 py-1.5 rounded-xl bg-white/12 hover:bg-white/22 border border-white/15 text-white text-xs font-semibold min-h-[38px]">PDF</button>
-              <button type="button" id="moneyQuickExportXlsx" class="px-3 py-1.5 rounded-xl bg-white/12 hover:bg-white/22 border border-white/15 text-white text-xs font-semibold min-h-[38px]">Excel</button>
-              <button type="button" id="moneyQuickExportCsv" class="px-3 py-1.5 rounded-xl bg-white/12 hover:bg-white/22 border border-white/15 text-white text-xs font-semibold min-h-[38px]">CSV</button>
+              <button type="button" id="moneyQuickExportPdf" class="px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 hover:bg-white text-[#2B2236] dark:text-[#F5EEFF] border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-xs font-extrabold min-h-[44px]">PDF</button>
+              <button type="button" id="moneyQuickExportXlsx" class="px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 hover:bg-white text-[#2B2236] dark:text-[#F5EEFF] border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-xs font-extrabold min-h-[44px]">Excel</button>
+              <button type="button" id="moneyQuickExportCsv" class="px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 hover:bg-white text-[#2B2236] dark:text-[#F5EEFF] border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-xs font-extrabold min-h-[44px]">CSV</button>
             </div>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div class="rounded-2xl bg-white/10 backdrop-blur-md p-3.5 border border-white/15">
-              <p class="text-[11px] font-semibold text-indigo-100">Net Balance</p>
-              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5">${fmtMoney(m.balance)}</p>
+            <div class="pastel-kpi-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Net Balance</p>
+              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-[#2B2236] dark:text-[#F5EEFF]">${fmtMoney(m.balance)}</p>
             </div>
-            <div class="rounded-2xl bg-white/10 backdrop-blur-md p-3.5 border border-white/15">
-              <p class="text-[11px] font-semibold text-emerald-200">This Month Income</p>
-              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-emerald-300">${fmtMoney(m.monthIncome)}</p>
+            <div class="pastel-kpi-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#146347] dark:text-[#86EFAC]">Month Income</p>
+              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-[#115E42] dark:text-[#6EE7B7]">${fmtMoney(m.monthIncome)}</p>
             </div>
-            <div class="rounded-2xl bg-white/10 backdrop-blur-md p-3.5 border border-white/15">
-              <p class="text-[11px] font-semibold text-rose-200">This Month Expense</p>
-              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-rose-300">${fmtMoney(m.monthExpense)}</p>
+            <div class="pastel-kpi-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#9F1D3A] dark:text-[#FDA4AF]">Month Expense</p>
+              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-[#8E1B3B] dark:text-[#FCA5A5]">${fmtMoney(m.monthExpense)}</p>
             </div>
-            <div class="rounded-2xl bg-white/10 backdrop-blur-md p-3.5 border border-white/15">
-              <p class="text-[11px] font-semibold text-amber-200">Today's Spend</p>
-              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-amber-300">${fmtMoney(m.todayExpense)}</p>
+            <div class="pastel-kpi-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#8A4600] dark:text-[#FDE68A]">Today's Spend</p>
+              <p class="text-lg sm:text-xl font-extrabold tabular-nums mt-0.5 text-[#7C3E00] dark:text-[#FCD34D]">${fmtMoney(m.todayExpense)}</p>
             </div>
           </div>
 
-          <div class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar pt-1">
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-1">
             ${tabs.map((t) => `
-              <button type="button" data-money-tab="${t.id}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap min-h-[40px] transition ${
-                activeSubTab === t.id ? 'bg-white text-[#10152A] shadow-sm' : 'bg-white/10 text-indigo-100 hover:bg-white/20'
+              <button type="button" data-money-tab="${t.id}" class="pastel-pill-tab ${
+                activeSubTab === t.id ? 'is-active' : ''
               }">${t.label}</button>
             `).join('')}
           </div>
@@ -334,87 +339,138 @@
   function renderOverview(records, m) {
     const catEntries = Object.entries(m.catSpend).sort((a, b) => b[1] - a[1]);
     const maxMonthVal = Math.max(1, ...m.months.map((x) => Math.max(x.inc, x.exp)));
+    const now = new Date();
+    const monthLabel = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+    const dayOfMonth = Math.max(1, now.getDate());
+    const dailyAvg = m.monthExpense / dayOfMonth;
+    const savingsRate = m.monthIncome > 0
+      ? Math.max(-100, Math.min(100, Math.round((m.monthSavings / m.monthIncome) * 100)))
+      : 0;
+    const topCategory = catEntries.length ? `${catEntries[0][0]} (${fmtMoney(catEntries[0][1])})` : 'No spend yet';
 
     return `
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <!-- Quick Add Expense / Income -->
-        <form id="moneyAddTxForm" class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
-          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Add Expense / Income</h3>
-          <div class="grid grid-cols-2 gap-2">
-            <select id="moneyTxType" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]">
-              <option value="expense">Expense (−)</option>
-              <option value="income">Income (+)</option>
-            </select>
-            <input type="number" step="0.01" min="0" id="moneyTxAmount" required placeholder="Amount (₹)" class="px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] tabular-nums min-h-[44px]" />
+      <div class="space-y-5">
+        <!-- Monthly Summary Insight Card -->
+        <div class="pastel-stage3-card p-5 space-y-3.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#5B3FD0] dark:text-[#CBBBFF]">Monthly Summary</p>
+              <h3 class="text-base sm:text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">${esc(monthLabel)}</h3>
+            </div>
+            <span class="px-3.5 py-1.5 rounded-full text-xs font-extrabold tabular-nums ${
+              m.monthSavings >= 0
+                ? 'bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0]'
+                : 'bg-[#FFD6D6] dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF]'
+            }">
+              ${m.monthSavings >= 0 ? 'Saved' : 'Deficit'}: ${fmtMoney(Math.abs(m.monthSavings))}
+            </span>
           </div>
-          <input type="text" id="moneyTxTitle" required maxlength="160" placeholder="Description (e.g. Lunch, Petrol, Salary)..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
-          <div class="grid grid-cols-2 gap-2">
-            <select id="moneyTxCategory" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
-              ${EXPENSE_CATEGORIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}
-            </select>
-            <select id="moneyTxMethod" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
-              ${PAYMENT_METHODS.map((p) => `<option value="${p.id}">${p.label}</option>`).join('')}
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="moneyTxDate" value="${esc(todayKey())}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <label class="cursor-pointer flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-[#7457E8]/40 dark:border-[#2E385C] bg-[#F3F0FF]/70 dark:bg-[#0C1020] text-[11px] font-bold text-[#7457E8] dark:text-[#C4B5FD] min-h-[42px]">
-              <span id="moneyReceiptLabel">Attach Receipt</span>
-              <input type="file" id="moneyReceiptInput" accept="image/*" class="hidden" />
-            </label>
-          </div>
-          <input type="text" id="moneyTxNotes" maxlength="300" placeholder="Optional notes..." class="w-full px-3.5 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
-          <button type="submit" class="w-full py-3 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] shadow-sm transition">Save Transaction</button>
-        </form>
 
-        <!-- Charts & Breakdown -->
-        <div class="lg:col-span-7 space-y-4">
-          <!-- 6-Month Income vs Expense Chart -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Income vs Expense (6 Months)</h3>
-              <div class="flex items-center gap-3 text-[11px] font-bold">
-                <span class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>Income</span>
-                <span class="flex items-center gap-1 text-rose-600 dark:text-rose-400"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span>Expense</span>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div class="pastel-inset-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Savings Rate</p>
+              <p class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums mt-0.5">${m.monthIncome > 0 ? `${savingsRate}% of income` : 'Add income'}</p>
+              <div class="h-2 rounded-full bg-[#2B2236]/10 dark:bg-[#F5EEFF]/12 overflow-hidden mt-2">
+                <div class="h-full rounded-full ${savingsRate >= 20 ? 'bg-[#15803D]' : savingsRate > 0 ? 'bg-[#5B3FD0]' : 'bg-[#BE123C]'}" style="width:${Math.max(0, Math.min(100, savingsRate))}%"></div>
               </div>
             </div>
-            <div class="grid grid-cols-6 gap-2 items-end h-36 pt-4">
-              ${m.months.map((mo) => {
-                const incH = Math.max(4, Math.round((mo.inc / maxMonthVal) * 100));
-                const expH = Math.max(4, Math.round((mo.exp / maxMonthVal) * 100));
-                return `
-                  <div class="flex flex-col items-center gap-1.5 h-full justify-end">
-                    <div class="w-full flex items-end justify-center gap-1 h-28">
-                      <div class="w-3.5 sm:w-4 rounded-t-md bg-emerald-500 transition-all" style="height:${incH}%" title="Income: ${fmtMoney(mo.inc)}"></div>
-                      <div class="w-3.5 sm:w-4 rounded-t-md bg-rose-500 transition-all" style="height:${expH}%" title="Expense: ${fmtMoney(mo.exp)}"></div>
-                    </div>
-                    <span class="text-[11px] font-bold text-[#647087] dark:text-[#A5ADC2]">${esc(mo.label)}</span>
-                  </div>
-                `;
-              }).join('')}
+            <div class="pastel-inset-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Daily Avg Spend</p>
+              <p class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums mt-0.5">${fmtMoney(dailyAvg)} / day</p>
+              <p class="text-[11px] text-[#5C506B] dark:text-[#C5B9DA] mt-1">Across ${dayOfMonth} day(s) this month</p>
+            </div>
+            <div class="pastel-inset-tile p-3.5">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Top Spend Category</p>
+              <p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate mt-0.5">${esc(topCategory)}</p>
+              <p class="text-[11px] text-[#5C506B] dark:text-[#C5B9DA] mt-1">${catEntries.length} active category(ies)</p>
             </div>
           </div>
+        </div>
 
-          <!-- Monthly Category Breakdown -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">This Month Spending by Category</h3>
-              <span class="text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD] tabular-nums">Savings: ${fmtMoney(m.monthSavings)}</span>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Quick Add Expense / Income -->
+          <form id="moneyAddTxForm" class="lg:col-span-5 pastel-stage3-card p-5 space-y-3">
+            <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Add Expense / Income</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <select id="moneyTxType" class="pastel-pill-input text-xs font-extrabold">
+                <option value="expense">Expense (−)</option>
+                <option value="income">Income (+)</option>
+              </select>
+              <input type="number" step="0.01" min="0" id="moneyTxAmount" required placeholder="Amount (₹)" class="pastel-pill-input text-sm font-extrabold tabular-nums" />
             </div>
-            ${catEntries.length ? catEntries.slice(0, 6).map(([cat, amt]) => {
-              const pct = m.monthExpense > 0 ? Math.round((amt / m.monthExpense) * 100) : 0;
-              return `
-                <div class="space-y-1">
-                  <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-[#14182B] dark:text-[#F5F6FC]">${esc(cat)}</span>
-                    <span class="text-[#14182B] dark:text-[#F5F6FC] tabular-nums">${fmtMoney(amt)} (${pct}%)</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] overflow-hidden">
-                    <div class="h-full rounded-full bg-[#7457E8]" style="width:${pct}%"></div>
-                  </div>
+            <input type="text" id="moneyTxTitle" required maxlength="160" placeholder="Description (e.g. Lunch, Petrol, Salary)..." class="pastel-pill-input w-full text-xs" />
+            <div class="grid grid-cols-2 gap-2">
+              <select id="moneyTxCategory" class="pastel-pill-input text-xs font-bold">
+                ${EXPENSE_CATEGORIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}
+              </select>
+              <select id="moneyTxMethod" class="pastel-pill-input text-xs font-bold">
+                ${PAYMENT_METHODS.map((p) => `<option value="${p.id}">${p.label}</option>`).join('')}
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="date" id="moneyTxDate" value="${esc(todayKey())}" class="pastel-pill-input text-xs font-bold" />
+              <label class="cursor-pointer flex items-center justify-center gap-1.5 px-3 py-2 rounded-[18px] border-2 border-dashed border-[#5B3FD0]/40 bg-[#E4D9FF]/40 dark:bg-[#2D2347] text-xs font-extrabold text-[#432B9F] dark:text-[#E4D9FF] min-h-[44px]">
+                <span id="moneyReceiptLabel">Attach Receipt</span>
+                <input type="file" id="moneyReceiptInput" accept="image/*" class="hidden" />
+              </label>
+            </div>
+            <input type="text" id="moneyTxNotes" maxlength="300" placeholder="Optional notes..." class="pastel-pill-input w-full text-xs" />
+            <button type="submit" class="w-full py-3 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[48px] shadow-sm transition">Save Transaction</button>
+          </form>
+
+          <!-- Charts & Breakdown -->
+          <div class="lg:col-span-7 space-y-4">
+            <!-- 6-Month Income vs Expense Chart -->
+            <div class="pastel-stage3-card p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Income vs Expense (6 Months)</h3>
+                <div class="flex items-center gap-3 text-[11px] font-extrabold">
+                  <span class="flex items-center gap-1.5 text-[#115E42] dark:text-[#6EE7B7]"><span class="w-2.5 h-2.5 rounded-full bg-[#15803D]"></span>Income</span>
+                  <span class="flex items-center gap-1.5 text-[#8E1B3B] dark:text-[#FCA5A5]"><span class="w-2.5 h-2.5 rounded-full bg-[#E11D48]"></span>Expense</span>
                 </div>
-              `;
-            }).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">Add your first expense to see live category breakdown.</p>'}
+              </div>
+              <div class="grid grid-cols-6 gap-2 items-end h-36 pt-4">
+                ${m.months.map((mo) => {
+                  const incH = Math.max(5, Math.round((mo.inc / maxMonthVal) * 100));
+                  const expH = Math.max(5, Math.round((mo.exp / maxMonthVal) * 100));
+                  return `
+                    <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                      <div class="w-full flex items-end justify-center gap-1 h-28">
+                        <div class="w-3.5 sm:w-4 rounded-t-full bg-[#15803D] transition-all" style="height:${incH}%" title="Income: ${fmtMoney(mo.inc)}"></div>
+                        <div class="w-3.5 sm:w-4 rounded-t-full bg-[#E11D48] transition-all" style="height:${expH}%" title="Expense: ${fmtMoney(mo.exp)}"></div>
+                      </div>
+                      <span class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">${esc(mo.label)}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Monthly Category Breakdown -->
+            <div class="pastel-stage3-card p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Spending by Category</h3>
+                <span class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] tabular-nums">Net: ${fmtMoney(m.monthSavings)}</span>
+              </div>
+              ${catEntries.length ? catEntries.slice(0, 6).map(([cat, amt]) => {
+                const pct = m.monthExpense > 0 ? Math.round((amt / m.monthExpense) * 100) : 0;
+                return `
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                      <span class="text-[#2B2236] dark:text-[#F5EEFF]">${esc(cat)}</span>
+                      <span class="text-[#2B2236] dark:text-[#F5EEFF] tabular-nums">${fmtMoney(amt)} (${pct}%)</span>
+                    </div>
+                    <div class="h-2.5 rounded-full bg-[#FFF7EE] dark:bg-[#17131F] overflow-hidden border border-[#2B2236]/8 dark:border-[#F5EEFF]/10">
+                      <div class="h-full rounded-full bg-[#5B3FD0]" style="width:${pct}%"></div>
+                    </div>
+                  </div>
+                `;
+              }).join('') : `
+                <div class="pastel-empty-state !py-6">
+                  <p class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">No spending recorded this month</p>
+                  <p class="text-[11px] text-[#5C506B] dark:text-[#C5B9DA]">Add your first expense on the left to see live category breakdown.</p>
+                </div>`}
+            </div>
           </div>
         </div>
       </div>
@@ -430,34 +486,38 @@
     });
 
     return `
-      <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+      <div class="pastel-stage3-card p-5 space-y-4">
         <div class="flex flex-col sm:flex-row gap-2.5">
-          <input type="search" id="moneyTxSearchInput" value="${esc(txSearchTerm)}" placeholder="Search by title, category, UPI/Cash..." class="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+          <input type="search" id="moneyTxSearchInput" value="${esc(txSearchTerm)}" placeholder="Search by title, category, UPI/Cash..." class="pastel-pill-input !rounded-full flex-1 text-xs" />
           <div class="flex items-center gap-1.5">
             ${['all', 'expense', 'income'].map((t) => `
-              <button type="button" data-tx-filter="${t}" class="px-3.5 py-2 rounded-xl text-xs font-bold capitalize min-h-[42px] transition ${
-                txFilterType === t ? 'bg-[#7457E8] text-white shadow-sm' : 'bg-[#F6F7FB] dark:bg-[#0C1020] text-[#647087] dark:text-[#A5ADC2]'
+              <button type="button" data-tx-filter="${t}" class="pastel-pill-tab capitalize ${
+                txFilterType === t ? 'is-active' : ''
               }">${t}</button>
             `).join('')}
           </div>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2.5">
           ${txs.length ? txs.map((r) => `
-            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
+            <div class="pastel-inset-tile flex items-center justify-between gap-3 p-3.5">
               <div class="flex items-center gap-3 min-w-0">
-                ${r.receiptThumb ? `<img src="${r.receiptThumb}" alt="Receipt" class="w-10 h-10 rounded-xl object-cover border border-[#E6E9F2] dark:border-[#232C4A] shrink-0" />` : `<span class="w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 ${r.recordType === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'}">${r.recordType === 'income' ? '+' : '−'}</span>`}
+                ${r.receiptThumb ? `<img src="${r.receiptThumb}" alt="Receipt" class="w-11 h-11 rounded-2xl object-cover border border-[#2B2236]/10 shrink-0" />` : `<span class="w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-base shrink-0 ${r.recordType === 'income' ? 'bg-[#CFF3E2] text-[#115E42] dark:bg-[#1B362E] dark:text-[#A7F3D0]' : 'bg-[#FFD6D6] text-[#8E1B3B] dark:bg-[#3D212B] dark:text-[#FDA4AF]'}">${r.recordType === 'income' ? '+' : '−'}</span>`}
                 <div class="min-w-0">
-                  <p class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] truncate">${esc(r.title)}</p>
-                  <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] truncate">${esc(r.category)} · ${esc(String(r.paymentMethod || '').toUpperCase())} · ${esc(r.dateKey)}</p>
+                  <p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate">${esc(r.title)}</p>
+                  <p class="text-[11px] font-semibold text-[#5C506B] dark:text-[#C5B9DA] truncate">${esc(r.category)} · ${esc(String(r.paymentMethod || '').toUpperCase())} · ${esc(r.dateKey)}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-sm font-extrabold tabular-nums ${r.recordType === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${r.recordType === 'income' ? '+' : '−'}${fmtMoney(r.amount)}</span>
-                <button type="button" data-fin-del="${r.id}" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-xs font-bold">✕</button>
+                <span class="text-sm font-extrabold tabular-nums ${r.recordType === 'income' ? 'text-[#115E42] dark:text-[#6EE7B7]' : 'text-[#8E1B3B] dark:text-[#FCA5A5]'}">${r.recordType === 'income' ? '+' : '−'}${fmtMoney(r.amount)}</span>
+                <button type="button" data-fin-del="${r.id}" aria-label="Delete transaction" class="w-11 h-11 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold flex items-center justify-center">✕</button>
               </div>
             </div>
-          `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-8">No transactions match your filter.</p>'}
+          `).join('') : `
+            <div class="pastel-empty-state">
+              <p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">No matching transactions</p>
+              <p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Try clearing your search or switch to Dashboard to log a new entry.</p>
+            </div>`}
         </div>
       </div>
     `;
@@ -470,15 +530,15 @@
     return `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Monthly & Category Budgets -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Monthly Budgets</h3>
+        <div class="pastel-stage3-card p-5 space-y-4">
+          <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Monthly Budgets</h3>
           <form id="moneyBudgetForm" class="grid grid-cols-12 gap-2">
-            <select id="budgetCatInput" class="col-span-6 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
+            <select id="budgetCatInput" class="pastel-pill-input col-span-6 text-xs font-bold">
               <option value="Overall Monthly">Overall Monthly</option>
               ${EXPENSE_CATEGORIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}
             </select>
-            <input type="number" min="1" id="budgetLimitInput" required placeholder="Limit (₹)" class="col-span-4 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <button type="submit" class="col-span-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[42px]">Set</button>
+            <input type="number" min="1" id="budgetLimitInput" required placeholder="Limit (₹)" class="pastel-pill-input col-span-4 text-xs font-bold" />
+            <button type="submit" class="col-span-2 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Set</button>
           </form>
 
           <div class="space-y-3">
@@ -487,31 +547,31 @@
               const pct = b.amount > 0 ? Math.min(100, Math.round((spent / b.amount) * 100)) : 0;
               const over = spent > b.amount;
               return `
-                <div class="p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border ${over ? 'border-rose-400' : 'border-[#E6E9F2] dark:border-[#232C4A]'} space-y-2">
-                  <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-[#14182B] dark:text-[#F5F6FC]">${esc(b.category)}</span>
+                <div class="pastel-inset-tile p-4 ${over ? '!border-[#E11D48]' : ''} space-y-2">
+                  <div class="flex items-center justify-between text-xs font-extrabold">
+                    <span class="text-[#2B2236] dark:text-[#F5EEFF]">${esc(b.category)}</span>
                     <div class="flex items-center gap-2">
-                      <span class="tabular-nums ${over ? 'text-rose-600' : 'text-[#647087] dark:text-[#A5ADC2]'}">${fmtMoney(spent)} / ${fmtMoney(b.amount)}</span>
-                      <button type="button" data-fin-del="${b.id}" class="text-rose-500">✕</button>
+                      <span class="tabular-nums ${over ? 'text-[#8E1B3B] dark:text-[#FDA4AF]' : 'text-[#5C506B] dark:text-[#C5B9DA]'}">${fmtMoney(spent)} / ${fmtMoney(b.amount)}</span>
+                      <button type="button" data-fin-del="${b.id}" class="w-9 h-9 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] font-extrabold">✕</button>
                     </div>
                   </div>
-                  <div class="h-2 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] overflow-hidden">
-                    <div class="h-full rounded-full ${over ? 'bg-rose-500' : pct > 80 ? 'bg-amber-500' : 'bg-[#7457E8]'}" style="width:${pct}%"></div>
+                  <div class="h-2.5 rounded-full bg-white dark:bg-[#221C2E] overflow-hidden">
+                    <div class="h-full rounded-full ${over ? 'bg-[#E11D48]' : pct > 80 ? 'bg-[#D97706]' : 'bg-[#5B3FD0]'}" style="width:${pct}%"></div>
                   </div>
-                  ${over ? `<p class="text-[11px] font-bold text-rose-600">Over budget by ${fmtMoney(spent - b.amount)}!</p>` : ''}
+                  ${over ? `<p class="text-[11px] font-extrabold text-[#8E1B3B] dark:text-[#FDA4AF]">Over budget by ${fmtMoney(spent - b.amount)}!</p>` : ''}
                 </div>
               `;
-            }).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">Set a monthly or category budget to track spending limits.</p>'}
+            }).join('') : '<div class="pastel-empty-state !py-6"><p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">Set a monthly or category budget to track spending limits.</p></div>'}
           </div>
         </div>
 
         <!-- Savings Goals -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Savings Goals</h3>
+        <div class="pastel-stage3-card p-5 space-y-4">
+          <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Savings Goals</h3>
           <form id="moneyGoalForm" class="grid grid-cols-12 gap-2">
-            <input type="text" id="goalTitleInput" required maxlength="120" placeholder="Goal (e.g. Emergency Fund)" class="col-span-6 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <input type="number" min="1" id="goalTargetInput" required placeholder="Target ₹" class="col-span-4 px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <button type="submit" class="col-span-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold min-h-[42px]">Add</button>
+            <input type="text" id="goalTitleInput" required maxlength="120" placeholder="Goal (e.g. Emergency Fund)" class="pastel-pill-input col-span-6 text-xs" />
+            <input type="number" min="1" id="goalTargetInput" required placeholder="Target ₹" class="pastel-pill-input col-span-4 text-xs font-bold" />
+            <button type="submit" class="col-span-2 rounded-full bg-[#157A54] hover:bg-[#106344] text-white text-xs font-extrabold min-h-[44px]">Add</button>
           </form>
 
           <div class="space-y-3">
@@ -519,22 +579,22 @@
               const target = Math.max(1, Number(g.targetAmount || 1));
               const pct = Math.min(100, Math.round((Number(g.amount || 0) / target) * 100));
               return `
-                <div class="p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] space-y-2">
-                  <div class="flex items-center justify-between text-xs font-bold">
-                    <span class="text-[#14182B] dark:text-[#F5F6FC]">${esc(g.title)}</span>
-                    <span class="tabular-nums text-emerald-600 dark:text-emerald-400">${fmtMoney(g.amount)} / ${fmtMoney(target)} (${pct}%)</span>
+                <div class="pastel-inset-tile p-4 space-y-2.5">
+                  <div class="flex items-center justify-between text-xs font-extrabold">
+                    <span class="text-[#2B2236] dark:text-[#F5EEFF]">${esc(g.title)}</span>
+                    <span class="tabular-nums text-[#115E42] dark:text-[#6EE7B7]">${fmtMoney(g.amount)} / ${fmtMoney(target)} (${pct}%)</span>
                   </div>
-                  <div class="h-2 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] overflow-hidden">
-                    <div class="h-full rounded-full bg-emerald-500" style="width:${pct}%"></div>
+                  <div class="h-2.5 rounded-full bg-white dark:bg-[#221C2E] overflow-hidden">
+                    <div class="h-full rounded-full bg-[#15803D]" style="width:${pct}%"></div>
                   </div>
-                  <div class="flex items-center justify-between gap-2 pt-1">
-                    <button type="button" data-goal-add="${g.id}" data-goal-step="500" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">+₹500</button>
-                    <button type="button" data-goal-add="${g.id}" data-goal-step="2000" class="px-2.5 py-1 rounded-lg bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] text-[11px] font-bold">+₹2,000</button>
-                    <button type="button" data-fin-del="${g.id}" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 text-[11px] font-bold ml-auto">Delete</button>
+                  <div class="flex items-center gap-2 pt-1">
+                    <button type="button" data-goal-add="${g.id}" data-goal-step="500" class="px-3.5 py-2 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[44px]">+₹500</button>
+                    <button type="button" data-goal-add="${g.id}" data-goal-step="2000" class="px-3.5 py-2 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold min-h-[44px]">+₹2,000</button>
+                    <button type="button" data-fin-del="${g.id}" class="px-3.5 py-2 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold min-h-[44px] ml-auto">Delete</button>
                   </div>
                 </div>
               `;
-            }).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">Create savings goals for travel, gadgets, or emergency funds.</p>'}
+            }).join('') : '<div class="pastel-empty-state !py-6"><p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">Create savings goals for travel, gadgets, or emergency funds.</p></div>'}
           </div>
         </div>
       </div>
@@ -548,67 +608,67 @@
     return `
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Recurring Bills & Subscriptions -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Bill Reminders &amp; Subscriptions</h3>
-          <form id="moneyBillForm" class="space-y-2">
+        <div class="pastel-stage3-card p-5 space-y-4">
+          <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Bill Reminders &amp; Subscriptions</h3>
+          <form id="moneyBillForm" class="space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="billTitleInput" required placeholder="Bill (WiFi, Electricity, EMI)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
-              <input type="number" min="1" id="billAmtInput" required placeholder="Amount (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
+              <input type="text" id="billTitleInput" required placeholder="Bill (WiFi, Electricity, EMI)" class="pastel-pill-input text-xs" />
+              <input type="number" min="1" id="billAmtInput" required placeholder="Amount (₹)" class="pastel-pill-input text-xs font-bold" />
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" min="1" max="31" id="billDueDayInput" value="5" placeholder="Due Day (1-31)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
-              <button type="submit" class="rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[40px]">+ Save Bill</button>
+              <input type="number" min="1" max="31" id="billDueDayInput" value="5" placeholder="Due Day (1-31)" class="pastel-pill-input text-xs font-bold" />
+              <button type="submit" class="rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">+ Save Bill</button>
             </div>
           </form>
 
           <div class="space-y-2">
             ${bills.length ? bills.map((b) => `
-              <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
-                <div>
-                  <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC]">${esc(b.title)}</p>
-                  <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2]">Due every month on Day ${Number(b.dueDay || 1)} · ${b.status === 'paid' ? 'Paid this cycle' : 'Pending'}</p>
+              <div class="pastel-inset-tile flex items-center justify-between gap-2 p-3.5">
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate">${esc(b.title)}</p>
+                  <p class="text-[11px] font-semibold text-[#5C506B] dark:text-[#C5B9DA]">Due Day ${Number(b.dueDay || 1)} · ${b.status === 'paid' ? 'Paid' : 'Pending'}</p>
                 </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-extrabold tabular-nums text-[#7457E8] dark:text-[#C4B5FD]">${fmtMoney(b.amount)}</span>
-                  <button type="button" data-bill-pay="${b.id}" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">${b.status === 'paid' ? 'Paid' : 'Mark Paid'}</button>
-                  <button type="button" data-fin-del="${b.id}" class="text-rose-500 px-1 text-xs font-bold">✕</button>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span class="text-xs font-extrabold tabular-nums text-[#5B3FD0] dark:text-[#CBBBFF]">${fmtMoney(b.amount)}</span>
+                  <button type="button" data-bill-pay="${b.id}" class="px-3 py-1.5 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[44px]">${b.status === 'paid' ? 'Paid' : 'Mark Paid'}</button>
+                  <button type="button" data-fin-del="${b.id}" class="w-10 h-10 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold">✕</button>
                 </div>
               </div>
-            `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">Track electricity, broadband, OTT, and EMI due dates here.</p>'}
+            `).join('') : '<div class="pastel-empty-state !py-6"><p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">Track electricity, broadband, OTT, and EMI due dates here.</p></div>'}
           </div>
         </div>
 
         <!-- Debt / Borrowed & Lent Tracker -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
-          <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Debt &amp; Udhaar Tracker</h3>
-          <form id="moneyDebtForm" class="space-y-2">
+        <div class="pastel-stage3-card p-5 space-y-4">
+          <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Debt &amp; Udhaar Tracker</h3>
+          <form id="moneyDebtForm" class="space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
-              <input type="text" id="debtPersonInput" required placeholder="Person / Lender name" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
-              <input type="number" min="1" id="debtAmtInput" required placeholder="Amount (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
+              <input type="text" id="debtPersonInput" required placeholder="Person / Lender name" class="pastel-pill-input text-xs" />
+              <input type="number" min="1" id="debtAmtInput" required placeholder="Amount (₹)" class="pastel-pill-input text-xs font-bold" />
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <select id="debtDirInput" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]">
+              <select id="debtDirInput" class="pastel-pill-input text-xs font-bold">
                 <option value="To Receive">Lent (To Receive)</option>
                 <option value="To Pay">Borrowed (To Pay)</option>
               </select>
-              <button type="submit" class="rounded-xl bg-[#10152A] dark:bg-[#7457E8] text-white text-xs font-bold min-h-[40px]">+ Track Entry</button>
+              <button type="submit" class="rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">+ Track Entry</button>
             </div>
           </form>
 
           <div class="space-y-2">
             ${debts.length ? debts.map((d) => `
-              <div class="flex items-center justify-between p-3 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
-                <div>
-                  <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] ${d.status === 'settled' ? 'line-through opacity-55' : ''}">${esc(d.counterparty || d.title)}</p>
-                  <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2]">${esc(d.category)} · ${esc(d.status)}</p>
+              <div class="pastel-inset-tile flex items-center justify-between gap-2 p-3.5">
+                <div class="min-w-0">
+                  <p class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate ${d.status === 'settled' ? 'line-through opacity-55' : ''}">${esc(d.counterparty || d.title)}</p>
+                  <p class="text-[11px] font-semibold text-[#5C506B] dark:text-[#C5B9DA]">${esc(d.category)} · ${esc(d.status)}</p>
                 </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-extrabold tabular-nums ${d.category === 'To Receive' ? 'text-emerald-600' : 'text-rose-600'}">${fmtMoney(d.amount)}</span>
-                  ${d.status !== 'settled' ? `<button type="button" data-debt-settle="${d.id}" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">Settle</button>` : ''}
-                  <button type="button" data-fin-del="${d.id}" class="text-rose-500 px-1 text-xs font-bold">✕</button>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span class="text-xs font-extrabold tabular-nums ${d.category === 'To Receive' ? 'text-[#115E42] dark:text-[#6EE7B7]' : 'text-[#8E1B3B] dark:text-[#FCA5A5]'}">${fmtMoney(d.amount)}</span>
+                  ${d.status !== 'settled' ? `<button type="button" data-debt-settle="${d.id}" class="px-3 py-1.5 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[44px]">Settle</button>` : ''}
+                  <button type="button" data-fin-del="${d.id}" class="w-10 h-10 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold">✕</button>
                 </div>
               </div>
-            `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-4">No pending borrowed or lent entries.</p>'}
+            `).join('') : '<div class="pastel-empty-state !py-6"><p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">No pending borrowed or lent entries.</p></div>'}
           </div>
         </div>
       </div>
@@ -620,72 +680,72 @@
       <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- SIP Calculator -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">SIP Wealth Calculator</h4>
-            <input type="number" id="calcSipAmt" value="5000" placeholder="Monthly SIP (₹)" class="w-full px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">SIP Wealth Calculator</h4>
+            <input type="number" id="calcSipAmt" value="5000" placeholder="Monthly SIP (₹)" class="pastel-pill-input w-full text-xs font-bold" />
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcSipRate" value="12" step="0.5" placeholder="Return % p.a." class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcSipYears" value="10" placeholder="Years" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcSipRate" value="12" step="0.5" placeholder="Return % p.a." class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcSipYears" value="10" placeholder="Years" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcSipBtn" class="w-full py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[38px]">Calculate SIP</button>
-            <p id="calcSipOut" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums"></p>
+            <button type="button" id="calcSipBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Calculate SIP</button>
+            <p id="calcSipOut" class="text-xs font-extrabold text-[#115E42] dark:text-[#6EE7B7] tabular-nums"></p>
           </div>
 
           <!-- Compound Interest -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Compound Interest</h4>
-            <input type="number" id="calcCiP" value="100000" placeholder="Principal (₹)" class="w-full px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Compound Interest</h4>
+            <input type="number" id="calcCiP" value="100000" placeholder="Principal (₹)" class="pastel-pill-input w-full text-xs font-bold" />
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcCiR" value="8" step="0.5" placeholder="Rate % p.a." class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcCiT" value="5" placeholder="Years" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcCiR" value="8" step="0.5" placeholder="Rate % p.a." class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcCiT" value="5" placeholder="Years" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcCiBtn" class="w-full py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[38px]">Calculate CI</button>
-            <p id="calcCiOut" class="text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD] tabular-nums"></p>
+            <button type="button" id="calcCiBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Calculate CI</button>
+            <p id="calcCiOut" class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] tabular-nums"></p>
           </div>
 
           <!-- Fuel Cost & Mileage -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Fuel Cost &amp; Mileage</h4>
-            <input type="number" id="calcFuelDist" value="120" placeholder="Distance (km)" class="w-full px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Fuel Cost &amp; Mileage</h4>
+            <input type="number" id="calcFuelDist" value="120" placeholder="Distance (km)" class="pastel-pill-input w-full text-xs font-bold" />
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcFuelMil" value="45" placeholder="Mileage (km/L)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcFuelPrice" value="105" placeholder="Price/L (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcFuelMil" value="45" placeholder="Mileage (km/L)" class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcFuelPrice" value="105" placeholder="Price/L (₹)" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcFuelBtn" class="w-full py-2 rounded-xl bg-[#10152A] dark:bg-[#7457E8] text-white text-xs font-bold min-h-[38px]">Calculate Fuel</button>
-            <p id="calcFuelOut" class="text-xs font-bold text-amber-600 dark:text-amber-400 tabular-nums"></p>
+            <button type="button" id="calcFuelBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Calculate Fuel</button>
+            <p id="calcFuelOut" class="text-xs font-extrabold text-[#8A4600] dark:text-[#FCD34D] tabular-nums"></p>
           </div>
 
           <!-- Discount Calculator -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Discount Calculator</h4>
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Discount Calculator</h4>
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcDiscPrice" value="1999" placeholder="MRP (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcDiscPct" value="25" placeholder="Discount %" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcDiscPrice" value="1999" placeholder="MRP (₹)" class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcDiscPct" value="25" placeholder="Discount %" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcDiscBtn" class="w-full py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[38px]">Calculate Price</button>
-            <p id="calcDiscOut" class="text-xs font-bold text-rose-600 dark:text-rose-400 tabular-nums"></p>
+            <button type="button" id="calcDiscBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Calculate Price</button>
+            <p id="calcDiscOut" class="text-xs font-extrabold text-[#8E1B3B] dark:text-[#FCA5A5] tabular-nums"></p>
           </div>
 
           <!-- Bill Splitter -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Group Bill Splitter</h4>
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Group Bill Splitter</h4>
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcSplitTotal" value="2400" placeholder="Total Bill (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcSplitPeople" value="4" min="1" placeholder="People" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcSplitTotal" value="2400" placeholder="Total Bill (₹)" class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcSplitPeople" value="4" min="1" placeholder="People" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcSplitBtn" class="w-full py-2 rounded-xl bg-[#10152A] dark:bg-[#7457E8] text-white text-xs font-bold min-h-[38px]">Split Bill</button>
-            <p id="calcSplitOut" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums"></p>
+            <button type="button" id="calcSplitBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Split Bill</button>
+            <p id="calcSplitOut" class="text-xs font-extrabold text-[#115E42] dark:text-[#6EE7B7] tabular-nums"></p>
           </div>
 
           <!-- Salary Take-Home Estimator -->
-          <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 space-y-2.5 shadow-sm">
-            <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Monthly Salary Estimator</h4>
+          <div class="pastel-stage3-card p-5 space-y-2.5">
+            <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Monthly Salary Estimator</h4>
             <div class="grid grid-cols-2 gap-2">
-              <input type="number" id="calcSalCtc" value="600000" placeholder="Annual CTC (₹)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
-              <input type="number" id="calcSalDed" value="12" placeholder="Deduction %" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold" />
+              <input type="number" id="calcSalCtc" value="600000" placeholder="Annual CTC (₹)" class="pastel-pill-input text-xs font-bold" />
+              <input type="number" id="calcSalDed" value="12" placeholder="Deduction %" class="pastel-pill-input text-xs font-bold" />
             </div>
-            <button type="button" id="calcSalBtn" class="w-full py-2 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[38px]">Estimate In-Hand</button>
-            <p id="calcSalOut" class="text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD] tabular-nums"></p>
+            <button type="button" id="calcSalBtn" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px]">Estimate In-Hand</button>
+            <p id="calcSalOut" class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] tabular-nums"></p>
           </div>
         </div>
       </div>

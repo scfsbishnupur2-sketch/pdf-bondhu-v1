@@ -235,40 +235,59 @@
     const activeTasks = items.filter((i) => i.kind === 'task' && i.status === 'active');
     const habits = items.filter((i) => i.kind === 'habit' && i.status !== 'archived');
     const doneHabitsToday = habits.filter((h) => Array.isArray(h.completedDates) && h.completedDates.includes(tKey)).length;
+    const bestStreak = habits.reduce((mx, h) => Math.max(mx, Number(h.streak || 0)), 0);
+    const activeStreakCount = habits.filter((h) => Number(h.streak || 0) > 0).length;
+    const habitPct = habits.length > 0 ? Math.round((doneHabitsToday / habits.length) * 100) : 0;
 
     const tabs = [
       { id: 'calendar', label: 'Calendar' },
       { id: 'notes', label: 'Date Notes' },
       { id: 'reminders', label: 'Reminders' },
       { id: 'tasks', label: 'Tasks & Lists' },
-      { id: 'habits', label: 'Habits' }
+      { id: 'habits', label: 'Habits & Streaks' }
     ];
 
     root.innerHTML = `
-      <div class="space-y-5">
-        <!-- Header Summary Strip -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E8EAF2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="text-xs font-semibold text-[#7457E8] dark:text-[#B4A5FF]">My Daily Life · Offline-First</p>
-              <h2 class="text-2xl font-extrabold text-[#171B2C] dark:text-[#F5F6FC] tracking-tight">ONEORA Planner</h2>
+      <div class="space-y-5" data-pastel-cat="lifemoney">
+        <!-- Pastel Planner Header & Streaks Banner -->
+        <div class="pastel-cat-header p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-start gap-3.5">
+              <div class="pastel-icon-tile !w-12 !h-12 !rounded-2xl shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#804800] dark:text-[#FCD34D]">My Daily Life · Offline-First</p>
+                <h2 class="text-2xl sm:text-[28px] font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tracking-tight leading-tight">ONEORA Planner</h2>
+              </div>
             </div>
-            <div class="flex items-center gap-2 text-xs font-semibold text-[#777F91] dark:text-[#A5ADC2] tabular-nums">
-              <span><strong class="text-[#171B2C] dark:text-[#F5F6FC]">${todayEvents.length}</strong> today</span>
-              <span aria-hidden="true">·</span>
-              <span><strong class="text-[#171B2C] dark:text-[#F5F6FC]">${activeTasks.length}</strong> tasks</span>
-              <span aria-hidden="true">·</span>
-              <span><strong class="text-emerald-600 dark:text-emerald-400">${doneHabitsToday}/${habits.length}</strong> habits</span>
+            <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/90 dark:bg-[#17131F]/80 border border-[#2B2236]/10 dark:border-[#F5EEFF]/12 text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums min-h-[44px]">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+              <span>Best Streak: ${bestStreak}d</span>
+            </div>
+          </div>
+
+          <!-- Planner Streaks & Daily Pulse Tiles -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="pastel-kpi-tile p-3">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Active Streaks</p>
+              <p class="text-base sm:text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums mt-0.5">${activeStreakCount} habit${activeStreakCount === 1 ? '' : 's'}</p>
+            </div>
+            <div class="pastel-kpi-tile p-3">
+              <p class="text-[11px] font-bold text-[#146347] dark:text-[#86EFAC]">Habits Today</p>
+              <p class="text-base sm:text-lg font-extrabold text-[#115E42] dark:text-[#6EE7B7] tabular-nums mt-0.5">${doneHabitsToday}/${habits.length} (${habitPct}%)</p>
+            </div>
+            <div class="pastel-kpi-tile p-3">
+              <p class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Today's Agenda</p>
+              <p class="text-base sm:text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums mt-0.5">${todayEvents.length} · ${activeTasks.length} tasks</p>
             </div>
           </div>
 
           <!-- Sub-Navigation Tabs -->
-          <div class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-1">
             ${tabs.map((t) => `
-              <button type="button" data-planner-tab="${t.id}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap min-h-[40px] transition ${
-                activeSubTab === t.id
-                  ? 'bg-[#7457E8] text-white shadow-sm'
-                  : 'bg-[#F6F7FB] dark:bg-[#1D2540] text-[#777F91] dark:text-[#A5ADC2] hover:text-[#171B2C] dark:hover:text-white'
+              <button type="button" data-planner-tab="${t.id}" class="pastel-pill-tab ${
+                activeSubTab === t.id ? 'is-active' : ''
               }">${t.label}</button>
             `).join('')}
           </div>
@@ -314,18 +333,18 @@
         const isToday = key === tKey;
         const isSel = key === selectedDateKey;
         cells.push(`
-          <button type="button" data-cal-date="${key}" class="relative h-12 sm:h-14 rounded-xl border text-left p-1.5 flex flex-col justify-between transition ${
+          <button type="button" data-cal-date="${key}" class="relative h-12 sm:h-14 rounded-2xl border text-left p-1.5 flex flex-col justify-between transition ${
             isSel
-              ? 'bg-[#7457E8] text-white border-[#7457E8] shadow-sm'
+              ? 'bg-[#5B3FD0] text-white border-[#5B3FD0] shadow-sm'
               : isToday
-                ? 'bg-[#F3F0FF] dark:bg-[#7457E8]/20 border-[#7457E8]/50 text-[#7457E8] dark:text-[#C4B5FD]'
-                : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC] hover:border-[#7457E8]/50'
+                ? 'bg-[#E4D9FF] dark:bg-[#2D2347] border-[#5B3FD0]/45 text-[#3E26A0] dark:text-[#E4D9FF]'
+                : 'bg-[#FFF7EE] dark:bg-[#17131F] border-[#2B2236]/8 dark:border-[#F5EEFF]/10 text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#5B3FD0]/50'
           }">
             <span class="text-xs font-extrabold tabular-nums">${d}</span>
             <div class="flex items-center gap-0.5 flex-wrap">
               ${holiday ? '<span class="w-1.5 h-1.5 rounded-full bg-orange-500" title="Holiday"></span>' : ''}
               ${dayItems.slice(0, 3).map((x) => {
-                const c = x.kind === 'reminder' ? 'bg-rose-500' : x.kind === 'note' ? 'bg-amber-400' : 'bg-emerald-400';
+                const c = x.kind === 'reminder' ? 'bg-rose-500' : x.kind === 'note' ? 'bg-amber-400' : 'bg-emerald-500';
                 return `<span class="w-1.5 h-1.5 rounded-full ${c}"></span>`;
               }).join('')}
             </div>
@@ -333,7 +352,7 @@
         `);
       }
       calendarGridHtml = `
-        <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-[#647087] dark:text-[#A5ADC2] mb-1.5">
+        <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-extrabold text-[#5C506B] dark:text-[#C5B9DA] mb-1.5">
           <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
         </div>
         <div class="grid grid-cols-7 gap-1.5">${cells.join('')}</div>
@@ -352,24 +371,24 @@
         const isSel = key === selectedDateKey;
         weekCards.push(`
           <button type="button" data-cal-date="${key}" class="p-3 rounded-2xl border text-left transition ${
-            isSel ? 'bg-[#7457E8] text-white border-[#7457E8]' : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC]'
+            isSel ? 'bg-[#5B3FD0] text-white border-[#5B3FD0]' : 'bg-[#FFF7EE] dark:bg-[#17131F] border-[#2B2236]/8 dark:border-[#F5EEFF]/10 text-[#2B2236] dark:text-[#F5EEFF]'
           }">
-            <div class="text-[11px] font-bold opacity-75">${cur.toLocaleDateString('en-IN', { weekday: 'short' })}</div>
+            <div class="text-[11px] font-bold opacity-80">${cur.toLocaleDateString('en-IN', { weekday: 'short' })}</div>
             <div class="text-lg font-extrabold tabular-nums">${cur.getDate()}</div>
-            <div class="text-[10px] mt-1 truncate ${isSel ? 'text-white/85' : 'text-[#7457E8] dark:text-[#C4B5FD]'}">${holiday ? esc(holiday) : `${dayItems.length} items`}</div>
+            <div class="text-[10px] mt-1 truncate ${isSel ? 'text-white/90' : 'text-[#5B3FD0] dark:text-[#CBBBFF]'}">${holiday ? esc(holiday) : `${dayItems.length} items`}</div>
           </button>
         `);
       }
       calendarGridHtml = `<div class="grid grid-cols-2 sm:grid-cols-7 gap-2">${weekCards.join('')}</div>`;
     } else {
       calendarGridHtml = `
-        <div class="p-4 rounded-2xl bg-[#F3F0FF]/70 dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] flex items-center justify-between">
+        <div class="pastel-inset-tile p-4 flex items-center justify-between gap-2">
           <div>
-            <p class="text-xs font-bold text-[#7457E8] dark:text-[#C4B5FD]">Daily Focus View</p>
-            <h4 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC]">${esc(selectedDateKey)}</h4>
-            ${INDIAN_HOLIDAYS[selectedDateKey] ? `<p class="text-xs font-bold text-orange-600 dark:text-orange-400 mt-0.5">Holiday: ${esc(INDIAN_HOLIDAYS[selectedDateKey])}</p>` : ''}
+            <p class="text-xs font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF]">Daily Focus View</p>
+            <h4 class="text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">${esc(selectedDateKey)}</h4>
+            ${INDIAN_HOLIDAYS[selectedDateKey] ? `<p class="text-xs font-bold text-[#8A4600] dark:text-[#FCD34D] mt-0.5">Holiday: ${esc(INDIAN_HOLIDAYS[selectedDateKey])}</p>` : ''}
           </div>
-          <input type="date" id="calDayPickerInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
+          <input type="date" id="calDayPickerInput" value="${esc(selectedDateKey)}" class="pastel-pill-input text-xs font-bold" />
         </div>
       `;
     }
@@ -379,18 +398,18 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-7 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="lg:col-span-7 pastel-stage3-card p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <button type="button" id="calPrevMonthBtn" class="w-9 h-9 rounded-xl bg-[#F6F7FB] dark:bg-[#0C1020] text-[#14182B] dark:text-[#F5F6FC] font-extrabold hover:bg-[#F3F0FF]">‹</button>
-              <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC] min-w-[140px] text-center">${monthNames[viewMonth]} ${viewYear}</h3>
-              <button type="button" id="calNextMonthBtn" class="w-9 h-9 rounded-xl bg-[#F6F7FB] dark:bg-[#0C1020] text-[#14182B] dark:text-[#F5F6FC] font-extrabold hover:bg-[#F3F0FF]">›</button>
-              <button type="button" id="calTodayBtn" class="px-3 h-9 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] text-xs font-bold">Today</button>
+              <button type="button" id="calPrevMonthBtn" class="w-11 h-11 rounded-full bg-[#FFF7EE] dark:bg-[#17131F] text-[#2B2236] dark:text-[#F5EEFF] font-extrabold hover:bg-[#E4D9FF]">‹</button>
+              <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-w-[140px] text-center">${monthNames[viewMonth]} ${viewYear}</h3>
+              <button type="button" id="calNextMonthBtn" class="w-11 h-11 rounded-full bg-[#FFF7EE] dark:bg-[#17131F] text-[#2B2236] dark:text-[#F5EEFF] font-extrabold hover:bg-[#E4D9FF]">›</button>
+              <button type="button" id="calTodayBtn" class="px-4 h-11 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold">Today</button>
             </div>
-            <div class="flex items-center gap-1 bg-[#F6F7FB] dark:bg-[#0C1020] p-1 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A]">
+            <div class="flex items-center gap-1 bg-[#FFF7EE] dark:bg-[#17131F] p-1 rounded-full border border-[#2B2236]/8 dark:border-[#F5EEFF]/10">
               ${['month', 'week', 'day'].map((m) => `
-                <button type="button" data-cal-mode="${m}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold capitalize transition ${
-                  calViewMode === m ? 'bg-white dark:bg-[#7457E8] text-[#14182B] dark:text-white shadow-sm' : 'text-[#647087] dark:text-[#A5ADC2]'
+                <button type="button" data-cal-mode="${m}" class="px-3.5 py-2 rounded-full text-xs font-extrabold capitalize min-h-[38px] transition ${
+                  calViewMode === m ? 'bg-[#5B3FD0] text-white shadow-sm' : 'text-[#5C506B] dark:text-[#C5B9DA]'
                 }">${m}</button>
               `).join('')}
             </div>
@@ -398,58 +417,58 @@
 
           ${calendarGridHtml}
 
-          <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-[#E6E9F2] dark:border-[#232C4A] text-[11px] font-semibold text-[#647087] dark:text-[#A5ADC2]">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-500"></span>Indian Holiday</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Event / Birthday</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Date Note</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Reminder</span>
+          <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-[#2B2236]/8 dark:border-[#F5EEFF]/10 text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Indian Holiday</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Event / Birthday</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Date Note</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Reminder</span>
           </div>
         </div>
 
         <!-- Selected Date Agenda & Quick Add -->
-        <div class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 sm:p-5 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
+        <div class="lg:col-span-5 pastel-stage3-card p-5 space-y-4">
+          <div class="flex items-center justify-between gap-2">
             <div>
-              <p class="text-[11px] font-bold uppercase tracking-wide text-[#7457E8] dark:text-[#C4B5FD]">Selected Date</p>
-              <h3 class="text-lg font-extrabold text-[#14182B] dark:text-[#F5F6FC] tabular-nums">${esc(selectedDateKey)}</h3>
+              <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#5B3FD0] dark:text-[#CBBBFF]">Selected Date</p>
+              <h3 class="text-lg font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums">${esc(selectedDateKey)}</h3>
             </div>
-            ${selHoliday ? `<span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300">${esc(selHoliday)}</span>` : ''}
+            ${selHoliday ? `<span class="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A]">${esc(selHoliday)}</span>` : ''}
           </div>
 
           <!-- Quick Add Event/Note/Reminder for Selected Date -->
-          <form id="calQuickAddForm" class="space-y-2.5 p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
+          <form id="calQuickAddForm" class="pastel-inset-tile space-y-2.5 p-3.5">
             <div class="grid grid-cols-2 gap-2">
-              <select id="calAddKind" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]">
+              <select id="calAddKind" class="pastel-pill-input !bg-white dark:!bg-[#221C2E] text-xs font-bold">
                 <option value="event">Event / Birthday</option>
                 <option value="note">Date Note</option>
                 <option value="reminder">Reminder</option>
                 <option value="task">Task</option>
               </select>
-              <input type="time" id="calAddTime" value="09:00" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[40px]" />
+              <input type="time" id="calAddTime" value="09:00" class="pastel-pill-input !bg-white dark:!bg-[#221C2E] text-xs font-bold" />
             </div>
-            <input type="text" id="calAddTitle" required maxlength="180" placeholder="Title (e.g. Mom's Birthday, Pay Electricity Bill)..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8] min-h-[42px]" />
-            <textarea id="calAddBody" rows="2" maxlength="1000" placeholder="Optional details or notes..." class="w-full px-3.5 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-white dark:bg-[#151B2F] text-xs text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8]"></textarea>
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[42px] transition">+ Save to ${esc(selectedDateKey)}</button>
+            <input type="text" id="calAddTitle" required maxlength="180" placeholder="Title (e.g. Mom's Birthday, Pay Bill)..." class="pastel-pill-input !bg-white dark:!bg-[#221C2E] w-full text-xs" />
+            <textarea id="calAddBody" rows="2" maxlength="1000" placeholder="Optional details or notes..." class="pastel-pill-input !bg-white dark:!bg-[#221C2E] w-full text-xs"></textarea>
+            <button type="submit" class="w-full py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] shadow-sm transition">+ Save to ${esc(selectedDateKey)}</button>
           </form>
 
           <!-- Agenda Items for Selected Date -->
           <div class="space-y-2 max-h-72 overflow-y-auto">
             ${selItems.length ? selItems.map((it) => `
-              <div class="p-3 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A] flex items-start justify-between gap-2">
+              <div class="pastel-inset-tile p-3.5 flex items-start justify-between gap-2">
                 <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-[#7457E8] dark:text-[#C4B5FD]">
+                  <div class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#5B3FD0] dark:text-[#CBBBFF]">
                     <span>${esc(it.kind)}</span>
                     ${it.timeStr ? `<span>· ${esc(it.timeStr)}</span>` : ''}
                   </div>
-                  <p class="text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 ${it.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(it.title)}</p>
-                  ${it.body ? `<p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-0.5 whitespace-pre-wrap">${esc(it.body)}</p>` : ''}
+                  <p class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mt-0.5 ${it.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(it.title)}</p>
+                  ${it.body ? `<p class="text-[11px] text-[#5C506B] dark:text-[#C5B9DA] mt-0.5 whitespace-pre-wrap">${esc(it.body)}</p>` : ''}
                 </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  <button type="button" data-pl-toggle="${it.id}" class="px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">${it.status === 'completed' ? 'Undo' : 'Done'}</button>
-                  <button type="button" data-pl-del="${it.id}" class="px-2 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 text-[11px] font-bold">✕</button>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button type="button" data-pl-toggle="${it.id}" class="px-3 py-1.5 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[40px]">${it.status === 'completed' ? 'Undo' : 'Done'}</button>
+                  <button type="button" data-pl-del="${it.id}" class="w-10 h-10 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold">✕</button>
                 </div>
               </div>
-            `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-6">No events or notes scheduled for this date yet.</p>'}
+            `).join('') : '<div class="pastel-empty-state !py-6"><p class="text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA]">No events or notes scheduled for this date yet.</p></div>'}
           </div>
         </div>
       </div>
@@ -463,43 +482,43 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <form id="oneoraNoteForm" class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">New Date-Wise Note</h3>
-            <button type="button" id="oneoraVoiceNoteBtn" class="px-3 py-1.5 rounded-xl bg-[#F3F0FF] dark:bg-[#7457E8]/20 text-[#7457E8] dark:text-[#C4B5FD] border border-[#7457E8]/25 text-xs font-bold min-h-[36px]">Voice Dictate</button>
+        <form id="oneoraNoteForm" class="lg:col-span-5 pastel-stage3-card p-5 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">New Date-Wise Note</h3>
+            <button type="button" id="oneoraVoiceNoteBtn" class="px-3.5 py-2 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold min-h-[44px]">Voice Dictate</button>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="noteDateInput" value="${esc(selectedDateKey)}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <input type="text" id="noteCatInput" placeholder="Tag (Work, Study, Home)" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+            <input type="date" id="noteDateInput" value="${esc(selectedDateKey)}" class="pastel-pill-input text-xs font-bold" />
+            <input type="text" id="noteCatInput" placeholder="Tag (Work, Study, Home)" class="pastel-pill-input text-xs" />
           </div>
-          <input type="text" id="noteTitleInput" required maxlength="180" placeholder="Note Title..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8] min-h-[44px]" />
-          <textarea id="noteBodyInput" rows="4" maxlength="3800" placeholder="Write description, meeting notes, or checklist items (one per line starting with - )..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC] outline-none focus:border-[#7457E8]"></textarea>
-          <label class="flex items-center gap-2 text-xs font-semibold text-[#647087] dark:text-[#A5ADC2]">
-            <input type="checkbox" id="notePinCheck" class="rounded accent-[#7457E8]" /> Pin this note to top
+          <input type="text" id="noteTitleInput" required maxlength="180" placeholder="Note Title..." class="pastel-pill-input w-full text-sm font-bold" />
+          <textarea id="noteBodyInput" rows="4" maxlength="3800" placeholder="Write description, meeting notes, or checklist items..." class="pastel-pill-input w-full text-xs"></textarea>
+          <label class="flex items-center gap-2 text-xs font-bold text-[#5C506B] dark:text-[#C5B9DA] min-h-[36px]">
+            <input type="checkbox" id="notePinCheck" class="rounded accent-[#5B3FD0]" /> Pin this note to top
           </label>
-          <button type="submit" class="w-full py-3 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] transition">Save Note Offline</button>
+          <button type="submit" class="w-full py-3 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[48px] shadow-sm transition">Save Note Offline</button>
         </form>
 
         <div class="lg:col-span-7 space-y-3">
           ${notes.length ? notes.map((n) => `
-            <div class="bg-white dark:bg-[#151B2F] rounded-2xl border ${n.pinned ? 'border-amber-300 dark:border-amber-700' : 'border-[#E6E9F2] dark:border-[#232C4A]'} p-4 shadow-sm space-y-2">
+            <div class="pastel-stage3-card ${n.pinned ? '!border-[#D97706]' : ''} p-4 sm:p-5 space-y-2">
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
-                  <div class="flex items-center gap-2 text-[11px] font-bold text-[#647087] dark:text-[#A5ADC2]">
+                  <div class="flex items-center gap-2 text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">
                     <span class="tabular-nums">${esc(n.dateKey || 'No date')}</span>
                     ${n.category ? `<span>· ${esc(n.category)}</span>` : ''}
-                    ${n.pinned ? '<span class="text-amber-600 dark:text-amber-400">· Pinned</span>' : ''}
+                    ${n.pinned ? '<span class="text-[#8A4600] dark:text-[#FCD34D]">· Pinned</span>' : ''}
                   </div>
-                  <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5">${esc(n.title)}</h4>
+                  <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mt-0.5">${esc(n.title)}</h4>
                 </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  <button type="button" data-pl-pin="${n.id}" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-[11px] font-bold">${n.pinned ? 'Unpin' : 'Pin'}</button>
-                  <button type="button" data-pl-del="${n.id}" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 text-[11px] font-bold">Delete</button>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button type="button" data-pl-pin="${n.id}" class="px-3 py-1.5 rounded-full bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A] text-xs font-extrabold min-h-[40px]">${n.pinned ? 'Unpin' : 'Pin'}</button>
+                  <button type="button" data-pl-del="${n.id}" class="px-3 py-1.5 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold min-h-[40px]">Delete</button>
                 </div>
               </div>
-              ${n.body ? `<p class="text-xs text-[#647087] dark:text-[#A5ADC2] whitespace-pre-wrap leading-relaxed">${esc(n.body)}</p>` : ''}
+              ${n.body ? `<p class="text-xs text-[#5C506B] dark:text-[#C5B9DA] whitespace-pre-wrap leading-relaxed">${esc(n.body)}</p>` : ''}
             </div>
-          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-center text-xs text-[#647087] dark:text-[#A5ADC2]">No saved notes yet. Add your first date-wise or voice note on the left.</div>'}
+          `).join('') : '<div class="pastel-empty-state"><p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">No saved notes yet</p><p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Add your first date-wise or voice note on the left.</p></div>'}
         </div>
       </div>
     `;
@@ -514,10 +533,10 @@
 
     return `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <form id="oneoraReminderForm" class="lg:col-span-5 bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-3">
+        <form id="oneoraReminderForm" class="lg:col-span-5 pastel-stage3-card p-5 space-y-3">
           <div>
-            <h3 class="text-base font-extrabold text-[#14182B] dark:text-[#F5F6FC]">Set Reliable Reminder</h3>
-            <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2] mt-0.5">${
+            <h3 class="text-base font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Set Reliable Reminder</h3>
+            <p class="text-[11px] font-semibold text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">${
               global.AndroidBridge && typeof global.AndroidBridge.scheduleReminder === 'function'
                 ? 'Backed by Android AlarmManager & reboot persistence.'
                 : notifSupported
@@ -527,44 +546,44 @@
           </div>
           <div class="flex flex-wrap gap-1.5">
             ${['Medicine', 'Bill Payment', 'Birthday', 'Document Renewal', 'Meeting'].map((p) => `
-              <button type="button" data-rem-preset="${p}" class="px-2.5 py-1 rounded-lg bg-[#F3F0FF] dark:bg-[#0C1020] text-[#7457E8] dark:text-[#C4B5FD] text-[11px] font-bold hover:bg-[#7457E8] hover:text-white transition">${p}</button>
+              <button type="button" data-rem-preset="${p}" class="px-3 py-1.5 rounded-full bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#E4D9FF] text-xs font-extrabold hover:bg-[#5B3FD0] hover:text-white min-h-[38px] transition">${p}</button>
             `).join('')}
           </div>
-          <input type="text" id="remTitleInput" required maxlength="180" placeholder="Remind me to..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
+          <input type="text" id="remTitleInput" required maxlength="180" placeholder="Remind me to..." class="pastel-pill-input w-full text-sm font-bold" />
           <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="remDateInput" value="${esc(todayKey())}" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-            <input type="time" id="remTimeInput" value="09:00" class="px-3 py-2 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
+            <input type="date" id="remDateInput" value="${esc(todayKey())}" class="pastel-pill-input text-xs font-bold" />
+            <input type="time" id="remTimeInput" value="09:00" class="pastel-pill-input text-xs font-bold" />
           </div>
-          <select id="remRepeatInput" class="w-full px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]">
+          <select id="remRepeatInput" class="pastel-pill-input w-full text-xs font-bold">
             <option value="none">One-Time Reminder</option>
             <option value="daily">Repeat Daily</option>
             <option value="weekly">Repeat Weekly</option>
             <option value="monthly">Repeat Monthly</option>
             <option value="yearly">Repeat Yearly</option>
           </select>
-          <input type="text" id="remBodyInput" maxlength="400" placeholder="Optional note or dosage / bill account info..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs text-[#14182B] dark:text-[#F5F6FC] min-h-[42px]" />
-          <button type="submit" class="w-full py-3 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] shadow-sm transition">Schedule Reminder</button>
+          <input type="text" id="remBodyInput" maxlength="400" placeholder="Optional note or dosage / bill account info..." class="pastel-pill-input w-full text-xs" />
+          <button type="submit" class="w-full py-3 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[48px] shadow-sm transition">Schedule Reminder</button>
         </form>
 
         <div class="lg:col-span-7 space-y-2.5">
           ${reminders.length ? reminders.map((r) => `
-            <div class="bg-white dark:bg-[#151B2F] rounded-2xl border border-[#E6E9F2] dark:border-[#232C4A] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+            <div class="pastel-stage3-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="min-w-0">
-                <div class="flex items-center gap-2 text-[11px] font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+                <div class="flex items-center gap-2 text-[11px] font-extrabold text-[#8E1B3B] dark:text-[#FDA4AF] tabular-nums">
                   <span>${esc(r.dateKey)} · ${esc(r.timeStr || '09:00')}</span>
-                  ${r.repeat && r.repeat !== 'none' ? `<span class="text-[#7457E8] dark:text-[#C4B5FD] uppercase">· ${esc(r.repeat)}</span>` : ''}
-                  ${r.status === 'completed' ? '<span class="text-emerald-600">· Completed</span>' : ''}
+                  ${r.repeat && r.repeat !== 'none' ? `<span class="text-[#5B3FD0] dark:text-[#CBBBFF] uppercase">· ${esc(r.repeat)}</span>` : ''}
+                  ${r.status === 'completed' ? '<span class="text-[#115E42] dark:text-[#6EE7B7]">· Completed</span>' : ''}
                 </div>
-                <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] mt-0.5 ${r.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(r.title)}</h4>
-                ${r.body ? `<p class="text-xs text-[#647087] dark:text-[#A5ADC2] mt-0.5">${esc(r.body)}</p>` : ''}
+                <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] mt-0.5 ${r.status === 'completed' ? 'line-through opacity-60' : ''}">${esc(r.title)}</h4>
+                ${r.body ? `<p class="text-xs text-[#5C506B] dark:text-[#C5B9DA] mt-0.5">${esc(r.body)}</p>` : ''}
               </div>
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
-                <button type="button" data-rem-snooze="${r.id}" class="px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-[11px] font-bold min-h-[34px]">+15m</button>
-                <button type="button" data-pl-toggle="${r.id}" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold min-h-[34px]">${r.status === 'completed' ? 'Reopen' : 'Done'}</button>
-                <button type="button" data-pl-del="${r.id}" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-[11px] font-bold min-h-[34px]">Delete</button>
+                <button type="button" data-rem-snooze="${r.id}" class="px-3 py-1.5 rounded-full bg-[#FFF1A8] dark:bg-[#3A3219] text-[#6B5000] dark:text-[#FDE68A] text-xs font-extrabold min-h-[44px]">+15m</button>
+                <button type="button" data-pl-toggle="${r.id}" class="px-3 py-1.5 rounded-full bg-[#CFF3E2] dark:bg-[#1B362E] text-[#115E42] dark:text-[#A7F3D0] text-xs font-extrabold min-h-[44px]">${r.status === 'completed' ? 'Reopen' : 'Done'}</button>
+                <button type="button" data-pl-del="${r.id}" class="px-3 py-1.5 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold min-h-[44px]">Delete</button>
               </div>
             </div>
-          `).join('') : '<div class="p-8 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-center text-xs text-[#647087] dark:text-[#A5ADC2]">No reminders scheduled yet.</div>'}
+          `).join('') : '<div class="pastel-empty-state"><p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">No reminders scheduled yet</p><p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Pick a quick preset on the left for medicines, bills, or renewals.</p></div>'}
         </div>
       </div>
     `;
@@ -573,33 +592,33 @@
   function renderTasksView(items) {
     const tasks = items.filter((i) => i.kind === 'task' && i.status !== 'archived');
     return `
-      <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+      <div class="pastel-stage3-card p-5 space-y-4">
         <form id="oneoraTaskForm" class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="taskTitleInput" required maxlength="180" placeholder="Add a to-do or shopping item..." class="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
-          <select id="taskCatInput" class="px-3 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-xs font-bold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]">
+          <input type="text" id="taskTitleInput" required maxlength="180" placeholder="Add a to-do or shopping item..." class="pastel-pill-input !rounded-full flex-1 text-sm" />
+          <select id="taskCatInput" class="pastel-pill-input !rounded-full text-xs font-bold">
             <option value="To-Do">To-Do</option>
             <option value="Shopping">Shopping List</option>
             <option value="Work">Work</option>
             <option value="Personal">Personal</option>
           </select>
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px] whitespace-nowrap">+ Add Task</button>
+          <button type="submit" class="px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] whitespace-nowrap shadow-sm">+ Add Task</button>
         </form>
 
-        <div class="space-y-2">
+        <div class="space-y-2.5">
           ${tasks.length ? tasks.map((t) => `
-            <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#F6F7FB] dark:bg-[#0C1020] border border-[#E6E9F2] dark:border-[#232C4A]">
-              <button type="button" data-pl-toggle="${t.id}" class="flex items-center gap-3 flex-1 min-w-0 text-left">
-                <span class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${t.status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-[#CBD5E1] dark:border-[#2E385C]'}">
+            <div class="pastel-inset-tile flex items-center justify-between gap-3 p-3.5">
+              <button type="button" data-pl-toggle="${t.id}" class="flex items-center gap-3 flex-1 min-w-0 text-left min-h-[44px]">
+                <span class="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 text-xs font-extrabold ${t.status === 'completed' ? 'bg-[#15803D] border-[#15803D] text-white' : 'border-[#5B3FD0]/40 bg-white dark:bg-[#221C2E]'}">
                   ${t.status === 'completed' ? '✓' : ''}
                 </span>
                 <div class="min-w-0">
-                  <p class="text-sm font-bold text-[#14182B] dark:text-[#F5F6FC] truncate ${t.status === 'completed' ? 'line-through opacity-55' : ''}">${esc(t.title)}</p>
-                  <p class="text-[11px] text-[#647087] dark:text-[#A5ADC2]">${esc(t.category || 'To-Do')} · ${esc(t.dateKey || '')}</p>
+                  <p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate ${t.status === 'completed' ? 'line-through opacity-55' : ''}">${esc(t.title)}</p>
+                  <p class="text-[11px] font-semibold text-[#5C506B] dark:text-[#C5B9DA]">${esc(t.category || 'To-Do')} · ${esc(t.dateKey || '')}</p>
                 </div>
               </button>
-              <button type="button" data-pl-del="${t.id}" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 text-xs font-bold">✕</button>
+              <button type="button" data-pl-del="${t.id}" aria-label="Delete task" class="w-11 h-11 rounded-full bg-[#FFD6D6]/70 dark:bg-[#3D212B] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold flex items-center justify-center">✕</button>
             </div>
-          `).join('') : '<p class="text-xs text-[#647087] dark:text-[#A5ADC2] text-center py-6">All clear! Add tasks or grocery items above.</p>'}
+          `).join('') : '<div class="pastel-empty-state"><p class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">All clear!</p><p class="text-xs text-[#5C506B] dark:text-[#C5B9DA]">Add to-dos or grocery items above to stay organized offline.</p></div>'}
         </div>
       </div>
     `;
@@ -613,26 +632,26 @@
 
     return `
       <div class="space-y-4">
-        <!-- Quick Water Counter Card -->
-        <div class="oneora-hero-card rounded-3xl p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1 flex-1">
-            <p class="text-[11px] font-bold uppercase tracking-wider text-[#C4B5FD]">Daily Hydration Tracker</p>
-            <h3 class="text-xl font-extrabold tabular-nums">${water.count} / ${water.goal} Glasses Today</h3>
-            <div class="w-full max-w-sm h-2 rounded-full bg-white/20 overflow-hidden mt-2">
-              <div class="h-full bg-white rounded-full transition-all" style="width:${waterPct}%"></div>
+        <!-- Quick Water Counter Card (Image Blue Pastel #D6E8FF / #1F2E44) -->
+        <div class="rounded-[28px] bg-[#D6E8FF] dark:bg-[#1F2E44] border border-[#2B2236]/8 dark:border-[#F5EEFF]/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div class="space-y-1.5 flex-1">
+            <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#1B4A8B] dark:text-[#93C5FD]">Daily Hydration Tracker</p>
+            <h3 class="text-xl font-extrabold text-[#2B2236] dark:text-[#F5EEFF] tabular-nums">${water.count} / ${water.goal} Glasses Today</h3>
+            <div class="w-full max-w-sm h-2.5 rounded-full bg-white/75 dark:bg-[#17131F]/70 overflow-hidden mt-2">
+              <div class="h-full bg-[#1D63D8] dark:bg-[#60A5FA] rounded-full transition-all" style="width:${waterPct}%"></div>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button type="button" id="waterDecBtn" class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white text-lg font-extrabold">−</button>
-            <button type="button" id="waterIncBtn" class="px-4 h-11 rounded-xl bg-white text-[#10152A] hover:bg-[#F3F0FF] text-xs font-bold">+1 Glass</button>
+            <button type="button" id="waterDecBtn" aria-label="Decrease water glasses" class="w-12 h-12 rounded-full bg-white/90 dark:bg-[#17131F]/80 text-[#2B2236] dark:text-[#F5EEFF] text-lg font-extrabold shadow-xs">−</button>
+            <button type="button" id="waterIncBtn" class="px-5 h-12 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold shadow-sm">+1 Glass</button>
           </div>
         </div>
 
         <!-- Custom Habits List -->
-        <div class="bg-white dark:bg-[#151B2F] rounded-3xl border border-[#E6E9F2] dark:border-[#232C4A] p-5 shadow-sm space-y-4">
+        <div class="pastel-stage3-card p-5 space-y-4">
           <form id="oneoraHabitForm" class="flex flex-col sm:flex-row gap-2">
-            <input type="text" id="habitTitleInput" required maxlength="140" placeholder="Add a daily habit (e.g. Meditate 10 min, No Sugar)..." class="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E9F2] dark:border-[#232C4A] bg-[#F6F7FB] dark:bg-[#0C1020] text-sm font-semibold text-[#14182B] dark:text-[#F5F6FC] min-h-[44px]" />
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#7457E8] hover:bg-[#5E42D4] text-white text-xs font-bold min-h-[44px]">+ Add Habit</button>
+            <input type="text" id="habitTitleInput" required maxlength="140" placeholder="Add a daily habit (e.g. Meditate 10 min, No Sugar)..." class="pastel-pill-input !rounded-full flex-1 text-sm" />
+            <button type="submit" class="px-5 py-2.5 rounded-full bg-[#5B3FD0] hover:bg-[#4A30B8] text-white text-xs font-extrabold min-h-[44px] shadow-sm">+ Add Habit</button>
           </form>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -642,20 +661,21 @@
               const monthPrefix = tKey.slice(0, 7);
               const monthCount = dates.filter((d) => String(d).startsWith(monthPrefix)).length;
               const pct = Math.min(100, Math.round((monthCount / 30) * 100));
+              const streakNum = Number(h.streak || 0);
               return `
-                <div class="p-4 rounded-2xl border ${doneToday ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800' : 'bg-[#F6F7FB] dark:bg-[#0C1020] border-[#E6E9F2] dark:border-[#232C4A]'} space-y-3">
+                <div class="p-4 rounded-[24px] border ${doneToday ? 'bg-[#CFF3E2]/70 dark:bg-[#1B362E] border-[#15803D]/35' : 'bg-[#FFF7EE] dark:bg-[#17131F] border-[#2B2236]/8 dark:border-[#F5EEFF]/10'} space-y-3">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <h4 class="text-sm font-extrabold text-[#14182B] dark:text-[#F5F6FC] truncate">${esc(h.title)}</h4>
-                      <p class="text-[11px] font-bold text-[#7457E8] dark:text-[#C4B5FD] mt-0.5 tabular-nums">Streak: ${Number(h.streak || 0)} days · ${monthCount} days this month</p>
+                      <h4 class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] truncate">${esc(h.title)}</h4>
+                      <p class="text-[11px] font-extrabold text-[#5B3FD0] dark:text-[#CBBBFF] mt-0.5 tabular-nums">${streakNum > 0 ? `Streak: ${streakNum} day${streakNum === 1 ? '' : 's'}` : 'Start streak today'} · ${monthCount}d this month</p>
                     </div>
-                    <button type="button" data-pl-del="${h.id}" class="text-xs font-bold text-[#647087] hover:text-rose-500 px-1.5">✕</button>
+                    <button type="button" data-pl-del="${h.id}" aria-label="Delete habit" class="w-10 h-10 rounded-full bg-white/80 dark:bg-[#221C2E] text-[#8E1B3B] dark:text-[#FDA4AF] text-xs font-extrabold">✕</button>
                   </div>
-                  <div class="h-1.5 rounded-full bg-[#E6E9F2] dark:bg-[#232C4A] overflow-hidden">
-                    <div class="h-full bg-emerald-500 rounded-full" style="width:${pct}%"></div>
+                  <div class="h-2 rounded-full bg-white dark:bg-[#221C2E] overflow-hidden">
+                    <div class="h-full bg-[#15803D] rounded-full transition-all" style="width:${pct}%"></div>
                   </div>
-                  <button type="button" data-habit-checkin="${h.id}" class="w-full py-2 rounded-xl text-xs font-bold min-h-[38px] transition ${
-                    doneToday ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-[#151B2F] border border-[#E6E9F2] dark:border-[#232C4A] text-[#14182B] dark:text-[#F5F6FC] hover:border-emerald-500'
+                  <button type="button" data-habit-checkin="${h.id}" class="w-full py-2.5 rounded-full text-xs font-extrabold min-h-[44px] transition ${
+                    doneToday ? 'bg-[#157A54] text-white shadow-sm' : 'bg-white dark:bg-[#221C2E] border border-[#2B2236]/12 dark:border-[#F5EEFF]/12 text-[#2B2236] dark:text-[#F5EEFF] hover:border-[#157A54]'
                   }">${doneToday ? '✓ Completed Today' : 'Mark Done Today'}</button>
                 </div>
               `;

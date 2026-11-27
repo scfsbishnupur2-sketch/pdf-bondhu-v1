@@ -1,158 +1,433 @@
-/**
- * ONEORA — Three-Screen Premium First-Launch Onboarding Experience
- * - Exact 3 screens:
- *   1. "Everything You Need. One App."
- *   2. "Make Every Day Simpler."
- *   3. "Your World. Your Control."
- * - Skip, Next, Back, 3-page progress indicator, Language quick-select, Get Started
- * - Automatically detects existing upgraded users so it NEVER blocks or resets their data
- * - Replayable anytime from Profile & Settings via window.OneoraOnboarding.open()
- */
+/* ==========================================================================
+   ONEORA — Stage 4 Pastel 3-Screen Onboarding, Home Persona & Font Scaling
+   Design A · Pastel (#FFF7EE / #17131F · Violet #5B3FD0 · Lavender #CBBBFF)
+   Personalises Home for: Student / Shop Owner / Job Seeker / General
+   Accessibility: 44px touch targets · AA contrast · Font Scaling (100/112/124%)
+   ========================================================================== */
 (function (global) {
+  'use strict';
+
   const DONE_KEY = 'oneoraOnboardingDone_v1';
+  const PERSONA_KEY = 'oneoraUserPersona_v1';
+  const FONT_SCALE_KEY = 'oneoraFontScale_v1';
 
-  const SLIDES = [
-    {
-      kicker: 'Everything in One Place',
-      title: 'Everything You Need. One App.',
-      description: 'Your documents, photos, productivity and everyday tools, all organised in ONEORA.',
-      showLang: true,
-      svg: `
-        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[300px] mx-auto h-auto" aria-hidden="true">
-          <defs>
-            <linearGradient id="ob1Card" x1="20" y1="20" x2="300" y2="200" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#10152A"/>
-              <stop offset="100%" stop-color="#252B55"/>
-            </linearGradient>
-            <linearGradient id="ob1Accent" x1="120" y1="70" x2="200" y2="150" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#648BFF"/>
-              <stop offset="100%" stop-color="#7457E8"/>
-            </linearGradient>
-          </defs>
-          <rect x="16" y="14" width="288" height="192" rx="28" fill="url(#ob1Card)"/>
-          <path d="M96 70L160 110M224 70L160 110M96 152L160 110M224 152L160 110" stroke="#648BFF" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="4 4"/>
-          <!-- Document Node -->
-          <rect x="44" y="42" width="66" height="52" rx="14" fill="#1D2540" stroke="#648BFF" stroke-opacity="0.35"/>
-          <rect x="58" y="56" width="24" height="4" rx="2" fill="#FFFFFF"/>
-          <rect x="58" y="65" width="38" height="3.5" rx="1.75" fill="#9EB4FF" fill-opacity="0.7"/>
-          <rect x="58" y="74" width="28" height="3.5" rx="1.75" fill="#7457E8"/>
-          <!-- Image Node -->
-          <rect x="210" y="42" width="66" height="52" rx="14" fill="#1D2540" stroke="#7457E8" stroke-opacity="0.4"/>
-          <circle cx="231" cy="60" r="5" fill="#648BFF"/>
-          <path d="M222 82L236 69L246 78L254 71L264 82H222Z" fill="#7457E8"/>
-          <!-- Calendar Node -->
-          <rect x="44" y="126" width="66" height="52" rx="14" fill="#1D2540" stroke="#7457E8" stroke-opacity="0.4"/>
-          <rect x="56" y="138" width="42" height="7" rx="3.5" fill="#7457E8"/>
-          <rect x="56" y="151" width="10" height="8" rx="2.5" fill="#FFFFFF" fill-opacity="0.85"/>
-          <rect x="72" y="151" width="10" height="8" rx="2.5" fill="#648BFF"/>
-          <rect x="88" y="151" width="10" height="8" rx="2.5" fill="#FFFFFF" fill-opacity="0.4"/>
-          <!-- Utility / Vault Node -->
-          <rect x="210" y="126" width="66" height="52" rx="14" fill="#1D2540" stroke="#648BFF" stroke-opacity="0.35"/>
-          <rect x="231" y="146" width="24" height="19" rx="5" fill="#648BFF"/>
-          <path d="M237 146V142C237 138.7 239.7 136 243 136C246.3 136 249 138.7 249 142V146" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- Central ONEORA Prism Hub -->
-          <circle cx="160" cy="110" r="36" fill="#10152A" stroke="url(#ob1Accent)" stroke-width="2.5"/>
-          <path d="M160 85L137 108C135.4 109.6 135.4 112.1 137 113.7L157 133.7C158.6 135.3 161.1 135.3 162.7 133.7L167.5 128.9L153.8 115.2C151.7 113.1 151.7 109.7 153.8 107.6L166.2 95.2L160 85Z" fill="#648BFF"/>
-          <path d="M157.3 85C158.9 83.4 161.4 83.4 163 85L183 105C184.6 106.6 184.6 109.1 183 110.7L160 133.7L153.8 123.5L166.2 111.1C168.3 109 168.3 105.6 166.2 103.5L152.5 89.8L157.3 85Z" fill="#FFFFFF"/>
-          <path d="M160 103.5L166.5 110L160 116.5L153.5 110L160 103.5Z" fill="#7457E8"/>
-        </svg>
-      `
+  const PERSONAS = {
+    student: {
+      id: 'student',
+      label: 'Student',
+      subtitle: 'Notes, PDF merge, scanner & exam photos first',
+      pastelCat: 'pdf',
+      categoryOrder: ['pdf', 'office', 'image', 'india', 'lifemoney', 'vault'],
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>'
     },
-    {
-      kicker: 'Your Life, Organised',
-      title: 'Make Every Day Simpler.',
-      description: 'Manage your calendar, reminders, notes, expenses and important documents from one place.',
-      showLang: false,
-      svg: `
-        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[300px] mx-auto h-auto" aria-hidden="true">
-          <defs>
-            <linearGradient id="ob2Bg" x1="20" y1="20" x2="300" y2="200" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#10152A"/>
-              <stop offset="100%" stop-color="#252B55"/>
-            </linearGradient>
-          </defs>
-          <rect x="16" y="14" width="288" height="192" rx="28" fill="url(#ob2Bg)"/>
-          <!-- Fintech Balance Card -->
-          <rect x="36" y="34" width="142" height="84" rx="16" fill="#1D2540" stroke="#7457E8" stroke-opacity="0.45"/>
-          <rect x="50" y="48" width="52" height="5" rx="2.5" fill="#A5ADC2"/>
-          <rect x="50" y="61" width="84" height="12" rx="4" fill="#FFFFFF"/>
-          <path d="M50 102L74 90L94 96L118 82L144 88L164 74" stroke="#34D399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Calendar Card -->
-          <rect x="190" y="34" width="94" height="84" rx="16" fill="#1D2540" stroke="#648BFF" stroke-opacity="0.38"/>
-          <rect x="204" y="47" width="46" height="6" rx="3" fill="#648BFF"/>
-          <circle cx="212" cy="70" r="5" fill="#FFFFFF" fill-opacity="0.8"/>
-          <circle cx="232" cy="70" r="5" fill="#7457E8"/>
-          <circle cx="252" cy="70" r="5" fill="#FFFFFF" fill-opacity="0.35"/>
-          <circle cx="212" cy="90" r="5" fill="#FFFFFF" fill-opacity="0.35"/>
-          <circle cx="232" cy="90" r="5" fill="#34D399"/>
-          <circle cx="252" cy="90" r="5" fill="#FFFFFF" fill-opacity="0.8"/>
-          <!-- Bottom Schedule & Reminder Strip -->
-          <rect x="36" y="130" width="248" height="56" rx="16" fill="#151B2F" stroke="#FFFFFF" stroke-opacity="0.1"/>
-          <rect x="50" y="146" width="24" height="24" rx="8" fill="#7457E8"/>
-          <path d="M58 158L61 161L67 154" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="86" y="148" width="106" height="6" rx="3" fill="#FFFFFF"/>
-          <rect x="86" y="161" width="74" height="4.5" rx="2.25" fill="#A5ADC2"/>
-          <rect x="218" y="148" width="52" height="20" rx="8" fill="#648BFF" fill-opacity="0.22"/>
-          <rect x="230" y="156" width="28" height="4.5" rx="2.25" fill="#648BFF"/>
-        </svg>
-      `
+    shop_owner: {
+      id: 'shop_owner',
+      label: 'Shop Owner',
+      subtitle: 'Bills, expenses, Udhar & PDF receipts first',
+      pastelCat: 'lifemoney',
+      categoryOrder: ['lifemoney', 'pdf', 'india', 'office', 'image', 'vault'],
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>'
     },
-    {
-      kicker: 'Smart. Private. Powerful.',
-      title: 'Your World. Your Control.',
-      description: 'Enjoy powerful tools, offline productivity and intelligent assistance in one seamless experience.',
-      showLang: false,
-      svg: `
-        <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[300px] mx-auto h-auto" aria-hidden="true">
-          <defs>
-            <linearGradient id="ob3Bg" x1="20" y1="20" x2="300" y2="200" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#10152A"/>
-              <stop offset="100%" stop-color="#252B55"/>
-            </linearGradient>
-            <linearGradient id="ob3Shield" x1="125" y1="54" x2="195" y2="162" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#7457E8"/>
-              <stop offset="100%" stop-color="#648BFF"/>
-            </linearGradient>
-          </defs>
-          <rect x="16" y="14" width="288" height="192" rx="28" fill="url(#ob3Bg)"/>
-          <!-- Concentric Orbital Precision Rings -->
-          <circle cx="160" cy="110" r="72" stroke="#648BFF" stroke-opacity="0.18" stroke-width="1.5"/>
-          <circle cx="160" cy="110" r="52" stroke="#7457E8" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="6 5"/>
-          <!-- Shield Core -->
-          <path d="M160 58L202 74V112C202 138 183.6 158.6 160 166C136.4 158.6 118 138 118 112V74L160 58Z" fill="url(#ob3Shield)"/>
-          <path d="M146 111L156 121L176 99" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Offline & AI Orbit Satellites -->
-          <rect x="44" y="88" width="54" height="44" rx="14" fill="#1D2540" stroke="#34D399" stroke-opacity="0.45"/>
-          <rect x="57" y="102" width="28" height="5" rx="2.5" fill="#34D399"/>
-          <rect x="57" y="113" width="20" height="4" rx="2" fill="#A5ADC2"/>
-          <rect x="222" y="88" width="54" height="44" rx="14" fill="#1D2540" stroke="#648BFF" stroke-opacity="0.5"/>
-          <path d="M249 99L252.2 106.8L260 110L252.2 113.2L249 121L245.8 113.2L238 110L245.8 106.8L249 99Z" fill="#FFFFFF"/>
-        </svg>
-      `
+    job_seeker: {
+      id: 'job_seeker',
+      label: 'Job Seeker',
+      subtitle: 'Govt exam KB photos, IDs, resumes & Vault first',
+      pastelCat: 'india',
+      categoryOrder: ['india', 'pdf', 'image', 'office', 'vault', 'lifemoney'],
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'
+    },
+    general: {
+      id: 'general',
+      label: 'General',
+      subtitle: 'Balanced access to PDF, Image, Office & Vault',
+      pastelCat: 'vault',
+      categoryOrder: ['pdf', 'image', 'office', 'lifemoney', 'india', 'vault'],
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg>'
     }
-  ];
+  };
 
-  let currentIndex = 0;
+  const FONT_SCALES = {
+    normal: { id: 'normal', label: 'Normal', pct: '100%' },
+    large: { id: 'large', label: 'Large', pct: '112%' },
+    xl: { id: 'xl', label: 'Extra Large', pct: '124%' }
+  };
+
+  function haptic(ms) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(ms || 10);
+    } catch (_) {}
+  }
+
+  function getPersona() {
+    try {
+      const saved = localStorage.getItem(PERSONA_KEY);
+      if (saved && PERSONAS[saved]) return saved;
+    } catch (_) {}
+    return 'general';
+  }
+
+  function getFontScale() {
+    try {
+      const saved = localStorage.getItem(FONT_SCALE_KEY);
+      if (saved && FONT_SCALES[saved]) return saved;
+    } catch (_) {}
+    return 'normal';
+  }
+
+  function applyFontScale(scaleId, silent) {
+    const prevScale = getFontScale();
+    const cfg = FONT_SCALES[scaleId] || FONT_SCALES.normal;
+    try {
+      localStorage.setItem(FONT_SCALE_KEY, cfg.id);
+    } catch (_) {}
+    document.documentElement.style.fontSize = cfg.pct;
+    document.documentElement.setAttribute('data-font-scale', cfg.id);
+
+    document.querySelectorAll('[data-font-scale]').forEach((btn) => {
+      const active = btn.getAttribute('data-font-scale') === cfg.id;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    if (silent === false && cfg.id !== prevScale) {
+      haptic(8);
+      if (global.utils && typeof global.utils.showToast === 'function') {
+        global.utils.showToast('Text Size Updated', `Display text set to ${cfg.label} (${cfg.pct}).`, 'success', 2000);
+      }
+    }
+  }
+
+  function applyHomePersona(personaId) {
+    const p = PERSONAS[personaId] || PERSONAS.general;
+    const grid = document.getElementById('pastelHomeCategoriesGrid');
+    if (grid) {
+      const cardsByCat = {};
+      Array.from(grid.querySelectorAll('[data-pastel-cat]')).forEach((el) => {
+        const key = el.getAttribute('data-pastel-cat');
+        if (key) cardsByCat[key] = el;
+      });
+      p.categoryOrder.forEach((catKey, idx) => {
+        const card = cardsByCat[catKey];
+        if (card) {
+          card.style.setProperty('--stagger-i', String(idx));
+          grid.appendChild(card);
+        }
+      });
+    }
+
+    // Sync Profile & Settings persona buttons
+    document.querySelectorAll('[data-set-persona]').forEach((btn) => {
+      const active = btn.getAttribute('data-set-persona') === p.id;
+      btn.classList.toggle('is-selected', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    const summaryEl = document.getElementById('settingsActivePersonaLabel');
+    if (summaryEl) {
+      summaryEl.textContent = `${p.label} · ${p.subtitle}`;
+    }
+
+    document.documentElement.setAttribute('data-oneora-persona', p.id);
+  }
+
+  function setPersona(personaId, silent) {
+    const p = PERSONAS[personaId] || PERSONAS.general;
+    try {
+      localStorage.setItem(PERSONA_KEY, p.id);
+    } catch (_) {}
+    applyHomePersona(p.id);
+    document.dispatchEvent(new CustomEvent('oneora:personachange', { detail: { persona: p.id } }));
+    if (!silent) {
+      haptic(12);
+      if (global.utils && typeof global.utils.showToast === 'function') {
+        global.utils.showToast('Home Personalised', `Categories arranged for ${p.label}.`, 'success');
+      }
+    }
+  }
+
+  function isDone() {
+    try {
+      return localStorage.getItem(DONE_KEY) === '1';
+    } catch (_) {
+      return true;
+    }
+  }
+
+  function markDone() {
+    try {
+      localStorage.setItem(DONE_KEY, '1');
+    } catch (_) {}
+  }
+
+  function getWelcomeIllustration() {
+    return `
+      <svg viewBox="0 0 280 170" class="w-full max-w-[260px] h-auto mx-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="14" y="14" width="252" height="142" rx="30" fill="#CBBBFF"/>
+        <circle cx="222" cy="48" r="24" fill="#FFE7C2" opacity="0.9"/>
+        <circle cx="58" cy="126" r="20" fill="#CFF3E2" opacity="0.9"/>
+        <rect x="44" y="34" width="122" height="94" rx="22" fill="#FFFFFF"/>
+        <rect x="58" y="50" width="38" height="38" rx="14" fill="#FFD6D6"/>
+        <path d="M72 62h10M72 69h10M72 76h6" stroke="#B91C47" stroke-width="2.6" stroke-linecap="round"/>
+        <rect x="106" y="54" width="46" height="8" rx="4" fill="#2B2236" opacity="0.85"/>
+        <rect x="106" y="68" width="34" height="6" rx="3" fill="#5C506B" opacity="0.5"/>
+        <rect x="58" y="98" width="94" height="16" rx="8" fill="#5B3FD0"/>
+        <rect x="174" y="68" width="66" height="64" rx="20" fill="#FFF7EE"/>
+        <path d="M195 100l8 8 16-18" stroke="#5B3FD0" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+  }
+
+  function getPrivacyIllustration() {
+    return `
+      <svg viewBox="0 0 280 156" class="w-full max-w-[250px] h-auto mx-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="16" y="12" width="248" height="132" rx="30" fill="#E4D9FF"/>
+        <circle cx="64" cy="48" r="18" fill="#CFF3E2"/>
+        <circle cx="220" cy="112" r="20" fill="#D6E8FF"/>
+        <path d="M140 30l44 16v30c0 28-18 48-44 58-26-10-44-30-44-58V46l44-16z" fill="#FFFFFF"/>
+        <path d="M140 42l32 12v22c0 20-13 35-32 43-19-8-32-23-32-43V54l32-12z" fill="#5B3FD0"/>
+        <path d="M126 78l10 10 20-22" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+  }
+
+  let currentSlide = 0;
+  let selectedPersona = getPersona();
+  let selectedScale = getFontScale();
   let overlayEl = null;
 
-  function isExistingUserUpgrade() {
-    const legacyKeys = [
-      'pdfBondhuRecentTools',
-      'pdfBondhuVault',
-      'pdfBondhuUserName',
-      'oneoraPlannerData_v1',
-      'oneoraMoneyData_v1',
-      'pdfBondhuThemeMode_v2'
-    ];
-    return legacyKeys.some((k) => {
-      try { return localStorage.getItem(k) !== null; } catch { return false; }
+  function renderOnboardingOverlay() {
+    if (overlayEl) return overlayEl;
+    overlayEl = document.createElement('div');
+    overlayEl.id = 'oneoraOnboardingOverlay';
+    overlayEl.className = 'oneora-ob-overlay animate-fade-in';
+    overlayEl.setAttribute('role', 'dialog');
+    overlayEl.setAttribute('aria-modal', 'true');
+    overlayEl.setAttribute('aria-label', 'Welcome to ONEORA');
+    document.body.appendChild(overlayEl);
+    return overlayEl;
+  }
+
+  function getCurrentLang() {
+    try {
+      return localStorage.getItem('pdfBondhuLang_v1') || localStorage.getItem('oneoraLang_v1') || 'en';
+    } catch (_) {
+      return 'en';
+    }
+  }
+
+  function updateSlideUI() {
+    if (!overlayEl) return;
+    const totalSlides = 3;
+    const isLast = currentSlide === totalSlides - 1;
+    const activeLang = getCurrentLang();
+
+    const dots = [0, 1, 2]
+      .map(
+        (i) =>
+          `<span class="h-2 rounded-full transition-all duration-300 ${
+            i === currentSlide ? 'w-8 bg-[#5B3FD0] dark:bg-[#CBBBFF]' : 'w-2 bg-[#D9CEE8] dark:bg-[#3A2F52]'
+          }"></span>`
+      )
+      .join('');
+
+    let bodyHtml = '';
+
+    if (currentSlide === 0) {
+      // Screen 1: Welcome + Language
+      bodyHtml = `
+        <div class="space-y-6 text-center animate-fade-in">
+          <div class="pt-1">${getWelcomeIllustration()}</div>
+          <div class="space-y-2">
+            <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-extrabold bg-[#E4D9FF] dark:bg-[#2D2347] text-[#3E26A0] dark:text-[#D7C9FF]">Welcome to ONEORA</span>
+            <h2 class="text-[28px] font-extrabold tracking-tight leading-tight text-[#2B2236] dark:text-[#F5EEFF]">Every daily tool, calm &amp; offline</h2>
+            <p class="text-sm font-medium text-[#5C506B] dark:text-[#C5B9DA] leading-relaxed max-w-sm mx-auto">Scan documents, edit PDFs, size passport photos, track money &amp; lock personal IDs — all on your device.</p>
+          </div>
+          <div class="pastel-ob-card p-4 space-y-2.5 text-left">
+            <div class="text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] px-1">Choose your language</div>
+            <div class="grid grid-cols-3 gap-2">
+              ${[
+                { code: 'en', label: 'English' },
+                { code: 'bn', label: 'বাংলা' },
+                { code: 'hi', label: 'हिन्दी' }
+              ]
+                .map(
+                  (l) => `
+                  <button type="button" data-ob-lang="${l.code}" class="pastel-scale-btn text-xs ${activeLang === l.code ? 'is-active' : ''}">${l.label}</button>`
+                )
+                .join('')}
+            </div>
+          </div>
+        </div>`;
+    } else if (currentSlide === 1) {
+      // Screen 2: Persona Selection (Personalises Home)
+      bodyHtml = `
+        <div class="space-y-5 animate-fade-in">
+          <div class="text-center space-y-1.5">
+            <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-extrabold bg-[#FFE7C2] dark:bg-[#3D2E1D] text-[#6B3E08] dark:text-[#FFE0B2]">Step 2 of 3 · Personalise</span>
+            <h2 class="text-[26px] font-extrabold tracking-tight leading-tight text-[#2B2236] dark:text-[#F5EEFF]">How will you use ONEORA?</h2>
+            <p class="text-sm font-medium text-[#5C506B] dark:text-[#C5B9DA]">We’ll arrange your Home categories to put your favourite tools first.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            ${Object.values(PERSONAS)
+              .map(
+                (p) => `
+                <button type="button" data-ob-persona="${p.id}" data-pastel-cat="${p.pastelCat}" class="pastel-persona-card ${selectedPersona === p.id ? 'is-selected' : ''}" aria-pressed="${selectedPersona === p.id ? 'true' : 'false'}">
+                  <div class="flex items-start justify-between gap-2">
+                    <span class="pastel-white-tile !w-11 !h-11 !rounded-[16px]">${p.icon}</span>
+                    ${
+                      selectedPersona === p.id
+                        ? '<span class="w-6 h-6 rounded-full bg-[#5B3FD0] text-white inline-flex items-center justify-center shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>'
+                        : ''
+                    }
+                  </div>
+                  <div class="mt-3.5">
+                    <div class="text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">${p.label}</div>
+                    <p class="text-[11px] font-semibold text-[#4C3F5E] dark:text-[#D6CAF0] mt-1 leading-snug">${p.subtitle}</p>
+                  </div>
+                </button>`
+              )
+              .join('')}
+          </div>
+        </div>`;
+    } else {
+      // Screen 3: Private Offline + Font Scaling Accessibility
+      bodyHtml = `
+        <div class="space-y-5 text-center animate-fade-in">
+          <div>${getPrivacyIllustration()}</div>
+          <div class="space-y-1.5">
+            <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-extrabold bg-[#CFF3E2] dark:bg-[#1B362E] text-[#0F5137] dark:text-[#B9F2D9]">100% On-Device Privacy</span>
+            <h2 class="text-[26px] font-extrabold tracking-tight leading-tight text-[#2B2236] dark:text-[#F5EEFF]">Your files never leave your phone</h2>
+            <p class="text-sm font-medium text-[#5C506B] dark:text-[#C5B9DA] leading-relaxed max-w-sm mx-auto">Lock your Vault with PIN or fingerprint, and share files from any app using “Open with ONEORA”.</p>
+          </div>
+          <div class="pastel-ob-card p-4 space-y-2.5 text-left">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-xs font-extrabold text-[#2B2236] dark:text-[#F5EEFF]">Comfortable Text Size</span>
+              <span class="text-[11px] font-bold text-[#5C506B] dark:text-[#C5B9DA]">Change anytime in Settings</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              ${Object.values(FONT_SCALES)
+                .map(
+                  (s) => `
+                  <button type="button" data-ob-scale="${s.id}" class="pastel-scale-btn text-xs ${selectedScale === s.id ? 'is-active' : ''}">
+                    ${s.label}
+                  </button>`
+                )
+                .join('')}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    overlayEl.innerHTML = `
+      <div class="flex items-center justify-between max-w-md w-full mx-auto">
+        <div class="flex items-center gap-2.5">
+          <img src="./icon.svg" alt="ONEORA" class="w-9 h-9 rounded-2xl shadow-sm" />
+          <span class="text-sm font-extrabold tracking-tight text-[#2B2236] dark:text-[#F5EEFF]">ONEORA</span>
+        </div>
+        <button type="button" id="oneoraObSkipBtn" class="px-4 py-2 rounded-full text-xs font-extrabold text-[#5C506B] dark:text-[#C5B9DA] hover:bg-black/5 dark:hover:bg-white/10 min-h-[44px] transition">
+          Skip
+        </button>
+      </div>
+
+      <div class="oneora-ob-stage py-4">${bodyHtml}</div>
+
+      <div class="max-w-md w-full mx-auto space-y-4">
+        <div class="flex items-center justify-center gap-2" aria-label="Step ${currentSlide + 1} of ${totalSlides}">${dots}</div>
+        <div class="flex items-center gap-2.5">
+          ${
+            currentSlide > 0
+              ? '<button type="button" id="oneoraObBackBtn" class="px-5 rounded-full bg-white dark:bg-[#221C2E] border border-[var(--oneora-border)] text-sm font-extrabold text-[#2B2236] dark:text-[#F5EEFF] min-h-[52px] shadow-sm transition">Back</button>'
+              : ''
+          }
+          <button type="button" id="oneoraObNextBtn" class="flex-1 rounded-full bg-[#5B3FD0] hover:bg-[#4B2FC0] text-white text-sm font-extrabold min-h-[52px] px-6 shadow-[0_14px_28px_-14px_rgba(91,63,208,0.65)] transition">
+            ${isLast ? 'Start Using ONEORA →' : 'Continue'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Bind interactive controls inside onboarding
+    const skipBtn = overlayEl.querySelector('#oneoraObSkipBtn');
+    const backBtn = overlayEl.querySelector('#oneoraObBackBtn');
+    const nextBtn = overlayEl.querySelector('#oneoraObNextBtn');
+
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => {
+        haptic(8);
+        closeOnboarding(true);
+      });
+    }
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        haptic(8);
+        currentSlide = Math.max(0, currentSlide - 1);
+        updateSlideUI();
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        haptic(12);
+        if (currentSlide < totalSlides - 1) {
+          currentSlide += 1;
+          updateSlideUI();
+        } else {
+          setPersona(selectedPersona, true);
+          applyFontScale(selectedScale, true);
+          closeOnboarding(true);
+          if (global.utils && typeof global.utils.showToast === 'function') {
+            const p = PERSONAS[selectedPersona] || PERSONAS.general;
+            global.utils.showToast('Welcome to ONEORA', `Home personalised for ${p.label}.`, 'success');
+          }
+        }
+      });
+    }
+
+    overlayEl.querySelectorAll('[data-ob-lang]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-ob-lang') || 'en';
+        haptic(8);
+        if (typeof global.setAppLanguage === 'function') {
+          global.setAppLanguage(lang);
+        } else {
+          try {
+            localStorage.setItem('pdfBondhuLang_v1', lang);
+          } catch (_) {}
+          const langBtn = document.querySelector(`[data-set-lang="${lang}"]`);
+          if (langBtn) langBtn.click();
+        }
+        updateSlideUI();
+      });
+    });
+
+    overlayEl.querySelectorAll('[data-ob-persona]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedPersona = btn.getAttribute('data-ob-persona') || 'general';
+        setPersona(selectedPersona, true);
+        haptic(10);
+        updateSlideUI();
+      });
+    });
+
+    overlayEl.querySelectorAll('[data-ob-scale]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedScale = btn.getAttribute('data-ob-scale') || 'normal';
+        applyFontScale(selectedScale, true);
+        haptic(8);
+        updateSlideUI();
+      });
     });
   }
 
-  function closeOnboarding(markDone = true) {
-    if (markDone) {
-      try { localStorage.setItem(DONE_KEY, '1'); } catch {}
-    }
+  function openOnboarding(startIndex) {
+    currentSlide = typeof startIndex === 'number' ? startIndex : 0;
+    selectedPersona = getPersona();
+    selectedScale = getFontScale();
+    renderOnboardingOverlay();
+    overlayEl.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    updateSlideUI();
+  }
+
+  function closeOnboarding(persist) {
+    if (persist) markDone();
     if (overlayEl) {
       overlayEl.remove();
       overlayEl = null;
@@ -160,128 +435,71 @@
     document.body.style.overflow = '';
   }
 
-  function renderSlide() {
-    if (!overlayEl) return;
-    const slide = SLIDES[currentIndex];
-    const isLast = currentIndex === SLIDES.length - 1;
-    const activeLang = (() => {
-      try { return localStorage.getItem('pdfBondhuLang') || 'en'; } catch { return 'en'; }
-    })();
-
-    overlayEl.innerHTML = `
-      <div class="w-full max-w-md mx-auto flex items-center justify-between pt-1">
-        <div class="flex items-center gap-2.5">
-          <img src="./icon.svg" alt="ONEORA" class="w-8 h-8 rounded-xl shadow-sm" />
-          <span class="text-sm font-extrabold tracking-tight text-[#171B2C] dark:text-[#F5F6FC]">ONEORA</span>
-        </div>
-        <button type="button" id="oneoraObSkipBtn" class="px-3.5 py-2 rounded-xl text-xs font-bold text-[#777F91] dark:text-[#A5ADC2] hover:text-[#7457E8] min-h-[40px]">Skip</button>
-      </div>
-
-      <div class="oneora-ob-stage py-6 flex flex-col items-center text-center oneora-ob-slide">
-        <div class="w-full mb-7">${slide.svg}</div>
-        <p class="text-xs font-bold tracking-wide text-[#7457E8] dark:text-[#9FAFFF] mb-2">${slide.kicker}</p>
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#171B2C] dark:text-[#F5F6FC] leading-tight mb-3">${slide.title}</h1>
-        <p class="text-sm text-[#777F91] dark:text-[#A5ADC2] leading-relaxed max-w-sm">${slide.description}</p>
-
-        ${slide.showLang ? `
-          <div class="mt-6 w-full max-w-xs">
-            <p class="text-[11px] font-semibold text-[#777F91] dark:text-[#A5ADC2] mb-2">Choose your preferred language</p>
-            <div class="grid grid-cols-3 gap-2">
-              <button type="button" data-ob-lang="en" class="py-2 rounded-xl text-xs font-bold border min-h-[40px] ${activeLang === 'en' ? 'bg-[#7457E8] text-white border-[#7457E8]' : 'bg-white dark:bg-[#151B2F] text-[#171B2C] dark:text-[#F5F6FC] border-[#E8EAF2] dark:border-[#232C4A]'}">English</button>
-              <button type="button" data-ob-lang="bn" class="py-2 rounded-xl text-xs font-bold border min-h-[40px] ${activeLang === 'bn' ? 'bg-[#7457E8] text-white border-[#7457E8]' : 'bg-white dark:bg-[#151B2F] text-[#171B2C] dark:text-[#F5F6FC] border-[#E8EAF2] dark:border-[#232C4A]'}">বাংলা</button>
-              <button type="button" data-ob-lang="hi" class="py-2 rounded-xl text-xs font-bold border min-h-[40px] ${activeLang === 'hi' ? 'bg-[#7457E8] text-white border-[#7457E8]' : 'bg-white dark:bg-[#151B2F] text-[#171B2C] dark:text-[#F5F6FC] border-[#E8EAF2] dark:border-[#232C4A]'}">हिन्दी</button>
-            </div>
-          </div>
-        ` : ''}
-      </div>
-
-      <div class="w-full max-w-md mx-auto space-y-5 pb-2">
-        <!-- 3-Page Progress Indicator -->
-        <div class="flex items-center justify-center gap-2" role="tablist" aria-label="Onboarding progress">
-          ${SLIDES.map((_, idx) => `
-            <button type="button" data-ob-dot="${idx}" aria-label="Step ${idx + 1} of 3" class="h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-[#7457E8]' : 'w-2 bg-[#D6DAEA] dark:bg-[#313D63]'}"></button>
-          `).join('')}
-        </div>
-
-        <div class="flex items-center gap-2.5">
-          ${currentIndex > 0 ? `
-            <button type="button" id="oneoraObPrevBtn" class="px-5 py-3.5 rounded-2xl bg-white dark:bg-[#151B2F] border border-[#E8EAF2] dark:border-[#232C4A] text-sm font-bold text-[#171B2C] dark:text-[#F5F6FC] min-h-[48px]">Back</button>
-          ` : ''}
-          <button type="button" id="oneoraObNextBtn" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-[#252B55] via-[#7457E8] to-[#648BFF] text-white text-sm font-extrabold shadow-lg min-h-[48px]">
-            ${isLast ? 'Get Started' : 'Next'}
-          </button>
-        </div>
-      </div>
-    `;
-
-    overlayEl.querySelector('#oneoraObSkipBtn')?.addEventListener('click', () => closeOnboarding(true));
-    overlayEl.querySelector('#oneoraObPrevBtn')?.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        renderSlide();
-      }
-    });
-    overlayEl.querySelector('#oneoraObNextBtn')?.addEventListener('click', () => {
-      if (isLast) {
-        closeOnboarding(true);
-      } else {
-        currentIndex++;
-        renderSlide();
-      }
-    });
-    overlayEl.querySelectorAll('[data-ob-dot]').forEach((dot) => {
-      dot.addEventListener('click', () => {
-        currentIndex = Number(dot.getAttribute('data-ob-dot')) || 0;
-        renderSlide();
-      });
-    });
-    overlayEl.querySelectorAll('[data-ob-lang]').forEach((btn) => {
+  function initSettingsBindings() {
+    document.querySelectorAll('[data-set-persona]').forEach((btn) => {
+      if (btn.dataset.personaWired) return;
+      btn.dataset.personaWired = '1';
       btn.addEventListener('click', () => {
-        const lang = btn.getAttribute('data-ob-lang');
-        if (!lang) return;
-        try { localStorage.setItem('pdfBondhuLang', lang); } catch {}
-        if (global.pdfBondhuI18n && typeof global.pdfBondhuI18n.setLanguage === 'function') {
-          global.pdfBondhuI18n.setLanguage(lang);
-        }
-        renderSlide();
+        setPersona(btn.getAttribute('data-set-persona') || 'general', false);
       });
     });
+
+    document.querySelectorAll('[data-font-scale]').forEach((btn) => {
+      if (btn.dataset.scaleWired) return;
+      btn.dataset.scaleWired = '1';
+      btn.addEventListener('click', (e) => {
+        if (e && e.isTrusted === false) return;
+        applyFontScale(btn.getAttribute('data-font-scale') || 'normal', false);
+      });
+    });
+
+    const replayBtn = document.getElementById('settingsReplayOnboardingBtn');
+    if (replayBtn && !replayBtn.dataset.obWired) {
+      replayBtn.dataset.obWired = '1';
+      replayBtn.addEventListener('click', () => {
+        haptic(10);
+        openOnboarding(0);
+      });
+    }
   }
 
-  function openOnboarding(startAt = 0) {
-    if (overlayEl) overlayEl.remove();
-    currentIndex = Math.max(0, Math.min(SLIDES.length - 1, startAt));
-    overlayEl = document.createElement('div');
-    overlayEl.id = 'oneoraOnboardingOverlay';
-    overlayEl.className = 'oneora-onboarding-overlay';
-    overlayEl.setAttribute('role', 'dialog');
-    overlayEl.setAttribute('aria-modal', 'true');
-    overlayEl.setAttribute('aria-label', 'Welcome to ONEORA');
-    document.body.appendChild(overlayEl);
-    document.body.style.overflow = 'hidden';
-    renderSlide();
-  }
-
-  global.OneoraOnboarding = {
-    open: () => openOnboarding(0),
-    close: () => closeOnboarding(true)
-  };
+  // Apply saved font scaling immediately to avoid layout jump
+  applyFontScale(getFontScale(), true);
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Wire Replay Onboarding button in Profile & Settings
-    document.getElementById('settingsReplayOnboardingBtn')?.addEventListener('click', () => {
-      openOnboarding(0);
-    });
+    applyFontScale(getFontScale(), true);
+    applyHomePersona(getPersona());
+    initSettingsBindings();
 
-    // Never block existing users upgrading from PDF Bondhu; only show on true first launch
-    let alreadyDone = false;
-    try { alreadyDone = localStorage.getItem(DONE_KEY) === '1'; } catch {}
-    if (!alreadyDone) {
-      if (isExistingUserUpgrade()) {
-        try { localStorage.setItem(DONE_KEY, '1'); } catch {}
-      } else {
-        openOnboarding(0);
-      }
+    // First-launch onboarding check (skip if existing user upgraded or deep-linked via shortcut/share)
+    const params = new URLSearchParams(window.location.search);
+    const hasDeepLink = params.has('shortcut') || params.has('shared') || params.has('open');
+    const hasExistingData = Boolean(
+      localStorage.getItem('pdfBondhuRecentTools_v2') ||
+        localStorage.getItem('pdfBondhuProfile_v2') ||
+        localStorage.getItem('oneoraProfile_v1')
+    );
+
+    if (!isDone() && !hasExistingData && !hasDeepLink) {
+      setTimeout(() => openOnboarding(0), 260);
+    } else if (hasExistingData && !isDone()) {
+      markDone();
     }
   });
+
+  global.OneoraOnboarding = {
+    open: openOnboarding,
+    close: () => closeOnboarding(true),
+    isDone
+  };
+
+  global.OneoraPersonalization = {
+    PERSONAS,
+    FONT_SCALES,
+    getPersona,
+    setPersona,
+    applyHomePersona,
+    getFontScale,
+    applyFontScale
+  };
 })(window);
